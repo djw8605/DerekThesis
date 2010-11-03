@@ -29,7 +29,7 @@ dweitzel@cse.unl.edu
 
 \begin{abstract}
 
-At many universities, each department maintains a independent cluster for their researchers.  Many of these clusters are under utilized while researchers at other departments are resource starved.  In this paper we will describe a framework and technologly that are used to link departmental clusters such that submission at one cluster could lead to execution on another.  This framework is then further expanded to operating on a national production grid.  All of these components a functional and are running research jobs in production.
+At many universities, each department maintains a independent cluster for their researchers.  Many of these clusters are under utilized while researchers at other departments may require these resources.  In this paper we will describe a framework and technology that are used to link departmental clusters such that submission at one cluster could lead to execution on another.  This framework is then further expanded to operating on a national production grid.  All of these components are functional and are running research jobs in production.
 
 \end{abstract}
 
@@ -49,8 +49,9 @@ At many universities, each department maintains a independent cluster for their 
 %succinct set of 1 to 3 paragraphs 
 
 \item Department clusters waste power by being under utilized for significant portions of time.
-\item Researchers have peaks in usage and need overflow capacity, while maintaining a single execution environment.  This is an expressed goal of the Condor project.
-\item Overflow capacity for their local cluster.
+\item Researchers have peaks in usage and need overflow capacity.
+\item Users want a single execution environment.  This is an expressed goal of the Condor project.
+\item Increased utilization of a cluster can reflect well on the department.
 
 %\item
 %A common mistake is to explain too much of the problem context first. Instead,
@@ -125,7 +126,7 @@ less effective than our method}
 %out both the strengths and weaknesses to provide as well rounded a view of how
 %your idea relates to other work as possible
 \item
-Globus is a translation layer between the globus specific Resource Specification Language, and the local resource manager.  It has been very successful in that is has a large install base.  Globus also has deep integration with standard grid credentials.
+Globus is a translation layer between the (globus specific?) Resource Specification Language, and the local resource manager.  It has been very successful in that is has a large install base.  Globus also has deep integration with standard grid credentials such as PKI.
 
 \item
 Condor Flocking
@@ -261,6 +262,12 @@ that our solution is effective}
 \item
 Faster job submission and start than globus.  Should be easy to show.
 
+\item
+Run at other campuses.
+
+\item
+Submit jobs between campuses.
+
 \end{itemize}
 
 
@@ -320,7 +327,7 @@ Combination of Condor, Glidein, and BLAHP.
 %worthwhile assuming the reader already agrees with you
 
 \item
-This solution keeps the administrator in control of priorities and access policies.  It can also follow's the campuses security model.
+This solution keeps the administrator in control of priorities and access policies.  It can also follow the campus' security model.
 
 \end{itemize}
 
