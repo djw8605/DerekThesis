@@ -29,7 +29,7 @@ dweitzel@cse.unl.edu
 
 \begin{abstract}
 
-At many universities, each department maintains a independent cluster.  Many of these clusters run under utilized.  In this paper we will describe a framework and technologies that where used to link departmental clusters such that submission at one cluster could lead to execution on another.  This framework is then further expanded to operating on a production national grid.
+At many universities, each department maintains a independent cluster for their researchers.  Many of these clusters run under utilized.  In this paper we will describe a framework and technologly that where used to link departmental clusters such that submission at one cluster could lead to execution on another.  This framework is then further expanded to operating on a national production grid.
 
 \end{abstract}
 
@@ -72,7 +72,7 @@ are ineffective in one or more important ways}
 A common solution to linking clusters is condor flocking.  Flocking requires every cluster to run condor daemons on their nodes.  
 
 \item
-Another solution is single vendor/software solution.  This again requires buy-in from all departments on campus.
+Another solution is single vendor/software solution.  Both PBS and SGE can create a grid of clusters.  This again requires buy-in from all departments on campus.
 
 \item
 Placing globus gatekeepers on each cluster would allow jobs to be submitted to each cluster without modifying the underlying batch system.  But, this would require a higher layer of abstraction over the globus gatekeepers to optimally balance load between clusters.  Also, it does not provide a method for transparent execution on other clusters.
@@ -216,9 +216,9 @@ Using offline ads to efficiently match jobs to glideins on the non-condor cluste
 %you have to convince someone you know enough to have a good chance of building
 %a solution, but that you have not {\em already} done so.
 
-\item Glideins
+\item Glideins are submitted to the non-condor cluster.
 
-\item Flocking
+\item Flocking is enabled between the condor clusters, and the non-condor clusters.  The non-condor clusters run the condor daemons on one node that will handle flocking and submission of glidein jobs.  This node can also serve as the local condor queue
 
 \item Condor \& BLAHP
 
