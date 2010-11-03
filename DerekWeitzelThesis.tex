@@ -93,7 +93,7 @@ in some way that others are not}
 %\item
 %A succinct statement of {\em why} the reader should care enough to read the
 %rest of the paper.
-\item The framework described in this paper is designed as a modular framework that will allow clusters overflow onto each other and to the grid.  This framework requires running condor on only one node in the cluster.  Each job that comes from another cluster will go through the default scheduler, whether it's PBS, SGE, or LSF.
+\item The framework described in this paper is designed as a modular framework that will allow clusters to overflow onto each other and to the grid.  This framework requires running condor on only one node in the cluster.  Each job that comes from another cluster will go through the default scheduler, whether it's PBS, SGE, or LSF.
 
 %\item
 %This should include a statement about the characteristics of your solution to
@@ -185,13 +185,6 @@ Panda
 \subsubsection*{What we (will do $|$ did): {\em Our Solution}}
 \begin{itemize}
 
-\item Glideins
-
-\item Flocking
-
-\item Condor \& BLAHP
-
-
 %\item   Another way to look at this section is as a paper, within a paper,
 %describing your implementation. That viewpoint makes this the introduction to
 %the subordinate paper, which should describe the overall structure of your
@@ -200,7 +193,17 @@ Panda
 %\item   Then, describe the structure of the rest of this section, and what each
 %subsection describes.
 
+\item
+Created a campus grid integrating 3 clusters on a campus into a grid.  Submission to any of the clusters could overflow to the other 2.
+
+\item
+Overflow to the grid
+
+\item
+Using offline ads to efficiently match jobs to glideins on the non-condor cluster.
+
 \end{itemize}
+
 
 
 \subsubsection*{How our solution (will $|$ does) work}
@@ -220,7 +223,13 @@ Panda
 %you have to convince someone you know enough to have a good chance of building
 %a solution, but that you have not {\em already} done so.
 
-\item Works on firefly
+\item Glideins
+
+\item Flocking
+
+\item Condor \& BLAHP
+
+\item OfflineAds
 
 \end{itemize}
 
@@ -250,7 +259,7 @@ Panda
 %\item   Comments
 
 \item
-Faster job submission and start than globus.  Should be easy to tell.
+Faster job submission and start than globus.  Should be easy to show.
 
 \end{itemize}
 
