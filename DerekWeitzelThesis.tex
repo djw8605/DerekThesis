@@ -257,8 +257,22 @@ Convenience attributes:
 \item PreviousName - Value of 'Name' attribute of the original ad. Useful for debugging. 
 \end{itemize}
 
+\subsubsection{Managing OfflineAds}
+By default, the factory will attempt to maintain a specific number of offline ads. This can be done in a number of ways, such as always maintaining the newest 10 ads. Or you can sort by different 'types' of machines (big memory, big disk), and keep an assortment of unique ads.  Currently, the factory only keeps the latest 10 ads.
 
+To maintain the classads, the factory queries the collector for offline ads. If it detects more than 10, it will only keep the newest 10. If less then ten, the offline ad manager will list the site as Delinquent, and will recommend submitting more glideins.
 
+\subsubsection{Influence OfflineAds have on the Factory}
+The OfflineAds do not completely replace all logic relating to the factory. The site must still meet the idle glideins/idle slots requirements that were originally used to throttle new glideins. The OfflineAds do replace the need for the factory to query remote schedd's to for idle jobs. The negotiator and collector take care of all job matching with semi-accurate glidein classads.
+
+The logic of the factory follows:
+
+\begin{enumerate}
+\item Are there idle startd's?
+\item Are there idle glideins in queue?
+\item Have any of the idle offline ads matched in the last x seconds?
+\item If we get this far, submit some glideins. 
+\end{enumerate}
 
 
 \section{Evaluation}
