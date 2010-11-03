@@ -48,8 +48,8 @@ At many universities, each department maintains a independent cluster for their 
 %Concentrate on making {\em this} assertion and {\em only} this assertion in a
 %succinct set of 1 to 3 paragraphs 
 
-\item Department clusters waste power by being under utilized significant portions of time.
-\item Researchers have peaks in usage (think paper writing) and need overflow capacity.
+\item Department clusters waste power by being under utilized for significant portions of time.
+\item Researchers have peaks in usage and need overflow capacity, while maintaining a single execution environment.  This is an expressed goal of the Condor project.
 \item Overflow capacity for their local cluster.
 
 %\item
@@ -130,7 +130,11 @@ Globus is a translation layer between the globus specific Resource Specification
 \item
 Condor Flocking
 
+\item
+Virginia Campus Grid \cite{humphrey2005university}.  They used globus 4 WSRF to create a grid.  They used the campus information services and authentication methods.  They do not mention load balancing or brokering.
 
+\item
+Oxford Campus Grid \cite{wallom2006oxgrid}.  Oxford leveraged the VDT stack, and Condor-G.  They built an equivalent of OSGMM using Condor-G and GLUE attributes to submit to globus gatekeepers installed on the clusters.  So, they built an OSG.
 
 %\item
 %In a social and political sense, it is {\em very smart} as well as ethical to
@@ -351,29 +355,8 @@ Scale this solution to other universities and institutions.  Already doing this 
 
 
 \bibliographystyle{plain}
-\begin{thebibliography}{99}%\setlength{\itemsep}{-1ex}
-% \small
-\singlespace
+\bibliography{DerekWeitzelThesis}
 
-\bibitem{ARJ:95} Anderson, J., Ramamurthy, S., Jeffay, K.,
-``Real-Time Computing with Lock-Free Shared Objects''\negthinspace,
-{\em Proceedings of the 16th IEEE Real-Time Systems Symposium\/},
-IEEE Computer Society Press, December 1995, pp.\ 28-37.
-
-\bibitem{BHR:90} Baruah, S., Howell, R., Rosier, L.,
-``Algorithms and Complexity Concerning the Preemptively Scheduling of Periodic,
-Real-Time Tasks on One Processor,'' {\em Real-Time Systems Journal\/},
-Vol. 2, 1990, pp. 301-324.
-
-
-\bibitem{Go:97} Goddard, S., Jeffay, K. ``Analyzing the Real-Time Properties of
-a Dataflow Execution Paradigm using a Synthetic Aperture Radar Application,''
-{\em Proc. IEEE Real-Time Technology and Applications
-Symposium\/}, June 1997, pp.\ 60-71.
-
-%\bibliography{/usr/users/niehaus/thesis/bib/papers/all}
-
-\end{thebibliography}
 
 
 \end{document}
