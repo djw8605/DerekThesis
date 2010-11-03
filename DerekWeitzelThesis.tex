@@ -231,8 +231,34 @@ Using offline ads to efficiently match jobs to glideins on the non-condor cluste
 
 \item OfflineAds are used to efficiently match jobs to potential slots on a machine.  These were developed because we do not always want ~5 idle jobs running on a cluster.  We would rather have a few jobs submitted per day, and only submit more glideins if jobs will run there.
 
-
 \end{itemize}
+
+\subsection{OfflineAds}
+Offline ads are designed to be used for power management. When a node hasn't been matched for a configurable amount of time, the machine can be turned off to save power. When the machine is preparing to turn off, it sends an offline ad to the collector that describes the machine. The OfflineAd includes all of the features that can be used when matching against an online resource.  When the offline ad describing the machine is matched to a job by the Condor negotiator, the negoiator inserts a new attributed into the offline ad called MachineLastMatchTime.  When using power management, the Condor Rooster periodically queries the collector for the offline ads, and wakes the powered off matched nodes to run the job.
+
+The collector maintains the offline ads for a configurable amount of time using the configuration variable OFFLINE\_EXPIRE\_ADS\_AFTER. During this time, the condor negotiator will treat the offline ad just as it would a real ad and match it to idle jobs. Since the Negotiator sees no difference between running and offline ads, the offline ads will be matched even when flocking from another condor pool.  This is how the offline ads are used in the campus factory.
+
+\subsubsection{Creating OfflineAds}
+The factory detects classads of running glideins, copies the classads, and re-advertises them as offline ads. Since the offline ad is an exact copy of a running glidein, it is reasonably expected that you can get a similar glidein when you submit to the local scheduler.
+
+To change a glidein classad into a offline ad, the following attributes must be changed
+
+\begin{itemize}
+\item Offline = true
+\item Name - to a unique name
+\item MyCurrentTime = LastHeardFrom - Time now
+\item ClassAdLifetime - To address a bug in the handling of offline ads by Condor. This is how many seconds the collector will keep this ad
+\item State = Unclaimed - Make sure it will match with idle jobs.
+\item Activity = Idle - Again, for matching 
+\end{itemize}
+
+Convenience attributes: 
+\begin{itemize}
+\item PreviousName - Value of 'Name' attribute of the original ad. Useful for debugging. 
+\end{itemize}
+
+
+
 
 
 \section{Evaluation}
