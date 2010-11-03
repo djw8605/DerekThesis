@@ -29,7 +29,7 @@ dweitzel@cse.unl.edu
 
 \begin{abstract}
 
-At many universities, each department maintains a independent cluster for their researchers.  Many of these clusters are under utilized while researchers at other departments may require these resources.  In this paper we will describe a framework and technology that are used to link departmental clusters such that submission at one cluster could lead to execution on another.  This framework is then further expanded to operating on a national production grid.  All of these components are functional and are running research jobs in production.
+At many universities, each department maintains a independent cluster for their researchers.  Many of these clusters are under utilized while researchers at other departments may require these resources.  Linking these clusters with traditional grid software would require changes in security and execution environments.  In this paper we will describe a framework and technology that are used to link departmental clusters such that submission at one cluster could lead to execution on another.  This framework is then further expanded to operating on a national production grid.  Additionally, the framework is designed as lightweight, and leveraging existing security infrastructure.   All of these components are functional and are running research jobs in production.
 
 \end{abstract}
 
@@ -52,6 +52,7 @@ At many universities, each department maintains a independent cluster for their 
 \item Researchers have peaks in usage and need overflow capacity.
 \item Users want a single execution environment.  This is an expressed goal of the Condor project.
 \item Increased utilization of a cluster can reflect well on the department.
+\item Use existing security infrastructure.
 
 %\item
 %A common mistake is to explain too much of the problem context first. Instead,
