@@ -225,7 +225,7 @@ Using offline ads to efficiently match jobs to glideins on the non-condor cluste
 
 
 \subsubsection*{How our solution (will $|$ does) work}
-\begin{itemize}
+%\begin{itemize}
 %\item   This is the body of the subordinate paper describing your solution. It
 %may be divided into several subsections as required by the nature of your
 %implementation.
@@ -241,7 +241,7 @@ Using offline ads to efficiently match jobs to glideins on the non-condor cluste
 %you have to convince someone you know enough to have a good chance of building
 %a solution, but that you have not {\em already} done so.
 
-\item Campus Factory is the heart of the operation.  It provides all throttling and logic to the submit of glidein jobs to the non-condor cluster.
+\textbf{ Campus Factory is the heart of the operation.  It provides all throttling and logic to the submit of glidein jobs to the non-condor cluster.}
 
 \subsection{Campus Factory}
 \begin{figure}[ht]
@@ -252,20 +252,29 @@ Using offline ads to efficiently match jobs to glideins on the non-condor cluste
 \end{figure}
 The Campus Factory is a daemon that runs on non-condor clusters in order to submit glideins when appropriate.  The factory is an integral part of the campus grid because it allows non-condor clusters to participate in the grid.  The factory submits glideins to the LRMS, allowing them to run with the priorities set in the LRMS.  The jobs, once started, report back to the factory collector as a regular condor pool node.  The factory collector then is able to route jobs from other clusters to these available glideins just as it would for a all-condor cluster.
 
-The factory includes logic to decide when to submit glideins, and how many.
 
 \subsubsection{Determining when to submit glideins}
-It is the factory's responsibility to decide whether submit glideins to the underlying non-condor cluster.
+The factory decides whether submit glideins to the underlying non-condor cluster.  The factory has 2 configuration options relating to submission of glideins to the LRMS: \texttt{MaxIdleGlideins} and \texttt{MaxQueuedJobs}.
 
-\item Glideins are submitted to the non-condor cluster.
+\begin{description}
+\item[ \texttt{MaxIdleGlideins}] \hfill \\
+An integer representing the number of idle slots that will be allowed before the factory stops submitting jobs. 
 
-\item Flocking is enabled between the condor clusters, and the non-condor clusters.  The non-condor clusters run the condor daemons on one node that will handle flocking and submission of glidein jobs.  This node can also serve as the local condor queue for users to submit to.  
+\item[ \texttt{MaxQueuedJobs}] \hfill \\
+An integer number of queued glideins that will be allowed to be idle in the LRMS before submitting more. 
 
-\item Condor \& BLAHP provides the interface to the local batch system.  It is developed as a part of glite, and is included in the standard condor distribution.  
+\end{description}
 
-\item OfflineAds are used to efficiently match jobs to potential slots on a machine.  These were developed because we do not always want ~5 idle jobs running on a cluster.  We would rather have a few jobs submitted per day, and only submit more glideins if jobs will run there.
 
-\end{itemize}
+
+Glideins are submitted to the non-condor cluster.
+
+Flocking is enabled between the condor clusters, and the non-condor clusters.  The non-condor clusters run the condor daemons on one node that will handle flocking and submission of glidein jobs.  This node can also serve as the local condor queue for users to submit to. 
+
+Condor \& BLAHP provides the interface to the local batch system.  It is developed as a part of glite, and is included in the standard condor distribution. 
+
+OfflineAds are used to efficiently match jobs to potential slots on a machine.  These were developed because we do not always want ~5 idle jobs running on a cluster.  We would rather have a few jobs submitted per day, and only submit more glideins if jobs will run there.
+
 
 \subsection{OfflineAds}
 Offline ads are designed to be used for power management. When a node hasn't been matched for a configurable amount of time, the machine can be turned off to save power. When the machine is preparing to turn off, it sends an offline ad to the collector that describes the machine. The OfflineAd includes all of the features that can be used when matching against an online resource.  When the offline ad describing the machine is matched to a job by the Condor negotiator, the negoiator inserts a new attributed into the offline ad called MachineLastMatchTime.  When using power management, the Condor Rooster periodically queries the collector for the offline ads, and wakes the powered off matched nodes to run the job.
