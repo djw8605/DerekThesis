@@ -9,6 +9,8 @@
 
 \newcommand{\secref}[1]{Section~\ref{#1}}
 
+
+
 %\newcommand{\doublespace}{\baselineskip0.34truein}
 %\newcommand{\singlespace}{\baselineskip0.16truein}
 %\newcommand{\midspace}{\baselineskip0.24truein}
@@ -17,6 +19,19 @@
 \title{\bf Campus Grids}
 
 \usepackage{setspace}
+
+\usepackage{graphicx}
+\usepackage{calc}
+
+\newlength{\imgwidth}
+
+\newcommand\scalegraphics[1]{%   
+    \settowidth{\imgwidth}{\includegraphics{#1}}%
+    \setlength{\imgwidth}{\minof{\imgwidth}{\textwidth}}%
+    \includegraphics[width=\imgwidth]{#1}%
+}
+
+
 
 \doublespacing
 
@@ -227,6 +242,20 @@ Using offline ads to efficiently match jobs to glideins on the non-condor cluste
 %a solution, but that you have not {\em already} done so.
 
 \item Campus Factory is the heart of the operation.  It provides all throttling and logic to the submit of glidein jobs to the non-condor cluster.
+
+\subsection{Campus Factory}
+\begin{figure}[ht]
+\centering
+\scalegraphics{images/FactoryOverview.pdf}
+\caption{Overview of Campus Factory function}
+\label{fig:campusfactoryoverview}
+\end{figure}
+The Campus Factory is a daemon that runs on non-condor clusters in order to submit glideins when appropriate.  The factory is an integral part of the campus grid because it allows non-condor clusters to participate in the grid.  The factory submits glideins to the LRMS, allowing them to run with the priorities set in the LRMS.  The jobs, once started, report back to the factory collector as a regular condor pool node.  The factory collector then is able to route jobs from other clusters to these available glideins just as it would for a all-condor cluster.
+
+The factory includes logic to decide when to submit glideins, and how many.
+
+\subsubsection{Determining when to submit glideins}
+It is the factory's responsibility to decide whether submit glideins to the underlying non-condor cluster.
 
 \item Glideins are submitted to the non-condor cluster.
 
