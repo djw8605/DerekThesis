@@ -261,7 +261,7 @@ The factory depends on Condor daemons to carry out many tasks such as:
 \item Run and maintain the factory daemon.
 \item Submission of the glidein jobs to the LRMS (See Section \ref{sec:condorandblahp}).
 \item Collect and advertise information on the glidein jobs.
-\item Negotiate with other submitters in order to route jobs to glideins.
+\item Negotiate with submitters in order to route jobs to glideins.
 \end{itemize}
 
 
@@ -295,7 +295,7 @@ The factory submission logic is as follows:
 Additionally, the factory has logic to detect glideins that are not reporting to the collector.  This can happen when the the LRMS cannot transfer files, if the BLAHP is incorrectly reporting the status of a job, or if there is something wrong with the glideins jobs.
 
 \subsection{Glidein Jobs}
-Glideins are submitted to the non-condor cluster.
+Glideins are described in full in \cite{frey2002condor}.  The factory uses them on non-condor resources in order to create a virtual condor cluster that can successfully flock.
 
 \subsection{Flocking}
 Flocking is enabled between the condor clusters, and the non-condor clusters.  The non-condor clusters run the condor daemons on one node that will handle flocking and submission of glidein jobs.  This node can also serve as the local condor queue for users to submit to. 
