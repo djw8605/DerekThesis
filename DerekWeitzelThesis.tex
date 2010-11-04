@@ -295,9 +295,9 @@ The factory submission logic is as follows:
 Additionally, the factory has logic to detect glideins that are not reporting to the collector.  This can happen when the the LRMS cannot transfer files, if the BLAHP is incorrectly reporting the status of a job, or if there is something wrong with the glideins jobs.
 
 \subsection{Glidein Jobs}
-Glidein is a pilot job based system described in full in \cite{frey2002condor}.  The factory uses glideins on non-condor resources in order to create a virtual condor cluster that can transfer jobs with flocking.  The glidein job is a few condor daemons packaged and started when the job starts.  At startup, the glidein reports to the factory the specifications of the machine.  The glidein is then available for jobs to execute.
+Glidein is a pilot job based system described in full in \cite{frey2002condor}.  The factory uses glideins on non-condor resources in order to create a virtual condor cluster that can transfer jobs with flocking.  The glidein job is a few condor daemons packaged and started when the job starts.  At startup, a glidein wrapper script transfers the files into the working directory.  It then creates a temp directory  the glidein reports to the factory the specifications of the machine.  Then, the glidein is then available for jobs to execute.
 
-Glideins are being used in production in the Open Science Grid because they provide several advantages over regular job submission.  Each glidein sandboxes and monitoring the user jobs it runs.  The glidein can run multiple user jobs inside a single LRMS job, and will continue to run until the configured time to stop.  And the glidein connects directly with the submitter host, removing the need for staging data.
+Glideins are being used in production in the Open Science Grid because they provide several advantages over regular job submission.  Each glidein sandboxes and monitoring the user jobs it runs.  The glidein can run multiple user jobs inside a single LRMS job, and will continue to run until the configured time to stop.  Glidein host connects directly with the submitter host, removing the need for staging data.
 
 \subsection{Flocking}
 Flocking is enabled between the condor clusters, and the non-condor clusters.  The non-condor clusters run the condor daemons on one node that will handle flocking and submission of glidein jobs.  This node can also serve as the local condor queue for users to submit to. 
@@ -353,6 +353,8 @@ The logic of the factory follows:
 
 \section{Evaluation}
 \label{sec:Evaluation}
+
+\subsubsection*{Social political stuff}
 
 \subsubsection*{How we tested our solution}
 \begin{itemize}
