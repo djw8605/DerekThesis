@@ -252,7 +252,15 @@ Using offline ads to efficiently match jobs to glideins on the non-condor cluste
 \caption{Overview of Campus Factory function}
 \label{fig:campusfactoryoverview}
 \end{figure}
-The Campus Factory is a daemon that runs on non-condor clusters in order to submit glideins when appropriate.  The factory is an integral part of the campus grid because it allows non-condor clusters to participate in the grid.  The factory submits glideins to the LRMS, allowing them to run with the priorities set in the LRMS.  The jobs, once started, report back to the factory collector as a regular condor pool node.  The factory collector then is able to route jobs from other clusters to these available glideins just as it would for a all-condor cluster.
+The Campus Factory is a daemon that runs on non-condor clusters in order to submit glideins when appropriate.  The factory is an integral part of the campus grid because it allows non-condor clusters to participate in the grid.  The factory submits glideins to the LRMS, allowing them to run with the priorities set in the LRMS.  The jobs, once started, report back to the factory collector as a regular condor pool node.  The factory collector then is able to route jobs from other clusters to these available glideins just as it would for an all-condor cluster.
+
+The Campus Factory is a python daemon that runs as a persistent condor job.  Since it runs as a condor job, the condor daemons will ensure that it stays alive, eliminating the need to monitoring an additional daemon.  The Campus Factory functions are shown in Figure \ref{fig:campusfactoryoverview}.  The factory will periodically query the collector for idle slots, and query the schedd for idle jobs.  The factory will talk to schedds on other clusters listed in the condor configuration variable \texttt{FLOCK\_FROM}.
+
+The factory depends on Condor daemons to carry out many tasks such as:
+\begin{itemize}
+\item Run and maintain the factory daemon
+\item 
+\end{itemize}
 
 
 \subsubsection{Determining when to submit glideins}
@@ -291,6 +299,7 @@ Glideins are submitted to the non-condor cluster.
 Flocking is enabled between the condor clusters, and the non-condor clusters.  The non-condor clusters run the condor daemons on one node that will handle flocking and submission of glidein jobs.  This node can also serve as the local condor queue for users to submit to. 
 
 \subsection{Condor \& BLAHP}
+\label{sec:condorandblahp}
 Condor \& BLAHP provides the interface to the local batch system.  It is developed as a part of glite, and is included in the standard condor distribution. 
 
 OfflineAds are used to efficiently match jobs to potential slots on a machine.  These were developed because we do not always want ~5 idle jobs running on a cluster.  We would rather have a few jobs submitted per day, and only submit more glideins if jobs will run there.
