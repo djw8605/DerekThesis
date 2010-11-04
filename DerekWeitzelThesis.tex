@@ -19,6 +19,8 @@
 \title{\bf Campus Grids}
 
 \usepackage{setspace}
+\usepackage{algorithmic}
+\usepackage{algorithm}
 
 \usepackage{graphicx}
 \usepackage{calc}
@@ -265,12 +267,30 @@ An integer number of queued glideins that will be allowed to be idle in the LRMS
 
 \end{description}
 
+The factory submission logic is as follows:
 
+\begin{algorithm}
+\begin{algorithmic}
+\IF {idlejobs $<$ MaxIdleGlideins \&\& queuedglideins $<$ MaxQueuedJobs}
+	\STATE $toSubmit \gets$ min(MaxIdleGlideins - idlejobs, MaxQueuedJobs - queuedglideins, idleuserjobs)
+\ELSE
+	\STATE $toSubmit \gets 0$
+\ENDIF
+\RETURN $toSubmit$
 
+\end{algorithmic}
+\caption{Algorithim for determining how many glideins to submit.}
+\end{algorithm}
+
+Additionally, the factory has logic to detect glideins that are not reporting to the collector.  This can happen when the the LRMS cannot transfer files, if the BLAHP is incorrectly reporting the status of a job, or if there is something wrong with the glideins jobs.
+
+\subsection{Glidein Jobs}
 Glideins are submitted to the non-condor cluster.
 
+\subsection{Flocking}
 Flocking is enabled between the condor clusters, and the non-condor clusters.  The non-condor clusters run the condor daemons on one node that will handle flocking and submission of glidein jobs.  This node can also serve as the local condor queue for users to submit to. 
 
+\subsection{Condor \& BLAHP}
 Condor \& BLAHP provides the interface to the local batch system.  It is developed as a part of glite, and is included in the standard condor distribution. 
 
 OfflineAds are used to efficiently match jobs to potential slots on a machine.  These were developed because we do not always want ~5 idle jobs running on a cluster.  We would rather have a few jobs submitted per day, and only submit more glideins if jobs will run there.
