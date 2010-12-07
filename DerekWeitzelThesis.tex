@@ -297,7 +297,7 @@ Additionally, the factory has logic to detect glideins that are not reporting to
 \subsection{Glidein Jobs}
 Glidein  \cite{frey2002condor} is a pilot job based grid submission that creates an overlay network.  Glidein is designed to used standard Condor mechanisms to advertise it's availablity to a Condor Collector process, which is queried by the Scheduler to learn about available resources.  Each user job is run in a sandbox on the local disk and is provided with a consistent execution environment across hosts and clusters.  
 
-The factory uses glideins on non-condor resources in order to create a overlay condor cluster that can execute remote jobs via flocking.  The glideins report to a Collector unique to each Cluster and are configured to exit after 20 minutes of inactivity.  
+The factory uses glideins on non-condor resources in order to create a overlay condor cluster that can execute remote jobs via flocking.  The glideins report to a Collector unique to each Cluster and are configured to exit after a configurable amount of time. 
 
 The glidein job requires six condor daemons packaged with a wrapper script.  When the job starts, the Glidein job will:
 
