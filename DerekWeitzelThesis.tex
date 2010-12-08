@@ -71,6 +71,7 @@ At many universities, each department maintains a independent cluster for their 
 
 \item Department clusters waste power by being under utilized for significant portions of time.
 \item Researchers have peaks in usage and need overflow capacity.
+\item Move single core jobs around to idle clusters, freeing up space for MPI jobs.
 \item Users want a single execution environment.  This is an expressed goal of the Condor project.
 \item Increased utilization of a cluster can reflect well on the department.
 \item Use existing security infrastructure.
@@ -81,6 +82,11 @@ At many universities, each department maintains a independent cluster for their 
 %your claim to the next part, ``Why it is not already solved.''
 
 \end{itemize}
+
+As the speed of innovation in computing increases, it is common for a campus to have multiple generations of clusters.  These clusters are commonly bought as independent systems, not meant to share work between them.  This causes users to flock to the newest generation hardware, hoping to increase the performance of their application.  This movement of users leads to under utilization of older hardware, and increased demand on the newest hardware.
+
+One way to alleviate this demand is to move single core jobs to other clusters that have idle cycles.  Recently, the single core performance has been stagnant, therefore moving the single core jobs to the older hardware will not significantly decrease performance.  Also, by moving the single core jobs, it can free the newest hardware for large parallel jobs.  
+
 
 
 \subsubsection* {Why the problem is not already solved or other solutions 
