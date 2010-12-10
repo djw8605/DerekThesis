@@ -1,0 +1,11 @@
+
+# Files that shouldn't be tracked
+DerekWeitzelThesis.aux
+DerekWeitzelThesis.bbl
+DerekWeitzelThesis.blg
+DerekWeitzelThesis.log
+DerekWeitzelThesis.pdf
+DerekWeitzelThesis.synctex.gz
+
+
+
