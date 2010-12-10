@@ -85,6 +85,14 @@ At many universities, each department maintains a independent cluster for their 
 
 As the speed of innovation in computing increases, it is common for a campus to have multiple generations of clusters.  These clusters are commonly bought as independent systems, not meant to share work between them.  This causes users to flock to the newest generation hardware, hoping to increase the performance of their application.  This movement of users leads to under utilization of older hardware, and increased demand on the newest.
 
+This is just one of many situations that would cause users to underutilize hardware.  Other situations could be:
+
+\begin{itemize}
+\item \textbf{Departmental clusters:}  Each department has a dedicated cluster.  This cluster specialization can cause under utilization when department researchers are not using the resources.
+\item \textbf{Peaks of usage:} In general, users have peaks to their usage.
+\item \textbf{Parallel jobs:} While a cluster is draining nodes for a large parallel job, the cluster could fill those drained slots with pre-emptable usage.
+\end{itemize}
+
 One way to alleviate this demand is to move single core jobs to other clusters that have idle cycles.  Recently, the single core performance has been stagnant, therefore moving the single core jobs to the older hardware will not significantly decrease performance.  Also, by moving the single core jobs, it can free the newest hardware for large parallel jobs which can benefit from better interconnects, larger and faster storage, and increased core count that are on the newest hardware.
 
 
@@ -97,8 +105,10 @@ are ineffective in one or more important ways}
 %Your new idea need not solve every problem but it should solve at least one
 %that is not already solved
 
-\item 
-A common solution to linking clusters is condor flocking.  Flocking requires every cluster to run condor daemons on their nodes.  
+%\item 
+%A common solution to linking clusters is condor flocking.  Flocking requires every cluster to run condor daemons on their nodes.  
+
+A common solution to this
 
 \item
 Another solution is single vendor/software solution.  Both PBS and SGE can create a grid of clusters.  This again requires buy-in from all departments on campus.
