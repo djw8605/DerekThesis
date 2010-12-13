@@ -271,28 +271,30 @@ Using offline ads to efficiently match jobs to glideins on the non-condor cluste
 \caption{Overview of Campus Factory function}
 \label{fig:campusfactoryoverview}
 \end{figure}
-The Campus Factory is a daemon that runs on non-condor clusters in order to submit glideins when additional resources are requested.  The factory is an integral part of the campus grid because it allows non-condor clusters to participate in the grid.  The factory submits glideins to the Local Resource Manager (LRM), allowing them to run with the priorities set in the LRM.  The jobs, once started, report back to the factory collector as a regular condor pool node.  The factory collector then is able to route jobs from other clusters to these available glideins just as it would for an all-condor cluster.
+The Campus Factory is a daemon that runs on non-condor clusters in order to submit glideins when additional resources are requested.  The Condor instance that the factory communicates with must be on a `gateway' node: Able to talk to both the remote clusters and the local nodes.   The Factory communicates with the \textbf{condor_collector} daemon in order to detect requests for resources.  
+
+The factory is an integral part of the campus grid because it allows non-condor clusters to participate in the grid.  The factory submits glideins to the Local Resource Manager (LRM), allowing them to run with the priorities set in the LRM.  The jobs, once started, report back to the factory collector as a regular condor pool node.  The factory collector then is able to route jobs from other clusters to these available glideins just as it would for an all-condor cluster.
 
 The Campus Factory is a python daemon that runs as a persistent condor job.  Since it runs as a condor job, the condor daemons will ensure that it stays alive, eliminating the need to monitoring an additional daemon.  The Campus Factory functions are shown in Figure \ref{fig:campusfactoryoverview}.  The factory will periodically query the collector for idle slots, and query the schedd for idle jobs.  The factory will talk to schedds on other clusters listed in the condor configuration variable \texttt{FLOCK\_FROM}.
 
 The factory depends on Condor daemons to carry out many tasks such as:
 \begin{itemize}
 \item Run and maintain the factory daemon.
-\item Submission of the glidein jobs to the LRMS (See Section \ref{sec:condorandblahp}).
+\item Submission of the glidein jobs to the LRM (See Section \ref{sec:condorandblahp}).
 \item Collect and advertise information on the glidein jobs.
 \item Negotiate with submitters in order to route jobs to glideins.
 \end{itemize}
 
 
 \subsubsection{Determining when to submit glideins}
-The factory decides whether submit glideins to the underlying non-condor cluster.  The factory has 2 configuration options relating to submission of glideins to the LRMS: \texttt{MaxIdleGlideins} and \texttt{MaxQueuedJobs}.
+The factory decides whether submit glideins to the underlying non-condor cluster.  The factory has 2 configuration options relating to submission of glideins to the LRM: \texttt{MaxIdleGlideins} and \texttt{MaxQueuedJobs}.
 
 \begin{description}
 \item[ \texttt{MaxIdleGlideins}] \hfill \\
 An integer representing the number of idle slots that will be allowed before the factory stops submitting jobs. 
 
 \item[ \texttt{MaxQueuedJobs}] \hfill \\
-An integer number of queued glideins that will be allowed to be idle in the LRMS before submitting more. 
+An integer number of queued glideins that will be allowed to be idle in the LRM before submitting more. 
 
 \end{description}
 
@@ -311,7 +313,7 @@ The factory submission logic is as follows:
 \caption{Algorithim for determining how many glideins to submit.}
 \end{algorithm}
 
-Additionally, the factory has logic to detect glideins that are not reporting to the collector.  This can happen when the the LRMS cannot transfer files, if the BLAHP is incorrectly reporting the status of a job, or if there is something wrong with the glideins jobs.
+Additionally, the factory has logic to detect glideins that are not reporting to the collector.  This can happen when the the LRM cannot transfer files, if the BLAHP is incorrectly reporting the status of a job, or if there is something wrong with the glideins jobs.
 
 \subsection{Glidein Jobs}
 Glidein  \cite{frey2002condor} is a pilot job based grid submission that creates an overlay network.  Glidein is designed to used standard Condor mechanisms to advertise it's availablity to a Condor Collector process, which is queried by the Scheduler to learn about available resources.  Each user job is run in a sandbox on the local disk and is provided with a consistent execution environment across hosts and clusters.  
