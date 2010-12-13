@@ -97,10 +97,11 @@ One way to alleviate this demand is to move single core jobs to other clusters t
 
 
 
+
 \subsubsection* {Why the problem is not already solved or other solutions 
 are ineffective in one or more important ways}
 
-\begin{itemize}
+
 %\item
 %Your new idea need not solve every problem but it should solve at least one
 %that is not already solved
@@ -124,7 +125,7 @@ Placing globus gatekeepers on each cluster would allow jobs to be submitted to e
 %the preceding problem declaration.
 
 
-\end{itemize}
+
 
 
 \subsubsection* {Why our solution is worth considering and why is it effective
@@ -270,7 +271,7 @@ Using offline ads to efficiently match jobs to glideins on the non-condor cluste
 \caption{Overview of Campus Factory function}
 \label{fig:campusfactoryoverview}
 \end{figure}
-The Campus Factory is a daemon that runs on non-condor clusters in order to submit glideins when appropriate.  The factory is an integral part of the campus grid because it allows non-condor clusters to participate in the grid.  The factory submits glideins to the LRMS, allowing them to run with the priorities set in the LRMS.  The jobs, once started, report back to the factory collector as a regular condor pool node.  The factory collector then is able to route jobs from other clusters to these available glideins just as it would for an all-condor cluster.
+The Campus Factory is a daemon that runs on non-condor clusters in order to submit glideins when additional resources are requested.  The factory is an integral part of the campus grid because it allows non-condor clusters to participate in the grid.  The factory submits glideins to the Local Resource Manager (LRM), allowing them to run with the priorities set in the LRM.  The jobs, once started, report back to the factory collector as a regular condor pool node.  The factory collector then is able to route jobs from other clusters to these available glideins just as it would for an all-condor cluster.
 
 The Campus Factory is a python daemon that runs as a persistent condor job.  Since it runs as a condor job, the condor daemons will ensure that it stays alive, eliminating the need to monitoring an additional daemon.  The Campus Factory functions are shown in Figure \ref{fig:campusfactoryoverview}.  The factory will periodically query the collector for idle slots, and query the schedd for idle jobs.  The factory will talk to schedds on other clusters listed in the condor configuration variable \texttt{FLOCK\_FROM}.
 
