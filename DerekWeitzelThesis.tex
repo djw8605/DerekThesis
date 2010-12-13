@@ -105,20 +105,18 @@ are ineffective in one or more important ways}
 %Your new idea need not solve every problem but it should solve at least one
 %that is not already solved
 
-A solution is single vendor/software solution.  For example, Cluster Resources offer a solution Moab Grid Suite\cite{website:moabgrid}.  This solution requires each resource to run a single piece of software, Moab.  This causes the development of new grid technologies to be limited to what can be done in Moab.  
+One solution to disconnected is a single vendor/software solution.  For example, Cluster Resources offer a solution Moab Grid Suite\cite{website:moabgrid}.  This solution requires each resource to run a single piece of software, Moab.  This causes the development of new grid technologies to be limited to what can be done in Moab.
 
+Another single vendor solution is Condor.  Each resource can run Condor on their clusters and 'flock' \cite{epema1996worldwide} to each other.  This again requires each resource to run Condor as their scheduler and resource manager.  This suffers from the same problem as before, restricting further innovation to the confines of a single solution.
 
-Both PBS and SGE can create a grid of clusters.  This again requires buy-in from all departments on campus.
-
-\item
-Placing globus gatekeepers on each cluster would allow jobs to be submitted to each cluster without modifying the underlying batch system.  But, this would require a higher layer of abstraction over the globus gatekeepers to optimally balance load between clusters.  Also, it does not provide a method for transparent execution on other clusters.
+Placing globus gatekeepers on each cluster would allow jobs to be submitted to each cluster without modifying the underlying batch system.  But, this would require a higher layer of abstraction over the globus gatekeepers to optimally balance load between clusters.  Also, it does not provide a method for transparent execution on other clusters, which experience on the OSG has shown is important to new users.
 
 
 %\item 
 %A common solution to linking clusters is condor flocking.  Flocking requires every cluster to run condor daemons on their nodes.  
 
 % Last case, since it's simalar to mine.
-Several universities have approached the problem utilizing condor flocking.
+%Several universities have approached the problem utilizing condor flocking.
 
 %\item
 %This is the place to provide a succinct description of the problem context
