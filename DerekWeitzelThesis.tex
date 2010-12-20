@@ -107,7 +107,9 @@ are ineffective in one or more important ways}
 %Your new idea need not solve every problem but it should solve at least one
 %that is not already solved
 
-One solution to connect clusters is a single vendor/software solution.  For example, Cluster Resources offer a solution Moab Grid Suite\cite{website:moabgrid}.  This solution requires each resource to run a single piece of proprietary software, Moab.  Moab is a meta-scheduler, using PBS to manage the underlying resources.  In this use, the development of new grid technologies are limited to what can be done in Moab.
+There have been several attempts to create a distributed campus grid.  They all use some technology to distribute and schedule the jobs on the grid.  Some methods for distribution are commercial such as Moab.  Others are translation layers between a generic description language and a scheduler, such as Globus.  Still others are entire resource managers and schedulers like Condor.  Each of these solutions can be built to create a campus grid, but they all have drawbacks that are highlighted below.
+
+One solution to build a grid is to use a single vendor/software solution.  For example, Cluster Resources offer a solution Moab Grid Suite\cite{website:moabgrid}.  This solution requires each resource to run a single piece of proprietary software, Moab.  Moab is a meta-scheduler, using PBS to manage the underlying resources.  Moab is a expensive By using Moab, the development of new grid technologies are limited to what can be done in Moab.
 
 Placing Globus gatekeepers on each cluster would allow jobs to be submitted to each cluster without modifying the underlying batch system.  But, this would require a higher layer of abstraction over the Globus gatekeepers to optimally balance load between clusters.  Additionally, Globus has well known limitations such as job a low submission rate, and high resource usage.  Globus implements security that is inconstant with most existing campus security architectures.  Also, it does not provide a method for transparent execution on other clusters, which experience on the OSG has shown is important to users.
 
