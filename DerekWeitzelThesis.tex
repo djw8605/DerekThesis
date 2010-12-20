@@ -24,6 +24,7 @@
 
 \usepackage{graphicx}
 \usepackage{calc}
+\usepackage{url}
 
 \newlength{\imgwidth}
 
@@ -89,7 +90,7 @@ This is just one of many situations that would cause users to underutilize hardw
 
 \begin{itemize}
 \item \textbf{Departmental clusters:}  Each department has a dedicated cluster.  This cluster specialization can cause under utilization when department researchers are not using the resources.
-\item \textbf{Peaks of usage:} In general, users have peaks to their usage.
+\item \textbf{Peaks of usage:} In general, users have peaks to their usage around deadlines.
 \item \textbf{Parallel jobs:} While a cluster is draining nodes for a large parallel job, the cluster could fill those drained slots with pre-emptable usage.
 \end{itemize}
 
@@ -106,12 +107,15 @@ are ineffective in one or more important ways}
 %Your new idea need not solve every problem but it should solve at least one
 %that is not already solved
 
-One solution to disconnected is a single vendor/software solution.  For example, Cluster Resources offer a solution Moab Grid Suite\cite{website:moabgrid}.  This solution requires each resource to run a single piece of software, Moab.  This causes the development of new grid technologies to be limited to what can be done in Moab.
+One solution to connect clusters is a single vendor/software solution.  For example, Cluster Resources offer a solution Moab Grid Suite\cite{website:moabgrid}.  This solution requires each resource to run a single piece of proprietary software, Moab.  Moab is a meta-scheduler, using PBS to manage the underlying resources.  In this use, the development of new grid technologies are limited to what can be done in Moab.
 
-Another single vendor solution is Condor.  Each resource can run Condor on their clusters and 'flock' \cite{epema1996worldwide} to each other.  This again requires each resource to run Condor as their scheduler and resource manager.  This suffers from the same problem as before, restricting further innovation to the confines of a single solution.
+Placing Globus gatekeepers on each cluster would allow jobs to be submitted to each cluster without modifying the underlying batch system.  But, this would require a higher layer of abstraction over the Globus gatekeepers to optimally balance load between clusters.  Additionally, Globus has well known limitations such as job a low submission rate, and high resource usage.  Globus implements security that is inconstant with most existing campus security architectures.  Also, it does not provide a method for transparent execution on other clusters, which experience on the OSG has shown is important to users.
 
-Placing globus gatekeepers on each cluster would allow jobs to be submitted to each cluster without modifying the underlying batch system.  But, this would require a higher layer of abstraction over the globus gatekeepers to optimally balance load between clusters.  Also, it does not provide a method for transparent execution on other clusters, which experience on the OSG has shown is important to new users.
+Another single vendor solution is Condor.  Each resource can run Condor on their clusters and 'flock' \cite{epema1996worldwide} to each other.  In this solution, jobs would be balanced on each resource due to Condor's greedy scheduler algorithm.  But, this again requires each resource to run Condor as their scheduler and resource manager.  Additionally, Condor must be running on each worker node, increasing the administration requirements.  This suffers from the same problem as Moab, restricting further innovation to the confines of a single solution.
 
+
+
+In each of these cases, we used technology
 
 %\item 
 %A common solution to linking clusters is condor flocking.  Flocking requires every cluster to run condor daemons on their nodes.  
@@ -271,7 +275,7 @@ Using offline ads to efficiently match jobs to glideins on the non-condor cluste
 \caption{Overview of Campus Factory function}
 \label{fig:campusfactoryoverview}
 \end{figure}
-The Campus Factory is a daemon that runs on non-condor clusters in order to submit glideins when additional resources are requested.  The Condor instance that the factory communicates with must be on a `gateway' node: Able to talk to both the remote clusters and the local nodes.   The Factory communicates with the \textbf{condor_collector} daemon in order to detect requests for resources, and the \textbf{condor_schedd} daemon to submit jobs to the LRM.  
+The Campus Factory is a daemon that runs on non-condor clusters in order to submit glideins when additional resources are requested.  The Condor instance that the factory communicates with must be on a `gateway' node: Able to talk to both the remote clusters and the local nodes.   The Factory communicates with the \texttt{condor\_collector} daemon in order to detect requests for resources, and the \texttt{condor\_schedd} daemon to submit jobs to the LRM.  
 
 The factory is an integral part of the campus grid because it allows non-condor clusters to participate in the grid.  A Condor cluster would not need the factory.  The factory submits glideins to the Local Resource Manager (LRM), allowing them to run with the priorities set in the LRM.  The jobs, once started, report back to the factory collector as a regular condor pool node.  The factory collector then is able to route jobs from other clusters to these available glideins just as it would for an all-condor cluster.
 
