@@ -117,8 +117,6 @@ Another single vendor solution is Condor.  Each resource can run Condor on their
 
 
 
-In each of these cases, we used technology
-
 %\item 
 %A common solution to linking clusters is condor flocking.  Flocking requires every cluster to run condor daemons on their nodes.  
 
@@ -137,18 +135,24 @@ In each of these cases, we used technology
 \subsubsection* {Why our solution is worth considering and why is it effective
 in some way that others are not}
 
-\begin{itemize}
+The framework described in this paper creates a production campus grid.  The campus grid includes technology to allow clusters to join the campus grid.  It integrates clusters that use several schedulers, and uses production quality software integrated into a solution that is deployed at several cluster in the U.S.
+
+The campus grid framework provides a method for users to run jobs transparently on distributed resources.  The jobs are sent to available resources on distributed clusters on the campus grid.  Further, it can expand beyond the campus and onto other campuses by simple configuration changes.
+
+The campus grid is used in production at the University of Nebraska, connecting two geographically separate clusters.  Users utilize the campus grid by submitting to one connected clusters, while their jobs run on either cluster.  The jobs are transported with their input files to a execution sandbox on the worker node.  Further, the campus grid expands beyond Nebraska, reaching Purdue and Clemson university.
+
+%\begin{itemize}
 %\item
 %A succinct statement of {\em why} the reader should care enough to read the
 %rest of the paper.
-\item The framework described in this paper is designed as a modular framework that will allow clusters to overflow onto each other and to the grid.  This framework requires running condor on only one node in the cluster.  Each job that comes from another cluster will go through the default scheduler, whether it's PBS, SGE, or LSF.
+%\item The framework described in this paper is designed as a modular framework that will allow clusters to overflow onto each other and to the grid.  This framework requires running condor on only one node in the cluster.  Each job that comes from another cluster will go through the default scheduler, whether it's PBS, SGE, or LSF.
 
 %\item
 %This should include a statement about the characteristics of your solution to
 %the problem which 1) make it a solution, and 2) make it superior to other
 %solutions to the same problem.
 
-\end{itemize}
+%\end{itemize}
 
 
 \subsubsection* {How the rest of the paper is structured}
