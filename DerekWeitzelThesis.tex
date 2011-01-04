@@ -10,6 +10,17 @@
 \newcommand{\secref}[1]{Section~\ref{#1}}
 
 
+\usepackage[dvipdfm,%
+bookmarks=true,%
+bookmarksopen=true,%
+bookmarksnumbered=true,%
+bookmarkstype=toc,%
+pdftitle={Derek Weitzel Thesis - Campus Grids},%
+pdfsubject={},%
+pdfauthor={Derek Weitzel},%
+pdfkeywords={Weitzel, Grid, Campus}
+]{hyperref}
+
 
 %\newcommand{\doublespace}{\baselineskip0.34truein}
 %\newcommand{\singlespace}{\baselineskip0.16truein}
@@ -113,11 +124,6 @@ are ineffective in one or more important ways}
 
 There have been several attempts to create a distributed campus grid.  They all use some technology to distribute and schedule the jobs on the grid.  Some methods for distribution are commercial such as Moab.  Others are translation layers between a generic description language and a scheduler, such as Globus.  Still others are entire resource managers and schedulers like Condor.  Each of these solutions can be built to create a campus grid, but they all have drawbacks that are highlighted below.
 
-One solution to build a grid is to use a single vendor/software solution.  For example, Cluster Resources offer a solution Moab Grid Suite\cite{website:moabgrid}.  This solution requires each resource to run a single piece of proprietary software, Moab.  Moab is a meta-scheduler, using PBS to manage the underlying resources.  By using Moab, the development of new grid technologies are limited to what can be done in Moab.
-
-Placing Globus gatekeepers on each cluster would allow jobs to be submitted to each cluster without modifying the underlying batch system.  But, this would require a higher layer of abstraction over the Globus gatekeepers to optimally balance load between clusters.  Additionally, Globus has well known limitations such as job a low submission rate, and high resource usage.  Globus implements security that is inconstant with most existing campus security architectures.  Also, it does not provide a method for transparent execution on other clusters, which experience on the OSG has shown is important to users.
-
-Another single vendor solution is Condor.  Each resource can run Condor on their clusters and 'flock' \cite{epema1996worldwide} to each other.  In this solution, jobs would be balanced on each resource due to Condor's greedy scheduler algorithm.  But, this again requires each resource to run Condor as their scheduler and resource manager.  Additionally, Condor must be running on each worker node, increasing the administration requirements.  This suffers from the same problem as Moab, restricting further innovation to the confines of a single solution.
 
 
 
@@ -146,6 +152,7 @@ The campus grid framework provides a method for users to run jobs transparently 
 The campus grid is used in production at the University of Nebraska, connecting two geographically separate clusters.  Users utilize the campus grid by submitting to one connected clusters, while their jobs run on either cluster.  The jobs are transported with their input files to a execution sandbox on the worker node.  Further, the campus grid expands beyond Nebraska, reaching Purdue and Clemson university.
 
 
+% This will largely be from CHEP paper
 \subsection{Attributes of Campus Grids}
 Here I will discuss the attributes that are used to evaluate campus grids.
 
@@ -199,22 +206,35 @@ conclusions and describes future work.
 \subsubsection*{Other efforts that exist to solve this problem and why are they
 less effective than our method}
 
-\begin{itemize}
+\subsection{Competing technology to create a campus grid}
+
 %\item
 %Resist the urge to point out only flaws in other work. Do your best to point
 %out both the strengths and weaknesses to provide as well rounded a view of how
 %your idea relates to other work as possible
-\item
+
+\subsubsection{Globus}
 Globus is a translation layer between the (globus specific?) Resource Specification Language, and the local resource manager.  It has been very successful in that is has a large install base.  Globus also has deep integration with standard grid credentials such as PKI.
 
-\item
-Condor Flocking
+Placing Globus gatekeepers on each cluster would allow jobs to be submitted to each cluster without modifying the underlying batch system.  But, this would require a higher layer of abstraction over the Globus gatekeepers to optimally balance load between clusters.  Additionally, Globus has well known limitations such as job a low submission rate, and high resource usage.  Globus implements security that is inconstant with most existing campus security architectures.  Also, it does not provide a method for transparent execution on other clusters, which experience on the OSG has shown is important to users.
 
-\item
-Virginia Campus Grid \cite{humphrey2005university}.  They used globus 4 WSRF to create a grid.  They used the campus information services and authentication methods.  They do not mention load balancing or brokering.
+\subsubsection{Condor Flocking}
+Another single vendor solution is Condor.  Each resource can run Condor on their clusters and 'flock' \cite{epema1996worldwide} to each other.  In this solution, jobs would be balanced on each resource due to Condor's greedy scheduler algorithm.  But, this again requires each resource to run Condor as their scheduler and resource manager.  Additionally, Condor must be running on each worker node, increasing the administration requirements.  This suffers from the same problem as Moab, restricting further innovation to the confines of a single solution.
 
-\item
-Oxford Campus Grid \cite{wallom2006oxgrid}.  Oxford leveraged the VDT stack, and Condor-G.  They built an equivalent of OSGMM using Condor-G and GLUE attributes to submit to globus gatekeepers installed on the clusters.  So, they built an OSG.
+
+\subsubsection{GlideinWMS}
+GlideinWMS
+
+\subsubsection{Panda}
+Panda
+
+\subsubsection{Moab}
+One solution to build a grid is to use a single vendor/software solution.  For example, Cluster Resources offer a solution Moab Grid Suite\cite{website:moabgrid}.  This solution requires each resource to run a single piece of proprietary software, Moab.  Moab is a meta-scheduler, using PBS to manage the underlying resources.  By using Moab, the development of new grid technologies are limited to what can be done in Moab.
+
+
+
+
+
 
 %\item
 %In a social and political sense, it is {\em very smart} as well as ethical to
@@ -231,30 +251,31 @@ Oxford Campus Grid \cite{wallom2006oxgrid}.  Oxford leveraged the VDT stack, and
 %Clear enough? Speak the truth, say what you have to say, but be generous to the
 %efforts of others.
 
-\end{itemize}
 
 
+\subsection{Other Campus Grids}
 \subsubsection*{Other efforts that exist to solve related problems that are
 relevant, how are they relevant, and why are they less effective than our
 solution for this problem}
 
-\begin{itemize}
+\subsubsection{Virginia Campus Grid}
+The Virginia Campus Grid \cite{humphrey2005university}.  They used globus 4 WSRF to create a grid.  They used the campus information services and authentication methods.  They do not mention load balancing or brokering.
 
-\item
+\subsubsection{Oxford Campus Grid}
+Oxford Campus Grid \cite{wallom2006oxgrid}.  Oxford leveraged the VDT stack, and Condor-G.  They built an equivalent of OSGMM using Condor-G and GLUE attributes to submit to globus gatekeepers installed on the clusters.  So, they built an OSG.
+
+
+\subsubsection{Diagrid}
 Diagrid
 
-\item 
-GlideinWMS
 
-\item
-Panda
 
 %\item 
 %Many times no one has solved your exact problem before, but others have solved
 %closely related problems or problems with aspects that are strongly analogous
 %to aspects of your problem
 
-\end{itemize}
+
 
 \section{Implementation}
 \label{sec:Implementation}
