@@ -55,8 +55,9 @@ At many universities, each department maintains a independent cluster for their 
 
 \end{abstract}
 
-%   \tableofcontents
-%   \newpage
+\newpage
+\tableofcontents
+\newpage
 
 % \doublespace
 
@@ -96,6 +97,7 @@ This is just one of many situations that would cause users to underutilize hardw
 
 One way to alleviate this demand is to move single core jobs to other clusters that have idle cycles.  Recently, the single core performance has been stagnant, therefore moving the single core jobs to the older hardware will not significantly decrease performance.  Also, by moving the single core jobs, it can free the newest hardware for large parallel jobs which can benefit from better interconnects, larger and faster storage, and increased core count that are on the newest hardware.
 
+A campus grid is a framework for distributing computation among independent clusters.  Users should have a uniform way to submit jobs to remote clusters inside their campus.  In many campus grids, the user manually submits to specific clusters.  In others, a layer of software distributes the computation among clusters in the grid. 
 
 
 
@@ -109,7 +111,7 @@ are ineffective in one or more important ways}
 
 There have been several attempts to create a distributed campus grid.  They all use some technology to distribute and schedule the jobs on the grid.  Some methods for distribution are commercial such as Moab.  Others are translation layers between a generic description language and a scheduler, such as Globus.  Still others are entire resource managers and schedulers like Condor.  Each of these solutions can be built to create a campus grid, but they all have drawbacks that are highlighted below.
 
-One solution to build a grid is to use a single vendor/software solution.  For example, Cluster Resources offer a solution Moab Grid Suite\cite{website:moabgrid}.  This solution requires each resource to run a single piece of proprietary software, Moab.  Moab is a meta-scheduler, using PBS to manage the underlying resources.  Moab is a expensive By using Moab, the development of new grid technologies are limited to what can be done in Moab.
+One solution to build a grid is to use a single vendor/software solution.  For example, Cluster Resources offer a solution Moab Grid Suite\cite{website:moabgrid}.  This solution requires each resource to run a single piece of proprietary software, Moab.  Moab is a meta-scheduler, using PBS to manage the underlying resources.  By using Moab, the development of new grid technologies are limited to what can be done in Moab.
 
 Placing Globus gatekeepers on each cluster would allow jobs to be submitted to each cluster without modifying the underlying batch system.  But, this would require a higher layer of abstraction over the Globus gatekeepers to optimally balance load between clusters.  Additionally, Globus has well known limitations such as job a low submission rate, and high resource usage.  Globus implements security that is inconstant with most existing campus security architectures.  Also, it does not provide a method for transparent execution on other clusters, which experience on the OSG has shown is important to users.
 
@@ -140,6 +142,17 @@ The framework described in this paper creates a production campus grid.  The cam
 The campus grid framework provides a method for users to run jobs transparently on distributed resources.  The jobs are sent to available resources on distributed clusters on the campus grid.  Further, it can expand beyond the campus and onto other campuses by simple configuration changes.
 
 The campus grid is used in production at the University of Nebraska, connecting two geographically separate clusters.  Users utilize the campus grid by submitting to one connected clusters, while their jobs run on either cluster.  The jobs are transported with their input files to a execution sandbox on the worker node.  Further, the campus grid expands beyond Nebraska, reaching Purdue and Clemson university.
+
+
+
+\subsection{Open Science Grid}
+
+\subsection{Condor}
+
+\subsection{Campus Grid}
+
+
+
 
 %\begin{itemize}
 %\item
