@@ -1,4 +1,5 @@
-\documentclass[11pt]{article}
+%\documentclass[11pt]{article}
+\documentclass[print,ms]{nuthesis}
 \usepackage{times}
 
 \setlength{\textwidth}{6.5in}
@@ -27,7 +28,8 @@ pdfkeywords={Weitzel, Grid, Campus}
 %\newcommand{\midspace}{\baselineskip0.24truein}
 %\newcommand{\midplusspace}{\baselineskip0.26truein}
 
-\title{\bf Campus Grids}
+
+
 
 \usepackage{setspace}
 \usepackage{algorithmic}
@@ -57,6 +59,14 @@ dweitzel@cse.unl.edu
        }
        
 \begin{document}
+\frontmatter
+\title{Campus Grids}
+\author{Derek Weitzel}
+\adviser{David Swanson}
+\adviserAbstract{David Swanson}
+\major{Computer Engineering}
+\degreemonth{May}
+\degreeyear{2011}
 
 \maketitle
 
@@ -68,13 +78,13 @@ It is common at research institutions to maintain multiple clusters.  These migh
 
 \end{abstract}
 
-\newpage
+%\newpage
 \tableofcontents
-\newpage
+%\newpage
 
 % \doublespace
-
-\section{Introduction}
+\mainmatter
+\chapter{Introduction}
 \label{sec:Introduction}
 
 \subsubsection* {The problem we have solved}
@@ -200,7 +210,7 @@ our system and presents the results. \secref{sec:Conclusion} presents our
 conclusions and describes future work.
 
 
-\section{Related Work}
+\chapter{Related Work}
 \label{sec:RelatedWork}
 
 \subsubsection*{Other efforts that exist to solve this problem and why are they
@@ -277,7 +287,7 @@ Diagrid
 
 
 
-\section{Implementation}
+\chapter{Implementation}
 \label{sec:Implementation}
 
 \subsubsection*{What we (will do $|$ did): {\em Our Solution}}
@@ -444,7 +454,7 @@ The logic of the factory follows:
 \end{enumerate}
 
 
-\section{Evaluation}
+\chapter{Evaluation}
 \label{sec:Evaluation}
 
 \subsubsection*{Social political stuff}
@@ -493,7 +503,7 @@ Therefore, my solution is awesome.
 
 
 
-\section{Conclusions and Future Work}
+\chapter{Conclusions and Future Work}
 \label{sec:Conclusion}
 
 \subsubsection*{The problem we have solved}
@@ -570,7 +580,7 @@ Scale this solution to other universities and institutions.  Already doing this 
 \end{itemize}
 
 
-
+\backmatter
 
 \bibliographystyle{plain}
 \bibliography{DerekWeitzelThesis}
@@ -578,3 +588,6 @@ Scale this solution to other universities and institutions.  Already doing this 
 
 
 \end{document}
+
+\endinput
+
