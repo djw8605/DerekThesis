@@ -1,15 +1,15 @@
 %\documentclass[11pt]{article}
 \documentclass[print,ms]{nuthesis}
-\usepackage{times}
+%\usepackage{times}
 
-\setlength{\textwidth}{6.5in}
-\setlength{\textheight}{9.0in}
-\setlength{\topmargin}{-.5in}
-\setlength{\oddsidemargin}{-.0600in}
-\setlength{\evensidemargin}{.0625in}
+%\setlength{\textwidth}{6.5in}
+%\setlength{\textheight}{9.0in}
+%\setlength{\topmargin}{-.5in}
+%\setlength{\oddsidemargin}{-.0600in}
+%\setlength{\evensidemargin}{.0625in}
 
 \newcommand{\secref}[1]{Section~\ref{#1}}
-
+\usepackage{xcolor}
 
 \usepackage[dvipdfm,%
 bookmarks=true,%
@@ -19,7 +19,9 @@ bookmarkstype=toc,%
 pdftitle={Derek Weitzel Thesis - Campus Grids},%
 pdfsubject={},%
 pdfauthor={Derek Weitzel},%
-pdfkeywords={Weitzel, Grid, Campus}
+pdfkeywords={Weitzel, Grid, Campus},
+%linktocpage=true,
+linkbordercolor=white
 ]{hyperref}
 
 
@@ -31,7 +33,7 @@ pdfkeywords={Weitzel, Grid, Campus}
 
 
 
-\usepackage{setspace}
+%\usepackage{setspace}
 \usepackage{algorithmic}
 \usepackage{algorithm}
 
@@ -49,21 +51,21 @@ pdfkeywords={Weitzel, Grid, Campus}
 
 
 
-\doublespacing
+%\doublespacing
 
-\author{Derek Weitzel\\
-Computer Science and Engineering\\
-University of Nebraska--Lincoln\\
-Lincoln, NE 66588-0115\\
-dweitzel@cse.unl.edu
-       }
+%\author{Derek Weitzel\\
+%Computer Science and Engineering\\
+%University of Nebraska--Lincoln\\
+%Lincoln, NE 66588-0115\\
+%dweitzel@cse.unl.edu
+%       }
        
 \begin{document}
 \frontmatter
 \title{Campus Grids}
 \author{Derek Weitzel}
-\adviser{David Swanson}
-\adviserAbstract{David Swanson}
+\adviser{Dr. David Swanson}
+\adviserAbstract{Dr. David Swanson}
 \major{Computer Engineering}
 \degreemonth{May}
 \degreeyear{2011}
