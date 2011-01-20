@@ -125,7 +125,6 @@ One way to alleviate this demand is to move single core jobs to other clusters t
 A campus grid is a framework for distributing computation among independent clusters.  Users should have a uniform way to submit jobs to remote clusters inside their campus.  In many campus grids, the user manually submits to specific clusters.  In others, a layer of software distributes the computation among clusters in the grid. 
 
 
-
 %\subsubsection* {Why the problem is not already solved or other solutions 
 %are ineffective in one or more important ways}
 
@@ -134,7 +133,45 @@ A campus grid is a framework for distributing computation among independent clus
 %Your new idea need not solve every problem but it should solve at least one
 %that is not already solved
 
-There have been several attempts to create a distributed campus grid.  They all use some technology to distribute and schedule the jobs on the grid.  Some methods for distribution are commercial products such as Moab.  Others are translation layers between a generic description language and a scheduler, such as Globus.  Still others are entire resource managers that can span multiple clusters like Condor.  Each of these solutions can be built to create a campus grid, but they all have drawbacks that are highlighted below.
+There have been several attempts to create a distributed campus grid.  They all use some technology to distribute and schedule the jobs on the grid.  Some methods for distribution are commercial products such as Moab \cite{website:moabgrid}.  Others are translation layers between a generic description language and a scheduler, such as Globus \cite{foster1997globus}.  Still others are entire resource managers that can span multiple clusters like Condor.  Each of these solutions can be built to create a campus grid, but they all have drawbacks that are highlighted below.
+
+
+Building a campus grid represents a significant commitment for both users and resource providers, which should be 
+evaluated against the benefits.  The primary benefits are:
+\begin{itemize}
+\item \textbf{Resource sharing}: An HTC-based approach focusses on using all resources effectively.  Resources are 
+typically bought for peak, not average, usage; integrating the idle time across the entire campus and using it improves 
+the value of the investment.
+\item \textbf{Homogeneous interfaces to multiple resources}: Moving researchers from one resource to another results in 
+a (possibly large) upfront cost in time and energy.  By providing a homogeneous interface across the campus, 
+researchers can quickly utilize new resources without the pain of migration.
+\item \textbf{Independence from any single computational resource}:  It is expensive to provide highly available 
+resources.  If do not rely on a specific single cluster, individual cluster downtimes have a smaller impact.  This 
+reduces the need for high levels of redundancy and stretches the campus computing budget further.
+\end{itemize}
+
+An obvious requirement for campus grids is having multiple resources on campus.  However, this is not sufficient for 
+resource providers - the resources should also be interchangeable.  A grid composed of a single AIX cluster, Linux 
+cluster, and Windows cluster, will likely never see any resource pooling or sharing.  This does not necessarily imply 
+the resources need to be identical - complete homogeneity is typically impossible due to individual resource 
+requirements or ownership.
+
+A mistake in campus grids is to focus on the infrastructure for pooling resources without similarly engaging and 
+supporting the activities of users.  An analogy can be made to flows: if there is a sink (resources) with no source 
+(user jobs), the flow quickly stops, and the campus grid is forgotten.  Personnel investment must be made to engage 
+the user community.  Even before this investment is made, a campus should identify whether the on-campus scientific 
+computing has a significant portion of tasks that can be converted to HTC workflows.  Prioritization should be applied 
+so the users with the simplest workflow and the most to benefit are converted first.  Tasks with the following 
+characteristics should typically be avoided:
+
+\begin{itemize}
+\item Large scale (multi-node) MPI, as these require specific tunings to the given resource.
+\item Multi-day jobs.  Shared resources often need to be reallocated quickly back to the owner, meaning these jobs are 
+unlikely to complete.
+\item Sensitive data or software.  Tasks with sensitive (for example, HIPPA-protected) data may have legal boundaries 
+preventing distribution.  Software with strict licenses may also be illegal to use across the grid.
+\end{itemize}
+
 
 
 
@@ -154,8 +191,8 @@ There have been several attempts to create a distributed campus grid.  They all 
 
 
 
-\subsubsection* {Why our solution is worth considering and why is it effective
-in some way that others are not}
+%\subsubsection* {Why our solution is worth considering and why is it effective
+%in some way that others are not}
 
 The framework described in this paper creates a production campus grid.  The campus grid includes technology to allow clusters to join the campus grid.  It integrates clusters that use several schedulers, and uses production quality software integrated into a solution that is deployed at several cluster in the U.S.
 
@@ -166,7 +203,10 @@ The campus grid is used in production at the University of Nebraska, connecting 
 
 % This will largely be from CHEP paper
 \section{Attributes of Campus Grids}
-Here I will discuss the attributes that are used to evaluate campus grids.
+In this section, we explore five characteristics of HTC-centric campus grids. While the list isn't exhaustive, we've 
+found campus grids can be characterized by how they approach trust relationships, job submission, resource 
+independence, accounting, and data management.
+
 
 \subsection{Trust relationships}
 A successful campus grid must have an acceptable trust model in order to succeed.  A trust relationship enables 
@@ -306,12 +346,14 @@ have significantly decreased the operational cost of data management systems.
 
 
 \section{Background}
-\subsection{Open Science Grid}
+\subsection{High Throughput Computing}
 
 \subsection{Condor}
 
-\subsection{Campus Grids}
+\subsection{Open Science Grid}
 
+
+\subsection{Campus Grids}
 
 
 
@@ -404,12 +446,39 @@ The Virginia Campus Grid \cite{humphrey2005university}.  They used globus 4 WSRF
 Oxford Campus Grid \cite{wallom2006oxgrid}.  Oxford leveraged the VDT stack, and Condor-G.  They built an equivalent of OSGMM using Condor-G and GLUE attributes to submit to globus gatekeepers installed on the clusters.  So, they built an OSG.
 
 \subsection{GLOW}
+GLOW \cite{gridworkshopweb, glowwebsite} is an University of Wisconsin grid used at the Madison campus to distribute 
+jobs on their all-Condor grid.  Security is based on IP whitelisting.  Since all resources are based on Condor, job 
+submission and distribution is managed through the same Condor-only mechanisms as Purdue.  While there is a central 
+team available to assist with management, each resource is free to define its own policies and priorities for local 
+and remote usage.  Cluster ownership is distributed, although there's also a general-purpose cluster available.  
+Software and data is managed by an AFS \cite{morris1986andrew} install and Condor file transfer.
 
-\subsection{Diagrid}
-Diagrid
+\subsection{Purdue}
+The Purdue campus grid \cite{smith2008implementing, gridworkshopweb} is part of a larger grid, Diagrid, which serves a 
+number of smaller 
+universities in Indiana and  Wisconsin.  This grid is based upon the Condor and Condor flocking technology.  All jobs 
+are submitted via Condor.  For security, Purdue manages a small number of submit hosts that are allowed to run jobs on 
+their grid.  External jobs can flock to Purdue and are mapped to an unprivileged user on the execute host.  In order to 
+maximize the resources in its grid, Purdue also installs Condor on its PBS-based clusters.  Each batch system makes 
+decisions independently, except any PBS job on a given node will preempt any Condor jobs.  While idle resources are 
+thus utilized, PBS may unnecessarily interrupt Condor jobs and all Condor jobs are inherently lower priority.  The 
+largest resources are centrally administered by a single organization, but there are large pools independently 
+configured and managed.  Usage accounting is done through Condor and a homegrown system.  On large subsets of the grid, 
+data is kept on a shared file system but no single file system is exported to all resources.  Condor file transfer can 
+be used throughout the grid.
 
 \subsection{FermiGrid}
-
+Fermigrid \cite{gridworkshopweb, chadwick2008fermigrid} is made up of resources located at the Fermi National 
+Accelerator Laboratory in Batavia, IL.  The Fermigrid campus grid is the closest example found of a ``mini-OSG".  Its 
+uses the same CE software, information systems, and storage elements as the OSG.  Trust relationships on Fermigrid are 
+based on the Grid Security Infrastructure (GSI) \cite{farrell2002rfc3281}, the same authentication method used by 
+OSG.  Job submission is managed by Condor-G through a Globus submission layer to the clusters.  This same method can be 
+used to submit to OSG, providing one strategy to getting users from campus to the national grid.  Some clusters are 
+managed by a central team, while others are done independently.  Some of the grid services (authorization and 
+information services, for example) are run centrally.  Accounting is done through Gratia \cite{gratiaweb}, the same 
+software that is 
+used on the OSG.  A central cluster file system is available to most clusters, but Globus-based file transfer is also 
+heavily used.
 
 %\item 
 %Many times no one has solved your exact problem before, but others have solved
