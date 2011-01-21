@@ -322,9 +322,9 @@ have significantly decreased the operational cost of data management systems.
 
 \section{Background}
 \subsection{High Throughput Computing}
-High Throughput Computing (HTC) is defined as tasks that require as much computing power (throughput) as possible over long periods of time \cite
-{gridbook-htc}.  In contrast, High Performance Computing (HPC) users are concerned with response time.  This style is typified by ensembles of independent single processor jobs.  Since there is no parallel 
-communication between the jobs in a given task, they can be distributed across multiple resources.  This increases 
+High Throughput Computing (HTC) is defined as tasks that require as much computing power (throughput) as possible over long periods of time \cite{gridbook-htc}.  This is in contrast to High Performance Computing (HPC), where users are concerned with response time.  This style is typified by ensembles of independent single processor jobs with no communication between them.  This is not to say there isn't coordination, many workflow managers can utilize HTC to solve complex problems with many steps.  
+
+As there is no parallel communication between the jobs in a given task, they can be distributed across multiple resources.  This increases 
 throughput, the end-goal of HTC.  HTC can use pooled resources mostly interchangeably and as such is well suited to 
 distributed and grid computing models.  The OSG has demonstrated its technologies are successful; in Q4 2010, the OSG 
 averaged over a 400,000 jobs and a million computational hours a day using HTC.
@@ -675,7 +675,53 @@ The logic of the factory follows:
 
 
 \section{Holland Computing Center campus grid}
+In designing a campus grid for the Holland Computing Center, we attempted to meet three goals:
+\begin{itemize}
+\item {\textbf Encompass}: The campus grid should reach all clusters managed by HCC.
+\item {\textbf Transparent execution environment}:  There should be an identical user interface for all resources, whether 
+running locally or remotely.
+\item {\textbf Decentralization}: A user should be able to utilize his local resource even if it becomes disconnected from 
+the rest of the campus.  An error on a given cluster should only affect that cluster.
+\end{itemize}
 
+Like Purdue and GLOW, we have based the campus grid upon Condor.  Each resource has a Condor-based interface, giving an 
+identical experience regardless of what the user considers his or her ``local" cluster.  While two of the local 
+clusters run Condor as the primary batch system, one is based upon PBS.  PBS was chosen because of its superior 
+scheduling of large-scale MPI jobs required for that resource.  GLOW's Condor-only approach did not fit our case, and 
+Purdue's model of running multiple schedulers was rejected because we wanted a less-invasive approach and because we 
+wanted more efficient scheduling.  So, for integrating our PBS cluster, we developed the Campus Grid Factory (CGF) to 
+provide a Condor interface for the non-Condor clusters; this is covered in Section \ref{sec:cgf}.
+
+To enable decentralized operation, we utilized Condor flocking \cite{epema1996worldwide} between clusters.  Condor 
+flocking enables a transparent execution environment by 
+imitating the interaction between submit and execute hosts when talking to remote resources.  The jobs will continue 
+to be managed by the original user's submit host, but the execute hosts can be outside what is managed by the local 
+Condor pool.  Furthermore, flocking can handle communication errors between remote hosts and can recover, 
+providing disconnected operation when resources are unreachable.
+
+Through Condor flocking and the CGF, we have successfully encompassed all local resources.  To provide even more value 
+to HCC, jobs can also bridge to the OSG and other campus grids.  The interface to the OSG uses the GlideinWMS \cite
+{sfiligoi2008GlideinWMS, sfiligoi2008making} frontend software, while we link to other campuses using Condor flocking 
+(the same method Purdue uses to link the campuses of DiaGrid).  Unlike Condor-G, which provides a Condor interface to 
+GRAM, these two methods give the same user experience as using Condor as a batch system.
+
+All clusters on the campus grid are managed by the Holland Computing Center, therefore the trust relationship 
+between the hosts are implicitly strong.  A special account is set aside on the PBS cluster for the CGF to run 
+campus grid jobs.  On the Condor-managed cluster, campus grid jobs run as user \texttt{nobody} while locally-submitted 
+jobs run as the submitting user.
+
+While all resources are run by the same team, we have the ability to provide distinct user priorities per resource 
+through Condor.  Further, because Condor runs {\textit inside} PBS rather than alongside it, PBS can schedule its jobs 
+without interrupting Condor ones.  An administrator can prioritize jobs submitted directly from the local cluster over 
+those from a remote submission, even for the same user.
+
+Each submission host runs the Gratia accounting software to provide user accounting.  Gratia was chosen because it has 
+a clean separation between remote clusters and the central database (updates are done via HTTP), ability to integrate 
+new resource types easily, and its ability to integrate into the larger OSG accounting.  For integration in the OSG, 
+we have extended the software to record both the submission host and the remote OSG cluster utilized.
+
+HCC does not have a shared filesystem across all clusters, so campus grid data management is handled by Condor file 
+transfer.
 
 \section{Bridging Campus Grids}
 TODO
