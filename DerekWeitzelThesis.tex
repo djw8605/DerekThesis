@@ -407,7 +407,7 @@ conclusions and describes future work.
 %\subsubsection*{Other efforts that exist to solve this problem and why are they
 %less effective than our method}
 
-\section{Competing technology to create a campus grid}
+\section{Technology to create a campus grid}
 
 %\item
 %Resist the urge to point out only flaws in other work. Do your best to point
@@ -417,7 +417,7 @@ conclusions and describes future work.
 \subsection{Globus}
 Globus is a translation layer between the (globus specific?) Resource Specification Language, and the local resource manager.  It has been very successful in that is has a large install base.  Globus also has deep integration with standard grid credentials such as PKI.
 
-Placing Globus gatekeepers on each cluster would allow jobs to be submitted to each cluster without modifying the underlying batch system.  But, this would require a higher layer of abstraction over the Globus gatekeepers to optimally balance load between clusters.  Additionally, Globus has well known limitations such as job a low submission rate, and high resource usage.  Globus implements security that is inconstant with most existing campus security architectures.  Also, it does not provide a method for transparent execution on other clusters, which experience on the OSG has shown is important to users.
+Placing Globus gatekeepers on each cluster would allow jobs to be submitted to each cluster without modifying the underlying batch system.  But, this would require a higher layer of abstraction over the Globus gatekeepers to optimally balance load between clusters.  Additionally, Globus has well known limitations such as job a low submission rate, and high resource usage.  Additionally, Globus implements GSI (certificates) security that is inconstant with most existing campus security architectures.  Also, it does not provide a method for transparent execution on other clusters, which experience on the OSG has shown is important to users.
 
 \subsection{Condor Flocking}
 Another single vendor solution is Condor.  Each resource can run Condor on their clusters and 'flock' \cite{epema1996worldwide} to each other.  In this solution, jobs would be balanced on each resource due to Condor's greedy scheduler algorithm.  But, this again requires each resource to run Condor as their scheduler and resource manager.  Additionally, Condor must be running on each worker node, increasing the administration requirements.  This suffers from the same problem as Moab, restricting further innovation to the confines of a single solution.
@@ -674,13 +674,13 @@ The logic of the factory follows:
 \end{enumerate}
 
 
-\section{Holland Computing Center campus grid}
+\section{Holland Computing Center campus grid} \label{sec:hcc}
 In designing a campus grid for the Holland Computing Center, we attempted to meet three goals:
 \begin{itemize}
-\item {\textbf Encompass}: The campus grid should reach all clusters managed by HCC.
-\item {\textbf Transparent execution environment}:  There should be an identical user interface for all resources, whether 
+\item \textbf{Encompass}: The campus grid should reach all clusters managed by HCC.
+\item \textbf{Transparent execution environment}:  There should be an identical user interface for all resources, whether 
 running locally or remotely.
-\item {\textbf Decentralization}: A user should be able to utilize his local resource even if it becomes disconnected from 
+\item \textbf{Decentralization}: A user should be able to utilize his local resource even if it becomes disconnected from 
 the rest of the campus.  An error on a given cluster should only affect that cluster.
 \end{itemize}
 
@@ -724,7 +724,35 @@ HCC does not have a shared filesystem across all clusters, so campus grid data m
 transfer.
 
 \section{Bridging Campus Grids}
-TODO
+There are two methods for expanding the campus grid described in Section \ref{sec:hcc}: through GlideinWMS to the OSG, 
+or by linking campus grids through flocking.  The benefits of bridging externally are obvious - increased throughput 
+for the local user's jobs.  HCC has been able to utilize over 7,000 remote job slots at a time, and has been able to 
+bridge to all the campus grids discussed in Section \ref{sec:others}.  We connect to FermiGrid and GLOW through the OSG and 
+to Purdue via Condor flocking.
+
+Unlike the OSG, where the trust relationship is well-defined and common between sites, trust is established between 
+campuses with flocking on a case-by-case basis.
+The current model for trust is based on limited trusted hosts.  Each site publishes a list of submit and negotiator 
+hosts that are trusted to submit and accept jobs, respectively.  This implicitly trusts an entire campus, while the OSG 
+trust model is based on virtual organizations that may have no relationship to a physical campus or submit host.
+
+The full campus grid architecture, with bridging, is shown in Figure \ref{fig:campusgrid}.  In this campus grid, the 
+user first submits jobs to the local condor cluster (1).  If the local cluster can fulfill the user's needs, then the 
+jobs will remain there.  If the local cluster is full or cannot meet the user's demand, Condor flocking will start 
+submitting jobs to other campus clusters (2), either Condor or CGF-based.  If the on-campus 
+resources are unable to meet the user's request, the local Condor schedd will expand its reach again (3) by looking 
+outside the campus.  The jobs can also be sent to the OSG via flocking to a GlideinWMS 
+frontend, which creates an overlay pool of grid resources.  In this architecture, every effort is given to find 
+resources for the user (local, across campus, or externally), while maintaining the same vanilla Condor interface.
+
+It is important to note the ever-widening circle of resources expands from the locality of the user.  It goes from the resource 
+the user knows best (and has the best support for) to the most foreign one.  This is a very natural progression, and 
+each step described comes with more complexity, and new failure modes.  If the user is ever frustrated at one 
+transition, he can just remain contented with the resources he has, as opposed to having to switch between ``local 
+mode" and ``grid mode".  Another usability boost is that all end-user interfaces are Condor vanilla universe.  The user 
+never encounters errors translated between systems (a common user frustration) and the user needs to develop expertise 
+in Condor alone.
+
 
 
 
