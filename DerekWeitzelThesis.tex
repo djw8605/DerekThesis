@@ -467,7 +467,12 @@ relevant, how are they relevant, and why are they less effective than our
 solution for this problem}
 
 \subsection{Virginia Campus Grid}
-The Virginia Campus Grid \cite{humphrey2005university}.  They used globus 4 WSRF to create a grid.  They used the campus information services and authentication methods.  They do not mention load balancing or brokering.
+The Virginia Campus Grid \cite{humphrey2005university} designed a campus grid using the Web Services Resource Framework (WSRF) with Globus.  The goal of the campus grid was use as much existing infrastructure as possible.  The grid utilized the existing authentication system by developing a new credential generator called CredEx \cite{del2005credex} that interacts with the local LDAP servers to create PKI certificates.  Globus version 4 (now depreciated) was used to interact with the Linux clusters on campus.
+
+Another focus of the Virginia campus grid was policy expression and enforcement.  This is a common theme for many grids since they span multiple administrative domains.  In the virginia grid, a enforcement service would enforce these rules by cutting off and redirecting users to and from resources.  The load balancing would be enforced by the enforcement services, as well as policies regarding a resources preference for jobs.  Additionally, a broker was developed to distribute jobs.
+
+The Virginia campus grid has many attributes shared with other Campus Grids.  The Virginia grid approaches trust relationships by utilizing the existing campus authentication infrastructure.  Job submission is handled by WSRF and distributed with a custom developed broker.  Resource independence is not discussed in the paper, but there are many central services such as the enforcement service and the broker.  A downtime in either of these services would limit usefulness the grid.  Accounting is handled with the central IT along with authentication.  Data management is not addressed in the campus grid.  Data management is very important to any campus grid given the rising demands of data intensive computing for scientific applications.
+
 
 \subsection{Oxford Campus Grid}
 Oxford Campus Grid \cite{wallom2006oxgrid}.  Oxford leveraged the VDT stack, and Condor-G.  They built an equivalent of OSGMM using Condor-G and GLUE attributes to submit to globus gatekeepers installed on the clusters.  So, they built an OSG.
@@ -563,13 +568,13 @@ Using offline ads to efficiently match jobs to glideins on the non-condor cluste
 \section{Glidein Jobs}
 Glidein  \cite{frey2002condor} is a pilot job based grid submission that creates an overlay network.  Glidein is designed to used standard Condor mechanisms to advertise it's availablity to a Condor Collector process, which is queried by the Scheduler to learn about available resources.  Each user job is run in a sandbox on the local disk and is provided with a consistent execution environment across hosts and clusters.
 
-Pilot jobs are used by many physics experiments \cite{nilsson2008experience, zvada2010cdf, bradley2010use}.  The are commonly used for multiple reasons:
+Pilot jobs are used by many physics experiments \cite{nilsson2008experience, zvada2010cdf, bradley2010use}.  Physics experiments create pilot frameworks because they have need for very large distributed workflow management systems.  Pilot workflow management systems are commonly used for multiple reasons:
 \begin{itemize}
 \item \textbf{Scheduling Optimization:} The pilot reports only when a cpu is immediately available to run a job.
 \item \textbf{Input/Output Automation:} The pilot can transfer input and output seamlessly for the user.
 \item \textbf{Monitoring:} The monitoring of a job can be more accurate while the job is running.
 \item \textbf{Fault Tolerance:} A job failure can be more accurately detected and recovered.
-\item \textbf{Multiple Runs:} Each pilot can run multiple jobs serially, reducing the need for multiple submissions through the site gatekeeper.
+\item \textbf{Multiple Runs:} Each pilot can run multiple jobs serially, reducing submissions through the site gatekeeper.
 \end{itemize}
 
 The factory uses glideins on non-condor resources in order to create a overlay condor cluster that can execute remote jobs via flocking.  The glideins report to a Collector unique to each Cluster and are configured to exit after a configurable amount of time. 
