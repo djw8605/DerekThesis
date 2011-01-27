@@ -567,6 +567,25 @@ Using offline ads to efficiently match jobs to glideins on the non-condor cluste
 %you have to convince someone you know enough to have a good chance of building
 %a solution, but that you have not {\em already} done so.
 
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[scale=0.8]{images/CHEP-Campus}
+\caption{The HCC Campus Grid architecture, complete with connections to other campuses and the OSG.  As each resource 
+becomes fully utilized, the user's jobs will extend out to increasingly remote clusters.}
+\label{fig:campusgrid}
+\end{center}
+\end{figure}
+
+The full campus grid architecture, with bridging, is shown in Figure \ref{fig:campusgrid}.  In this campus grid, the 
+user first submits jobs to the local condor cluster (1).  If the local cluster can fulfill the user's needs, then the 
+jobs will remain there.  If the local cluster is full or cannot meet the user's demand, Condor flocking will start 
+submitting jobs to other campus clusters (2), either Condor or CGF-based.  If the on-campus 
+resources are unable to meet the user's request, the local Condor schedd will expand its reach again (3) by looking 
+outside the campus.  The jobs can also be sent to the OSG via flocking to a GlideinWMS 
+frontend, which creates an overlay pool of grid resources.  In this architecture, every effort is given to find 
+resources for the user (local, across campus, or externally), while maintaining the same vanilla Condor interface.
+
 \textbf{ Campus Factory is the heart of the operation.  It provides all throttling and logic to the submit of glidein jobs to the non-condor cluster.}
 
 \section{Glidein Jobs}
@@ -764,14 +783,7 @@ The current model for trust is based on limited trusted hosts.  Each site publis
 hosts that are trusted to submit and accept jobs, respectively.  This implicitly trusts an entire campus, while the OSG 
 trust model is based on virtual organizations that may have no relationship to a physical campus or submit host.
 
-The full campus grid architecture, with bridging, is shown in Figure \ref{fig:campusgrid}.  In this campus grid, the 
-user first submits jobs to the local condor cluster (1).  If the local cluster can fulfill the user's needs, then the 
-jobs will remain there.  If the local cluster is full or cannot meet the user's demand, Condor flocking will start 
-submitting jobs to other campus clusters (2), either Condor or CGF-based.  If the on-campus 
-resources are unable to meet the user's request, the local Condor schedd will expand its reach again (3) by looking 
-outside the campus.  The jobs can also be sent to the OSG via flocking to a GlideinWMS 
-frontend, which creates an overlay pool of grid resources.  In this architecture, every effort is given to find 
-resources for the user (local, across campus, or externally), while maintaining the same vanilla Condor interface.
+
 
 It is important to note the ever-widening circle of resources expands from the locality of the user.  It goes from the resource 
 the user knows best (and has the best support for) to the most foreign one.  This is a very natural progression, and 

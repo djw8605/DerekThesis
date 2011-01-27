@@ -9,5 +9,17 @@ DerekWeitzelThesis.toc
 DerekWeitzelThesis.out
 DerekWeitzelThesis.synctex.gz
 
+# Support files not to be tracked
+support/CampusGridCHEP/.svn/
+support/CampusGridCHEP/CampusGridCHEP.aux
+support/CampusGridCHEP/CampusGridCHEP.bbl
+support/CampusGridCHEP/CampusGridCHEP.blg
+support/CampusGridCHEP/CampusGridCHEP.log
+support/CampusGridCHEP/CampusGridCHEP.pdf
+support/CampusGridCHEP/CampusGridCHEP.synctex.gz
+support/CampusGridCHEP/iopams.sty
+support/CampusGridCHEP/jpconf.cls
+support/CampusGridCHEP/jpconf11.clo
+support/CampusGridCHEP/name.eps
 
 
