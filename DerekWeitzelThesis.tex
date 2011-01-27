@@ -475,7 +475,9 @@ The Virginia campus grid has many attributes shared with other Campus Grids.  Th
 
 
 \subsection{Oxford Campus Grid}
-The Oxford Campus Grid \cite{wallom2006oxgrid} built an .  Oxford leveraged the VDT stack, and Condor-G.  They built an equivalent of OSGMM using Condor-G and GLUE attributes to submit to globus gatekeepers installed on the clusters.  So, they built an OSG.
+The Oxford Campus Grid \cite{wallom2006oxgrid} built a comprehensive campus grid including both compute and data provisioning.  The compute provisioning used Condor-G (TODO: Cite) and a information server.  The information server injected resource specific information into the Condor-G matchmaker, allowing Condor to match jobs to appropriate resources, as well as follow resource policies.  For data provisioning, the Storage Resource Broker (SRB) \cite{baru1998sdsc} was used with a dedicated data vault.
+
+.   Oxford leveraged the VDT stack, and Condor-G.  They built an equivalent of OSGMM using Condor-G and GLUE attributes to submit to globus gatekeepers installed on the clusters.  So, they built an OSG.
 
 \subsection{GLOW}
 GLOW \cite{gridworkshopweb, glowwebsite} is an University of Wisconsin grid used at the Madison campus to distribute 
