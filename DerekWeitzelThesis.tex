@@ -577,8 +577,8 @@ becomes fully utilized, the user's jobs will extend out to increasingly remote c
 \end{center}
 \end{figure}
 
-The full campus grid architecture, with bridging, is shown in Figure \ref{fig:campusgrid}.  In this campus grid, the 
-user first submits jobs to the local condor cluster (1).  If the local cluster can fulfill the user's needs, then the 
+The full campus grid architecture with bridging is shown in Figure \ref{fig:campusgrid}.  In this campus grid, the 
+user first submits jobs to the local Condor cluster (1).  If the local cluster can fulfill the user's needs, then the 
 jobs will remain there.  If the local cluster is full or cannot meet the user's demand, Condor flocking will start 
 submitting jobs to other campus clusters (2), either Condor or CGF-based.  If the on-campus 
 resources are unable to meet the user's request, the local Condor schedd will expand its reach again (3) by looking 
