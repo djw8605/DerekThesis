@@ -567,6 +567,16 @@ heavily used.
 %you have to convince someone you know enough to have a good chance of building
 %a solution, but that you have not {\em already} done so.
 
+In designing a campus grid for the Holland Computing Center, we attempted to meet three goals:
+\begin{itemize}
+\item \textbf{Encompass}: The campus grid should reach all clusters managed by HCC.
+\item \textbf{Transparent execution environment}:  There should be an identical user interface for all resources, whether 
+running locally or remotely.
+\item \textbf{Decentralization}: A user should be able to utilize his local resource even if it becomes disconnected from 
+the rest of the campus.  An error on a given cluster should only affect that cluster.
+\end{itemize}
+
+Along with these goals, the technologies in this section will address the characteristics of a campus grid described in Section \ref{sec:attributes}: trust relationships, job submission, resource independence, accounting, and data management.
 
 \begin{figure}[htbp]
 \begin{center}
@@ -588,14 +598,7 @@ resources for the user (local, across campus, or externally), while maintaining 
 
 
 \section{Holland Computing Center campus grid} \label{sec:hcc}
-In designing a campus grid for the Holland Computing Center, we attempted to meet three goals:
-\begin{itemize}
-\item \textbf{Encompass}: The campus grid should reach all clusters managed by HCC.
-\item \textbf{Transparent execution environment}:  There should be an identical user interface for all resources, whether 
-running locally or remotely.
-\item \textbf{Decentralization}: A user should be able to utilize his local resource even if it becomes disconnected from 
-the rest of the campus.  An error on a given cluster should only affect that cluster.
-\end{itemize}
+
 
 Like Purdue and GLOW, we have based the campus grid upon Condor.  Each resource has a Condor-based interface, giving an 
 identical experience regardless of what the user considers his or her ``local" cluster.  While two of the local 
