@@ -659,11 +659,57 @@ The factory submission logic is as follows:
 Additionally, the factory has logic to detect glideins that are not reporting to the collector.  This can happen when the the LRM cannot transfer files, if the BLAHP is incorrectly reporting the status of a job, or if there is something wrong with the glideins jobs.
 
 
+\subsection{OfflineAds} \label{sec:offlineads}
+Offline ads are designed to be used for power management. When a node hasn't been matched for a configurable amount of time, the machine can be turned off to save power. When the machine is preparing to turn off, it sends an offline ad to the collector that describes the machine. The OfflineAd includes all of the features that can be used when matching against an online resource.  When the offline ad describing the machine is matched to a job by the Condor negotiator, the negoiator inserts a new attributed into the offline ad called MachineLastMatchTime.  When using power management, the Condor Rooster periodically queries the collector for the offline ads, and wakes the powered off matched nodes to run the job.
+
+The collector maintains the offline ads for a configurable amount of time using the configuration variable OFFLINE\_EXPIRE\_ADS\_AFTER. During this time, the condor negotiator will treat the offline ad just as it would a real ad and match it to idle jobs. Since the Negotiator sees no difference between running and offline ads, the offline ads will be matched even when flocking from another condor pool.  This is how the offline ads are used in the campus factory.
+
+\subsubsection{Creating OfflineAds}
+The factory detects classads of running glideins, copies the classads, and re-advertises them as offline ads. Since the offline ad is an exact copy of a running glidein, it is reasonably expected that you can get a similar glidein when you submit to the local scheduler.
+
+To change a glidein classad into a offline ad, the following attributes must be changed
+
+\begin{table}[h!t]
+\centering
+\begin{tabular}{| l | l | p{6cm} |}
+\hline
+ClassAd & New Value & Comment\\ \hline \hline
+Offline & True & Enable the offline ad logic in Condor daemons.\\ \hline
+Name & Unique name & Mandatory name for indexing in the Condor collector.\\ \hline
+MyCurrentTime & LastHeardFrom - Time now & Used for offset time.   \\ \hline
+ClassAdLifetime & 24 hours & To address a bug in the handling of offline ads by Condor. This is how many seconds the collector will keep this ad. \\ \hline
+State & Unclaimed & Make sure it will match with idle jobs. \\ \hline
+Activity & Idle & Again, for matching  \\ \hline
+PreviousName & Name & Value of 'Name' attribute of the original ad. Useful for debugging. \\ \hline
+\end{tabular}
+\caption{Changes to ClassAds for Offline function}
+\end{table}
+
+
+
+\subsubsection{Managing OfflineAds}
+By default, the factory will attempt to maintain a specific number of offline ads. This can be done in a number of ways, such as always maintaining the newest 10 ads. Or you can sort by different 'types' of machines (big memory, big disk), and keep an assortment of unique ads.  Currently, the factory only keeps the latest 10 ads.
+
+To maintain the classads, the factory queries the collector for offline ads. If it detects more than 10, it will only keep the newest 10. If less then ten, the offline ad manager will list the site as Delinquent, and will recommend submitting more glideins.
+
+\subsubsection{Influence OfflineAds have on the Factory}
+The OfflineAds do not completely replace all logic relating to the factory. The site must still meet the idle glideins/idle slots requirements that were originally used to throttle new glideins. The OfflineAds do replace the need for the factory to query remote schedd's to for idle jobs. The negotiator and collector take care of all job matching with semi-accurate glidein classads.
+
+The logic of the factory follows:
+
+\begin{enumerate}
+\item Are there idle startd's?
+\item Are there idle glideins in queue?
+\item Have any of the idle offline ads matched in the last x seconds?
+\item If we get this far, submit some glideins. 
+\end{enumerate}
+
+
 
 \section{Glidein Jobs} \label{sec:glideins}
-Glidein jobs are compliment the job submission method and are used to present a transparent execution environment to the submitter.  
+Glidein jobs compliment the job submission method and are used to present a transparent execution environment to the submitter.  Additionally, it allows for better data management since the submitter directly connects to the execute host to transfer files and job information.
 
-Glidein  \cite{frey2002condor} is a pilot job based grid submission that creates an overlay network.  Glidein is designed to used standard Condor mechanisms to advertise it's availablity to a Condor Collector process, which is queried by the Scheduler to learn about available resources.  Each user job is run in a sandbox on the local disk and is provided with a consistent execution environment across hosts and clusters.
+Glidein \cite{frey2002condor} is a pilot job based grid submission that creates an overlay network.  Glidein is designed to used standard Condor mechanisms to advertise it's availablity to a Condor Collector process, which is queried by the Scheduler to learn about available resources.  Each user job is run in a sandbox on the local disk and is provided with a consistent execution environment across hosts and clusters.
 
 Pilot jobs are used by many physics experiments \cite{nilsson2008experience, zvada2010cdf, bradley2010use}.  Physics experiments create pilot frameworks because they have need for very large distributed workflow management systems.  Pilot workflow management systems are commonly used for multiple reasons:
 \begin{itemize}
@@ -771,46 +817,6 @@ Condor \& BLAHP \cite{blahp} provides the interface to the local batch system.  
 OfflineAds are used to efficiently match jobs to potential slots on a machine.  These were developed because we do not always want ~5 idle jobs running on a cluster.  We would rather have a few jobs submitted per day, and only submit more glideins if jobs will run there.
 
 
-\section{OfflineAds} \label{sec:offlineads}
-Offline ads are designed to be used for power management. When a node hasn't been matched for a configurable amount of time, the machine can be turned off to save power. When the machine is preparing to turn off, it sends an offline ad to the collector that describes the machine. The OfflineAd includes all of the features that can be used when matching against an online resource.  When the offline ad describing the machine is matched to a job by the Condor negotiator, the negoiator inserts a new attributed into the offline ad called MachineLastMatchTime.  When using power management, the Condor Rooster periodically queries the collector for the offline ads, and wakes the powered off matched nodes to run the job.
-
-The collector maintains the offline ads for a configurable amount of time using the configuration variable OFFLINE\_EXPIRE\_ADS\_AFTER. During this time, the condor negotiator will treat the offline ad just as it would a real ad and match it to idle jobs. Since the Negotiator sees no difference between running and offline ads, the offline ads will be matched even when flocking from another condor pool.  This is how the offline ads are used in the campus factory.
-
-\subsection{Creating OfflineAds}
-The factory detects classads of running glideins, copies the classads, and re-advertises them as offline ads. Since the offline ad is an exact copy of a running glidein, it is reasonably expected that you can get a similar glidein when you submit to the local scheduler.
-
-To change a glidein classad into a offline ad, the following attributes must be changed
-
-\begin{itemize}
-\item Offline = true
-\item Name - to a unique name
-\item MyCurrentTime = LastHeardFrom - Time now
-\item ClassAdLifetime - To address a bug in the handling of offline ads by Condor. This is how many seconds the collector will keep this ad
-\item State = Unclaimed - Make sure it will match with idle jobs.
-\item Activity = Idle - Again, for matching 
-\end{itemize}
-
-Convenience attributes: 
-\begin{itemize}
-\item PreviousName - Value of 'Name' attribute of the original ad. Useful for debugging. 
-\end{itemize}
-
-\subsection{Managing OfflineAds}
-By default, the factory will attempt to maintain a specific number of offline ads. This can be done in a number of ways, such as always maintaining the newest 10 ads. Or you can sort by different 'types' of machines (big memory, big disk), and keep an assortment of unique ads.  Currently, the factory only keeps the latest 10 ads.
-
-To maintain the classads, the factory queries the collector for offline ads. If it detects more than 10, it will only keep the newest 10. If less then ten, the offline ad manager will list the site as Delinquent, and will recommend submitting more glideins.
-
-\subsection{Influence OfflineAds have on the Factory}
-The OfflineAds do not completely replace all logic relating to the factory. The site must still meet the idle glideins/idle slots requirements that were originally used to throttle new glideins. The OfflineAds do replace the need for the factory to query remote schedd's to for idle jobs. The negotiator and collector take care of all job matching with semi-accurate glidein classads.
-
-The logic of the factory follows:
-
-\begin{enumerate}
-\item Are there idle startd's?
-\item Are there idle glideins in queue?
-\item Have any of the idle offline ads matched in the last x seconds?
-\item If we get this far, submit some glideins. 
-\end{enumerate}
 
 
 
