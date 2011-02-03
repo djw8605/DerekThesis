@@ -661,18 +661,20 @@ Additionally, the factory has logic to detect glideins that are not reporting to
 
 
 \subsection{OfflineAds} \label{sec:offlineads}
-OfflineAds are used to optimize the submission of glideins to the underlying batch system.  
+OfflineAds are used to optimize the submission of glideins to the underlying batch system.   
 Offline ads are designed to be used for power management. When a node hasn't been matched for a configurable amount of time, the machine can be turned off to save power. When the machine is preparing to turn off, it sends an offline ad to the collector that describes the machine. The OfflineAd includes all of the features that can be used when matching against an online resource, such as memory, disk space, and installed software.  When the offline ad describing the machine is matched to a job by the Condor negotiator, the negoiator inserts a new attributed into the offline ad called \texttt{MachineLastMatchTime}.  When using power management, the Condor Rooster periodically queries the collector for the offline ads, and wakes the powered off matched nodes to run the job.
 
 
 
 %The collector maintains the offline ads for a configurable amount of time using the configuration variable OFFLINE\_EXPIRE\_ADS\_AFTER. During this time, 
 
-In the factory's implementation, the OfflineAds are used to match possible glidein resources to idle jobs.  The condor negotiator will treat the offline ads just as it would a real ad and match it to idle jobs. Since the Negotiator sees no difference between running and offline ads, the offline ads will be matched even when flocking from another condor pool.
+In the factory's implementation, the OfflineAds are used to match possible glidein resources to idle jobs.  When the OfflineAds are collected, the   The condor negotiator will treat the offline ads just as it would a real ad and match it to idle jobs. Since the Negotiator sees no difference between running and offline ads, the offline ads will be matched even when flocking from another condor pool.
+
+Since the OfflineAds are exact copies of active glideins, the OfflineAds will increase the accuracy of matching with idle jobs by resembling running glideins.  Descriptions of the glidein host and installed software will be represented in the OfflineAds just as it would a regular glidein ad.
 
 
 \subsubsection{Influence OfflineAds have on the Factory}
-The OfflineAds do not completely replace all logic described in Algorithm \ref{alg:glideins}. The site must still meet the idle glideins andidle slots requirements that were originally used to throttle new glideins. The OfflineAds do replace the need for the factory to query remote schedd's to for idle jobs.  This improves the efficiency of the factory by eliminating needless communication.  The negotiator and collector take care of all job matching with accurate glidein classads.
+The OfflineAds do not completely replace all logic described in Algorithm \ref{alg:glideins}. The site must still meet the idle glideins andidle slots requirements that were originally used to throttle new glideins. The OfflineAds do replace the need for the factory to query remote schedd's to for idle jobs.  This improves the efficiency of the factory by eliminating communication.  The negotiator and collector take care of all job matching with accurate glidein classads.
 
 The logic of the factory follows:
 
@@ -685,10 +687,9 @@ The logic of the factory follows:
 
 
 \subsubsection{Creating OfflineAds}
-During operation of the factory, it will submit glideins to the underlying batch system.  When these glideins report to the collector, the classads are copied by the factory to create OfflineAds.  
-The factory detects classads of running glideins, copies the classads, and re-advertises them as offline ads. Since the offline ad is an exact copy of a running glidein, it is reasonably expected that you can get a similar glidein when you submit to the local scheduler.
+During operation of the factory, it will submit glideins to the underlying batch system.  The factory detects the classads of running glideins, copies the classads, and re-advertises them as offline ads. Since the offline ad is an exact copy of a running glidein, it is reasonably expected that you can get a similar glidein when you submit to the local scheduler.
 
-To change a glidein classad into a offline ad, the following attributes must be changed
+The changes required to transform a glidein classad into an offline ad is in Table \ref{tab:offlineads}. 
 
 \begin{table}[h!t]
 \centering
@@ -703,7 +704,7 @@ State & Unclaimed & Make sure it will match with idle jobs. \\ \hline
 Activity & Idle & Again, for matching  \\ \hline
 PreviousName & Name & Value of 'Name' attribute of the original ad. Useful for debugging. \\ \hline
 \end{tabular}
-\caption{Changes to ClassAds for Offline function}
+\caption{Changes to ClassAds for Offline function} \label{tab:offlineads}
 \end{table}
 
 
