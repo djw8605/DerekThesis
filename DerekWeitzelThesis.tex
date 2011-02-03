@@ -747,6 +747,24 @@ The \texttt{condor\_master} will start the \texttt{condor\_startd} which will ad
 Glideins are being used in production in the Open Science Grid using the software GlideinWMS \cite{sfiligoi2008glideinwms}.  They provide several advantages over regular job submission.  Each glidein sandboxes and monitors the user jobs it runs.  The glidein can run multiple user jobs inside a single Local Resource Management (LRM) job, and will continue to run until the configured time to stop.  Glidein host connects directly with the submitter host, removing the need for staging data.
 
 
+\section{Flocking} \label{sec:flocking}
+Flocking \cite{epema1996worldwide} is a method of linking Condor clusters into a larger grid.  When a user submit jobs to Condor, they are stored and managed by the \texttt{condor\_schedd}.  The \texttt{condor\_schedd} acts as an agent on the user's behalf to keep track of jobs, and place jobs efficiently.
+
+After the jobs have been submitted, the \texttt{condor\_schedd} will maintain a \texttt{FlockLevel}.  At first, the \texttt{FlockLevel} will be set to 0 and jobs will only run on the local resources.  After a few minutes, if there are still idle jobs, then the \texttt{FlockLevel} will increase by 1.  Each time the \texttt{FlockLevel} increases, the \texttt{condor\_schedd} will advertise to another Condor pool that it has idle jobs to run.  When the remote Condor pools see idle jobs, the \texttt{condor\_negotiator} for that pool will contact the \texttt{condor\_schedd} to attempt to match jobs to the remote resources.
+
+Flocking does not delegate responsibility for a job.  The original \texttt{condor\_schedd} will maintain the job, transferring input and output, and monitoring it's status.  When flocking a job, first the negotiator for the remote pool contacts the local \texttt{condor\_schedd}.  If a match is found, the schedd directly contacts the execute host.  After transferring files, the schedd will monitor the status of the job.  This is analogous to a hub and spokes, the job never moves, it just is executed elsewhere.
+
+
+\section{Condor \& BLAHP} \label{sec:blahp}
+\label{sec:condorandblahp}
+Condor \& BLAHP \cite{blahp} provides the interface to the local batch system.  It is developed as a part of glite, and is included in the standard condor distribution. 
+
+OfflineAds are used to efficiently match jobs to potential slots on a machine.  These were developed because we do not always want ~5 idle jobs running on a cluster.  We would rather have a few jobs submitted per day, and only submit more glideins if jobs will run there.
+
+
+
+
+
 \section{Holland Computing Center campus grid} \label{sec:hcc}
 
 
@@ -816,16 +834,6 @@ transfer.
 
 
 
-
-
-\section{Flocking} \label{sec:flocking}
-Flocking is enabled between the condor clusters, and the non-condor clusters.  The non-condor clusters run the condor daemons on one node that will handle flocking and submission of glidein jobs.  This node can also serve as the local condor queue for users to submit to. 
-
-\section{Condor \& BLAHP} \label{sec:blahp}
-\label{sec:condorandblahp}
-Condor \& BLAHP \cite{blahp} provides the interface to the local batch system.  It is developed as a part of glite, and is included in the standard condor distribution. 
-
-OfflineAds are used to efficiently match jobs to potential slots on a machine.  These were developed because we do not always want ~5 idle jobs running on a cluster.  We would rather have a few jobs submitted per day, and only submit more glideins if jobs will run there.
 
 
 
