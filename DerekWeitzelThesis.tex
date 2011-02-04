@@ -431,10 +431,10 @@ But, this solution again requires each resource to run Condor as their scheduler
 
 
 \subsection{GlideinWMS}
-GlideinWMS
+ The Glidein Workflow Management System \cite{sfiligoi2008glideinwms} is a job submission method that abstracts the grid interface, leaving only a batch system interface.  
 
 \subsection{Panda}
-Panda
+Panda \cite{panda}
 
 \subsection{Moab}
 One solution to build a grid is to use a single vendor/software solution.  For example, Cluster Resources offer a solution Moab Grid Suite\cite{website:moabgrid}.  This solution requires each resource to run a single piece of proprietary software, Moab.  Moab is a meta-scheduler, using PBS to manage the underlying resources.  By using Moab, the development of new grid technologies are limited to what can be done in Moab.
@@ -758,7 +758,6 @@ Flocking does not delegate responsibility for a job.  The original \texttt{condo
 \section{Condor \& BLAHP} \label{sec:blahp}
 \label{sec:condorandblahp}
 The Batch?system Local ASCII Helper Protocol (BLAHP) was designed to offer a simple abstraction layer over the different LRMS, providing uniform access to the underlying computing resources \cite{blahp}. BLAHP is maintained by the gLite \cite{glite} collaboration at CERN.  The BLAHP supplements the encompass goal by allowing execution of Condor jobs to the underlying resource manager.  
-
 
 BLAHP is distributed with Condor as an additional library.  Condor uses BLAHP to submit jobs when specifying the PBS or LSF \texttt{universe} in the submission file.  The Campus Grid Factory submits glidein jobs to the underlying resource manager through the BLAHP.  Submitting glideins to Condor and allowing the BLAHP to manage the jobs simplifies the factory.  
 
