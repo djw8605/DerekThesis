@@ -746,6 +746,8 @@ Glideins are being used in production in the Open Science Grid using the softwar
 
 
 \section{Flocking} \label{sec:flocking}
+TODO: Picture of Flocking
+
 Flocking \cite{epema1996worldwide} is a method of linking Condor clusters into a larger grid.  When a user submit jobs to Condor, they are stored and managed by the \texttt{condor\_schedd}.  The \texttt{condor\_schedd} acts as an agent on the user's behalf to keep track of jobs, and place jobs efficiently.  Flocking improves the job submission and transparent execution environment of campus grid jobs by eliminating the need to explicitly specifying pools for execution.  It improves data management by directly transferring files from the submitter to the execute host, bypassing the gatekeeper (typically done in the OSG).  It also allows for decentralization since pools can leave and appear in the campus grid independent of the submitters.
 
 After the jobs have been submitted, the \texttt{condor\_schedd} will maintain a \texttt{FlockLevel}.  At first, the \texttt{FlockLevel} will be set to 0 and jobs will only run on the local resources.  After a few minutes, if there are still idle jobs, then the \texttt{FlockLevel} will increase by 1.  Each time the \texttt{FlockLevel} increases, the \texttt{condor\_schedd} will advertise to another Condor pool that it has idle jobs to run.  When the remote Condor pools see idle jobs, the \texttt{condor\_negotiator} for that pool will contact the \texttt{condor\_schedd} to attempt to match jobs to the remote resources.
@@ -755,9 +757,10 @@ Flocking does not delegate responsibility for a job.  The original \texttt{condo
 
 \section{Condor \& BLAHP} \label{sec:blahp}
 \label{sec:condorandblahp}
-The Batch?system Local ASCII Helper Protocol (BLAHP) was designed to offer a simple abstraction layer over the different LRMS, providing uniform access to the underlying computing resources \cite{blahp}. BLAHP is maintained by the glite 
+The Batch?system Local ASCII Helper Protocol (BLAHP) was designed to offer a simple abstraction layer over the different LRMS, providing uniform access to the underlying computing resources \cite{blahp}. BLAHP is maintained by the gLite \cite{glite} collaboration at CERN.  The BLAHP supplements the encompass goal by allowing execution of Condor jobs to the underlying resource manager.  
 
-Condor \& BLAHP \cite{blahp} provides the interface to the local batch system.  It is developed as a part of glite, and is included in the standard condor distribution. 
+
+BLAHP is distributed with Condor as an additional library.  Condor uses BLAHP to submit jobs when specifying the PBS or LSF \texttt{universe} in the submission file.  The Campus Grid Factory submits glidein jobs to the underlying resource manager through the BLAHP.  Submitting glideins to Condor and allowing the BLAHP to manage the jobs simplifies the factory.  
 
 
 
@@ -768,7 +771,7 @@ Condor \& BLAHP \cite{blahp} provides the interface to the local batch system.  
 \section{Holland Computing Center campus grid} \label{sec:hcc}
 
 
-\begin{figure}[htbp]
+\begin{figure}[h!tbp]
 \begin{center}
 \includegraphics[scale=0.8]{images/CHEP-Campus}
 \caption{The HCC Campus Grid architecture, complete with connections to other campuses and the OSG.  As each resource 
