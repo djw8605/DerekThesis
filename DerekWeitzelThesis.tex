@@ -433,7 +433,11 @@ But, this solution again requires each resource to run Condor as their scheduler
 \subsection{GlideinWMS}
  The Glidein Workflow Management System (GlideinWMS) \cite{sfiligoi2008glideinwms} is a job submission method that abstracts the grid interface, leaving only a batch system interface.  GlideinWMS separates the system into two components, the frontend and the factory.  The frontend monitors the local user queue and requests glideins from the factory.  The factory submits the pilots to the grid resources, while serving requests from multiple frontends.  The factory only submits jobs to grid interfaces on multiple resources and can be optimized for that purpose.  While the frontend only deals with the local batch system, and can be optimized for the user's jobs.
  
-The GlideinWMS system is managed by Condor.  It uses Condor to submit to the grid resources, as well as mange user jobs on the frontend.
+The GlideinWMS system is managed by Condor.  It uses Condor to submit to the grid resources, as well as mange user jobs on the frontend.  The frontend and factory are daemons that run on the user submit host and a central machine, respectively.  
+
+GlideinWMS is heavily used on the the Open Science Grid.  A major user and developer of the software is CMS \cite{bradley2010use}.  They have shown recently that GlideinWMS can scale beyond 25,000 running jobs.
+
+GlideinWMS does have a few drawbacks.  GlideinWMS uses a external factory that acts as a single point of failure.  If the factory quits submitting jobs to grid resources, then users cannot run jobs.  Also, GlideinWMS is designed to only submit to GSI secured sites.  GSI is typically used only on production grids, and is rarely used inside a campus where the trust relationship is implicitly stronger.  
 
 \subsection{Panda}
 Panda \cite{panda}
