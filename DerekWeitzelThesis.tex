@@ -431,7 +431,9 @@ But, this solution again requires each resource to run Condor as their scheduler
 
 
 \subsection{GlideinWMS}
- The Glidein Workflow Management System \cite{sfiligoi2008glideinwms} is a job submission method that abstracts the grid interface, leaving only a batch system interface.  
+ The Glidein Workflow Management System (GlideinWMS) \cite{sfiligoi2008glideinwms} is a job submission method that abstracts the grid interface, leaving only a batch system interface.  GlideinWMS separates the system into two components, the frontend and the factory.  The frontend monitors the local user queue and requests glideins from the factory.  The factory submits the pilots to the grid resources, while serving requests from multiple frontends.  The factory only submits jobs to grid interfaces on multiple resources and can be optimized for that purpose.  While the frontend only deals with the local batch system, and can be optimized for the user's jobs.
+ 
+The GlideinWMS system is managed by Condor.  It uses Condor to submit to the grid resources, as well as mange user jobs on the frontend.
 
 \subsection{Panda}
 Panda \cite{panda}
