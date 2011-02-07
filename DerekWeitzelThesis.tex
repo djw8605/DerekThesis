@@ -446,7 +446,7 @@ PANDA is designed to be based around a central server.  All jobs are submitted t
 
 PANDA has very strong data management since it is integrated with the ATLAS data management system.  The client interface is generic enough that jobs can be submitted to multiple grids transparently.  Accounting and monitoring are tightly integrated into the system and can be easily monitored since all jobs are run from a central server.
 
-
+The PANDA system is very reliant on the uptime of the central server.  Though the resource independence is high when the resources are grid sites, the system still is reliant on the central PANDA server for any jobs to start.  Though, in practice, this has been very reliable.
 
 \subsection{Moab}
 One solution to build a grid is to use a single vendor/software solution.  For example, Cluster Resources offer a solution Moab Grid Suite\cite{website:moabgrid}.  This solution requires each resource to run a single piece of proprietary software, Moab.  Moab is a meta-scheduler, using PBS to manage the underlying resources.  By using Moab, the development of new grid technologies are limited to what can be done in Moab.
