@@ -368,12 +368,14 @@ averaged over a 400,000 jobs and a million computational hours a day using HTC.
 
 
 \subsection{Condor}
-Condor \cite{thain2005distributed} is a high--throughput batch computing system developed at the University of Wisconsin - Madison.  An overview from \cite{thain2005distributed}:
+Condor is a high--throughput batch computing system developed at the University of Wisconsin - Madison.  An overview from \cite{thain2005distributed}:
 \begin{quotation}
 Condor is a high-throughput distributed batch computing system.  Like other batch systems, Condor provides a job management mechanism, scheduling policy, priority scheme, resource monitoring, and resource management.  Users submit their jobs to Condor, and Condor subsequently chooses when and where to run them based upon a policy, monitors their progress, and ultimately informs the suer upon completion.  
 \end{quotation}
 
 An important technology used in Condor is the ClassAd mechanism.  ClassAds are the language that Condor uses to communicate between daemons.  A ClassAd is a list of keys and values, where the values can be strings, numbers, or expressions.  All resources are described by ClassAds.  Job ClassAds have attributes such as log file, output, input, and job requirements.  Resource ClassAds have requirements to run on the resource, ownership, and policies.  ClassAds are used for matching jobs to resources by evaluating requirements of both the jobs and the resources.
+
+Another component of Condor is the grid computing agent Condor-G \cite{frey2002condor}.  Condor-G communicates with Globus \cite{foster1997globus} sites.  Condor provides job submission, error recovery, and creation of a minimal execution environment.  Along with Condor-G, Condor can also submit jobs to other systems including Amazon EC2 \cite{amazonec2} and PBS \cite{pbstorque}.
 
 \subsection{Open Science Grid}
 
