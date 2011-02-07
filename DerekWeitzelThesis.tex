@@ -119,17 +119,54 @@ The HCC campus grid bridges clusters and the national infrastructure while runni
 
 Generally, users are provided a uniform interface to submit jobs to remote clusters inside their campus.  In many campus grids, the user manually submits to specific clusters.  In others, a layer of software distributes the computation among clusters in the grid. 
 
+Building a campus grid represents a significant commitment for both users and resource providers, which should be 
+evaluated against the benefits.  The primary benefits are:
+\begin{itemize}
+\item \textbf{Resource sharing}: An HTC-based approach focusses on using all resources effectively.  Resources are 
+typically bought for peak, not average, usage; integrating the idle time across the entire campus and using it improves 
+the value of the investment.
+\item \textbf{Homogeneous interfaces to multiple resources}: Moving researchers from one resource to another results in 
+a (possibly large) upfront cost in time and energy.  By providing a homogeneous interface across the campus, 
+researchers can quickly utilize new resources without the pain of migration.
+\item \textbf{Independence from any single computational resource}:  It is expensive to provide highly available 
+resources.  If do not rely on a specific single cluster, individual cluster downtimes have a smaller impact.  This 
+reduces the need for high levels of redundancy and stretches the campus computing budget further.
+\end{itemize}
 
+An obvious requirement for campus grids is having multiple resources on campus.  However, this is not sufficient for 
+resource providers - the resources should also be interchangeable.  A grid composed of a single AIX cluster, Linux 
+cluster, and Windows cluster, will likely never see any resource pooling or sharing.  This does not necessarily imply 
+the resources need to be identical - complete homogeneity is typically impossible due to individual resource 
+requirements or ownership.
 
-As the speed of innovation in computing increases, it is common for a campus to have multiple generations of clusters.  These clusters are commonly bought as independent systems, not meant to share work between them.  This causes users to flock to the newest generation hardware, hoping to increase the performance of their application.  This movement of users leads to under utilization of older hardware, and increased demand on the newest.
-
-This is just one of many situations that would cause users to underutilize hardware.  Other situations could be:
+A mistake in campus grids is to focus on the infrastructure for pooling resources without similarly engaging and 
+supporting the activities of users.  An analogy can be made to flows: if there is a sink (resources) with no source 
+(user jobs), the flow quickly stops, and the campus grid is forgotten.  Personnel investment must be made to engage 
+the user community.  Even before this investment is made, a campus should identify whether the on-campus scientific 
+computing has a significant portion of tasks that can be converted to HTC workflows.  Prioritization should be applied 
+so the users with the simplest workflow and the most to benefit are converted first.  Tasks with the following 
+characteristics should typically be avoided:
 
 \begin{itemize}
-\item \textbf{Departmental clusters:}  Each department has a dedicated cluster.  This cluster specialization can cause under utilization when department researchers are not using the resources.
-\item \textbf{Peaks of usage:} In general, users have peaks to their usage around deadlines.
-\item \textbf{Parallel jobs:} While a cluster is draining nodes for a large parallel job, the cluster could fill those drained slots with pre-emptable usage.
+\item Large scale (multi-node) MPI, as these require specific tunings to the given resource.
+\item Multi-day jobs.  Shared resources often need to be reallocated quickly back to the owner, meaning these jobs are 
+unlikely to complete.
+\item Sensitive data or software.  Tasks with sensitive (for example, HIPPA-protected) data may have legal boundaries 
+preventing distribution.  Software with strict licenses may also be illegal to use across the grid.
 \end{itemize}
+
+An common advantage for using campus grids is to alleviate demand on newer parallel machines by moving single core jobs to other clusters that have idle cycles.  Recently, the single core performance has been stagnant, therefore moving the single core jobs to the older hardware will not significantly decrease performance.  Also, by moving the single core jobs, it can free the newest hardware for large parallel jobs which can benefit from better interconnects, larger and faster storage, and increased core count that are on the newest hardware.
+
+
+%As the speed of innovation in computing increases, it is common for a campus to have multiple generations of clusters.  These clusters are commonly bought as independent systems, not meant to share work between them.  This causes users to flock to the newest generation hardware, hoping to increase the performance of their application.  This movement of users leads to under utilization of older hardware, and increased demand on the newest.
+
+%This is just one of many situations that would cause users to underutilize hardware.  Other situations could be:
+
+%\begin{itemize}
+%\item \textbf{Departmental clusters:}  Each department has a dedicated cluster.  This cluster specialization can cause under utilization when department researchers are not using the resources.
+%\item \textbf{Peaks of usage:} In general, users have peaks to their usage around deadlines.
+%\item \textbf{Parallel jobs:} While a cluster is draining nodes for a large parallel job, the cluster could fill those drained slots with pre-emptable usage.
+%\end{itemize}
 
 One way to alleviate this demand is to move single core jobs to other clusters that have idle cycles.  Recently, the single core performance has been stagnant, therefore moving the single core jobs to the older hardware will not significantly decrease performance.  Also, by moving the single core jobs, it can free the newest hardware for large parallel jobs which can benefit from better interconnects, larger and faster storage, and increased core count that are on the newest hardware.
 
@@ -144,7 +181,7 @@ One way to alleviate this demand is to move single core jobs to other clusters t
 %Your new idea need not solve every problem but it should solve at least one
 %that is not already solved
 
-There have been several attempts to create a distributed campus grid.  They all use some technology to distribute and schedule the jobs on the grid.  Some methods for distribution are commercial products such as Moab \cite{website:moabgrid}.  Others are translation layers between a generic description language and a scheduler, such as Globus \cite{foster1997globus}.  Still others are entire resource managers that can span multiple clusters like Condor.  Each of these solutions can be built to create a campus grid, but they all have drawbacks that are highlighted below.
+There have been several attempts to create a distributed campus grid.  They all use some technology to distribute and schedule the jobs on the grid.  Some methods for distribution are commercial products such as Moab \cite{website:moabgrid}.  Others are translation layers between a generic description language and a scheduler, such as Globus \cite{foster1997globus}.  Still others are entire resource managers that can span multiple clusters like Condor \cite{thain2005distributed}.  Each of these solutions can be built to create a campus grid, but they all have drawbacks that are highlighted below.
 
 
 
@@ -335,45 +372,10 @@ averaged over a 400,000 jobs and a million computational hours a day using HTC.
 \subsection{Open Science Grid}
 
 
-\subsection{Campus Grids}
+%\subsection{Campus Grids}
 
 
 
-Building a campus grid represents a significant commitment for both users and resource providers, which should be 
-evaluated against the benefits.  The primary benefits are:
-\begin{itemize}
-\item \textbf{Resource sharing}: An HTC-based approach focusses on using all resources effectively.  Resources are 
-typically bought for peak, not average, usage; integrating the idle time across the entire campus and using it improves 
-the value of the investment.
-\item \textbf{Homogeneous interfaces to multiple resources}: Moving researchers from one resource to another results in 
-a (possibly large) upfront cost in time and energy.  By providing a homogeneous interface across the campus, 
-researchers can quickly utilize new resources without the pain of migration.
-\item \textbf{Independence from any single computational resource}:  It is expensive to provide highly available 
-resources.  If do not rely on a specific single cluster, individual cluster downtimes have a smaller impact.  This 
-reduces the need for high levels of redundancy and stretches the campus computing budget further.
-\end{itemize}
-
-An obvious requirement for campus grids is having multiple resources on campus.  However, this is not sufficient for 
-resource providers - the resources should also be interchangeable.  A grid composed of a single AIX cluster, Linux 
-cluster, and Windows cluster, will likely never see any resource pooling or sharing.  This does not necessarily imply 
-the resources need to be identical - complete homogeneity is typically impossible due to individual resource 
-requirements or ownership.
-
-A mistake in campus grids is to focus on the infrastructure for pooling resources without similarly engaging and 
-supporting the activities of users.  An analogy can be made to flows: if there is a sink (resources) with no source 
-(user jobs), the flow quickly stops, and the campus grid is forgotten.  Personnel investment must be made to engage 
-the user community.  Even before this investment is made, a campus should identify whether the on-campus scientific 
-computing has a significant portion of tasks that can be converted to HTC workflows.  Prioritization should be applied 
-so the users with the simplest workflow and the most to benefit are converted first.  Tasks with the following 
-characteristics should typically be avoided:
-
-\begin{itemize}
-\item Large scale (multi-node) MPI, as these require specific tunings to the given resource.
-\item Multi-day jobs.  Shared resources often need to be reallocated quickly back to the owner, meaning these jobs are 
-unlikely to complete.
-\item Sensitive data or software.  Tasks with sensitive (for example, HIPPA-protected) data may have legal boundaries 
-preventing distribution.  Software with strict licenses may also be illegal to use across the grid.
-\end{itemize}
 
 
 
