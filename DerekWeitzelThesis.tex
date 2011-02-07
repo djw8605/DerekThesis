@@ -444,7 +444,9 @@ Panda \cite{panda} is the distributed production and distributed analysis system
 
 PANDA is designed to be based around a central server.  All jobs are submitted to this single server that centrally manages all job information.  The user submits jobs using HTTP interface to the central server.  The end-users are insulated from the grid by only accessing the central PANDA server.
 
-Panda has very strong data management since it is integrated with the ATLAS data management system.  The client interface is generic enough that jobs can be submitted to multiple grids transparently.  
+PANDA has very strong data management since it is integrated with the ATLAS data management system.  The client interface is generic enough that jobs can be submitted to multiple grids transparently.  Accounting and monitoring are tightly integrated into the system and can be easily monitored since all jobs are run from a central server.
+
+
 
 \subsection{Moab}
 One solution to build a grid is to use a single vendor/software solution.  For example, Cluster Resources offer a solution Moab Grid Suite\cite{website:moabgrid}.  This solution requires each resource to run a single piece of proprietary software, Moab.  Moab is a meta-scheduler, using PBS to manage the underlying resources.  By using Moab, the development of new grid technologies are limited to what can be done in Moab.
