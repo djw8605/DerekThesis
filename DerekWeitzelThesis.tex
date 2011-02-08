@@ -792,8 +792,25 @@ BLAHP is distributed with Condor as an additional library.  Condor uses BLAHP to
 
 
 
+\section{Full Campus Infrastructure}
 
+\begin{figure}[h!tbp]
+\begin{center}
+\includegraphics[scale=0.8]{images/CHEP-Campus}
+\caption{The HCC Campus Grid architecture, complete with connections to other campuses and the OSG.  As each resource 
+becomes fully utilized, the user's jobs will extend out to increasingly remote clusters.}
+\label{fig:campusgrid}
+\end{center}
+\end{figure}
 
+The full campus grid architecture with bridging is shown in Figure \ref{fig:campusgrid}.  In this campus grid, the 
+user first submits jobs to the local Condor cluster (1).  If the local cluster can fulfill the user's needs, then the 
+jobs will remain there.  If the local cluster is full or cannot meet the user's demand, Condor flocking will start 
+submitting jobs to other campus clusters (2), either Condor or CGF-based.  If the on-campus 
+resources are unable to meet the user's request, the local Condor schedd will expand its reach again (3) by looking 
+outside the campus.  The jobs can also be sent to the OSG via flocking to a GlideinWMS 
+frontend, which creates an overlay pool of grid resources.  In this architecture, every effort is given to find 
+resources for the user (local, across campus, or externally), while maintaining the same vanilla Condor interface.
 
 
 
@@ -842,28 +859,20 @@ in Condor alone.
 \chapter{Evaluation}
 \label{sec:Evaluation}
 
-\section{Experimental Setup}
+%\section{Experimental Setup}
 
 \section{Holland Computing Center campus grid} \label{sec:hcc}
 
+In order to test the framework described in this paper, we created a campus grid at Nebraska.  A diagram describing the HCC campus grid is shown in Figure \ref{fig:hccgrid}.  In this diagram the user submits jobs on a central machine.  First, the jobs will attempt to run on local resources at Prairiefire and Firefly.  Next, it will branch out to the GlideinWMS interface and Purdue.
 
-\begin{figure}[h!tbp]
+\begin{figure}[h!tb]
 \begin{center}
-\includegraphics[scale=0.8]{images/CHEP-Campus}
-\caption{The HCC Campus Grid architecture, complete with connections to other campuses and the OSG.  As each resource 
-becomes fully utilized, the user's jobs will extend out to increasingly remote clusters.}
-\label{fig:campusgrid}
+\includegraphics[scale=0.8]{images/HCC-CampusGrid-012411}
+\caption{The HCC Campus Grid}
+\label{fig:hccgrid}
 \end{center}
 \end{figure}
 
-The full campus grid architecture with bridging is shown in Figure \ref{fig:campusgrid}.  In this campus grid, the 
-user first submits jobs to the local Condor cluster (1).  If the local cluster can fulfill the user's needs, then the 
-jobs will remain there.  If the local cluster is full or cannot meet the user's demand, Condor flocking will start 
-submitting jobs to other campus clusters (2), either Condor or CGF-based.  If the on-campus 
-resources are unable to meet the user's request, the local Condor schedd will expand its reach again (3) by looking 
-outside the campus.  The jobs can also be sent to the OSG via flocking to a GlideinWMS 
-frontend, which creates an overlay pool of grid resources.  In this architecture, every effort is given to find 
-resources for the user (local, across campus, or externally), while maintaining the same vanilla Condor interface.
 
 Like Purdue and GLOW, we have based the campus grid upon Condor.  Each resource has a Condor-based interface, giving an 
 identical experience regardless of what the user considers his or her ``local" cluster.  While two of the local 
@@ -882,7 +891,7 @@ providing disconnected operation when resources are unreachable.
 
 Through Condor flocking and the CGF, we have successfully encompassed all local resources.  To provide even more value 
 to HCC, jobs can also bridge to the OSG and other campus grids.  The interface to the OSG uses the GlideinWMS \cite
-{sfiligoi2008GlideinWMS, sfiligoi2008making} frontend software, while we link to other campuses using Condor flocking 
+{sfiligoi2008glideinwms, sfiligoi2008making} frontend software, while we link to other campuses using Condor flocking 
 (the same method Purdue uses to link the campuses of DiaGrid).  Unlike Condor-G, which provides a Condor interface to 
 GRAM, these two methods give the same user experience as using Condor as a batch system.
 
@@ -908,22 +917,15 @@ transfer.
 
 %\subsubsection*{How we tested our solution}
 
-In order to test the framework described in this paper, we created a campus grid at Nebraska.  A diagram describing the HCC campus grid is shown in Figure \ref{fig:hccgrid}.  In this diagram the user submits jobs on a central machine.  First, the jobs will attempt to run on local resources at Prairiefire and Firefly.  Next, it will branch out to the GlideinWMS interface and Purdue.
-
-\begin{figure}[h!tb]
-\begin{center}
-\includegraphics[scale=0.8]{images/HCC-CampusGrid-012411}
-\caption{The HCC Campus Grid}
-\label{fig:hccgrid}
-\end{center}
-\end{figure}
 
 The environment includes two local clusters, as well as an interface to the OSG and another campus grid.
 
 \subsection{Prairiefire Cluster Setup}
 Prairiefire is setup as running both Condor and PBS.  This is very similar to how Purdue uses Condor.  When a PBS arrives on a node, the Condor daemons will preempt the running job, and move to another node.  Therefore, PBS has priority access to nodes, while Condor is treated as an opportunistic user.
 
-Prairiefire is setup to allow jobs from Firefly and the GlideWMS submit machine to run.  To do this, the configuration variable \texttt{FLOCK\_FROM} was set to \texttt{ff-grid.unl.edu, glidein.unl.edu}.
+Condor runs on the head node of the cluster.  The head node has both a public and private interface.  Each worker node connects to the outside world through a NAT.  Since Condor must have direct communication between the submitter (possibly outside of Prairiefire) and the execute host (worker nodes), Prairiefire must run the Condor Connection Broker (CCB).  The CCB runs on the head node and negotiates connections for nodes behind the NAT to connect with the submitter.
+
+Prairiefire is setup to allow jobs from Firefly and the GlideWMS submit machine to run.  To do this, the configuration variable \texttt{FLOCK\_FROM} was set to \texttt{ff-grid.unl.edu, glidein.unl.edu}.   Further, the security is setup such that jobs coming from outside of the Prairiefire pool will use the user \texttt{nobody} when running the job.  Condor uses this underprivileged account so that a rogue user can cause minimal impact to the system, and to protect other users of the system.  The security on the machine is IP based, it trusts all users from certain hosts.
 
 
 \subsection{Firefly Cluster Setup}
