@@ -384,6 +384,7 @@ The OSG provides a common interface to computing and storage resources: Globus a
 
 
 
+
 % Do we need this?  Probably not, this is what the paper is about.
 %\subsection{Campus Grids}
 
@@ -409,6 +410,7 @@ The OSG provides a common interface to computing and storage resources: Globus a
 %\subsubsection* {How the rest of the paper is structured}
 
 
+\section{Paper Overview}
 The rest of this paper first discusses related work in
 \secref{sec:RelatedWork}, and then describes our implementation in
 \secref{sec:Implementation}. \secref{sec:Evaluation} describes how we evaluated
@@ -898,9 +900,39 @@ in Condor alone.
 \chapter{Evaluation}
 \label{sec:Evaluation}
 
-\subsubsection*{Social political stuff}
+\section{Experimental Setup}
 
-\subsubsection*{How we tested our solution}
+
+
+%\subsubsection*{Social political stuff}
+
+%\subsubsection*{How we tested our solution}
+
+In order to test the framework described in this paper, we created a campus grid at Nebraska.  A diagram describing the HCC campus grid is shown in Figure \ref{fig:hccgrid}.  In this diagram the user submits jobs on a central machine.  First, the jobs will attempt to run on local resources at Prairiefire and Firefly.  Next, it will branch out to the GlideinWMS interface and Purdue.
+
+\begin{figure}[h!tb]
+\begin{center}
+\includegraphics[scale=0.8]{images/HCC-CampusGrid-012411}
+\caption{The HCC Campus Grid}
+\label{fig:hccgrid}
+\end{center}
+\end{figure}
+
+The environment includes two local clusters, as well as an interface to the OSG and another campus grid.
+
+\subsection{Prairiefire Cluster Setup}
+Prairiefire is setup as running both Condor and PBS.  This is very similar to how Purdue uses Condor.  When a PBS arrives on a node, the Condor daemons will preempt the running job, and move to another node.  Therefore, PBS has priority access to nodes, while Condor is treated as an opportunistic user.
+
+Prairiefire is setup to allow jobs from Firefly and the GlideWMS submit machine to run. 
+
+
+\subsection{Firefly Cluster Setup}
+
+\subsection{GlideinWMS OSG Interface Setup}
+
+\subsection{Flock to Purdue Setup}
+
+
 \begin{itemize}
 %\item   Performance metrics 
 %\item   Performance parameters
