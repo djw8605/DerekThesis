@@ -796,6 +796,54 @@ BLAHP is distributed with Condor as an additional library.  Condor uses BLAHP to
 
 
 
+
+
+
+
+%\textbf{ Campus Factory is the heart of the operation.  It provides all throttling and logic to the submit of glidein jobs to the non-condor cluster.}
+
+
+
+
+
+
+
+
+
+
+
+\section{Bridging Campus Grids} \label{sec:bridging}
+There are two methods for expanding the campus grid described in Section \ref{sec:hcc}: through GlideinWMS to the OSG, 
+or by linking campus grids through flocking.  The benefits of bridging externally are obvious - increased throughput 
+for the local user's jobs.  HCC has been able to utilize over 7,000 remote job slots at a time, and has been able to 
+bridge to all the campus grids discussed in Section \ref{sec:others}.  We connect to FermiGrid and GLOW through the OSG and 
+to Purdue via Condor flocking.
+
+Unlike the OSG, where the trust relationship is well-defined and common between sites, trust is established between 
+campuses with flocking on a case-by-case basis.
+The current model for trust is based on limited trusted hosts.  Each site publishes a list of submit and negotiator 
+hosts that are trusted to submit and accept jobs, respectively.  This implicitly trusts an entire campus, while the OSG 
+trust model is based on virtual organizations that may have no relationship to a physical campus or submit host.
+
+
+
+It is important to note the ever-widening circle of resources expands from the locality of the user.  It goes from the resource 
+the user knows best (and has the best support for) to the most foreign one.  This is a very natural progression, and 
+each step described comes with more complexity, and new failure modes.  If the user is ever frustrated at one 
+transition, he can just remain contented with the resources he has, as opposed to having to switch between ``local 
+mode" and ``grid mode".  Another usability boost is that all end-user interfaces are Condor vanilla universe.  The user 
+never encounters errors translated between systems (a common user frustration) and the user needs to develop expertise 
+in Condor alone.
+
+
+
+
+
+\chapter{Evaluation}
+\label{sec:Evaluation}
+
+\section{Experimental Setup}
+
 \section{Holland Computing Center campus grid} \label{sec:hcc}
 
 
@@ -856,54 +904,6 @@ we have extended the software to record both the submission host and the remote 
 HCC does not have a shared filesystem across all clusters, so campus grid data management is handled by Condor file 
 transfer.
 
-
-
-%\textbf{ Campus Factory is the heart of the operation.  It provides all throttling and logic to the submit of glidein jobs to the non-condor cluster.}
-
-
-
-
-
-
-
-
-
-
-
-\section{Bridging Campus Grids} \label{sec:bridging}
-There are two methods for expanding the campus grid described in Section \ref{sec:hcc}: through GlideinWMS to the OSG, 
-or by linking campus grids through flocking.  The benefits of bridging externally are obvious - increased throughput 
-for the local user's jobs.  HCC has been able to utilize over 7,000 remote job slots at a time, and has been able to 
-bridge to all the campus grids discussed in Section \ref{sec:others}.  We connect to FermiGrid and GLOW through the OSG and 
-to Purdue via Condor flocking.
-
-Unlike the OSG, where the trust relationship is well-defined and common between sites, trust is established between 
-campuses with flocking on a case-by-case basis.
-The current model for trust is based on limited trusted hosts.  Each site publishes a list of submit and negotiator 
-hosts that are trusted to submit and accept jobs, respectively.  This implicitly trusts an entire campus, while the OSG 
-trust model is based on virtual organizations that may have no relationship to a physical campus or submit host.
-
-
-
-It is important to note the ever-widening circle of resources expands from the locality of the user.  It goes from the resource 
-the user knows best (and has the best support for) to the most foreign one.  This is a very natural progression, and 
-each step described comes with more complexity, and new failure modes.  If the user is ever frustrated at one 
-transition, he can just remain contented with the resources he has, as opposed to having to switch between ``local 
-mode" and ``grid mode".  Another usability boost is that all end-user interfaces are Condor vanilla universe.  The user 
-never encounters errors translated between systems (a common user frustration) and the user needs to develop expertise 
-in Condor alone.
-
-
-
-
-
-\chapter{Evaluation}
-\label{sec:Evaluation}
-
-\section{Experimental Setup}
-
-
-
 %\subsubsection*{Social political stuff}
 
 %\subsubsection*{How we tested our solution}
@@ -923,7 +923,7 @@ The environment includes two local clusters, as well as an interface to the OSG 
 \subsection{Prairiefire Cluster Setup}
 Prairiefire is setup as running both Condor and PBS.  This is very similar to how Purdue uses Condor.  When a PBS arrives on a node, the Condor daemons will preempt the running job, and move to another node.  Therefore, PBS has priority access to nodes, while Condor is treated as an opportunistic user.
 
-Prairiefire is setup to allow jobs from Firefly and the GlideWMS submit machine to run. 
+Prairiefire is setup to allow jobs from Firefly and the GlideWMS submit machine to run.  To do this, the configuration variable \texttt{FLOCK\_FROM} was set to \texttt{ff-grid.unl.edu, glidein.unl.edu}.
 
 
 \subsection{Firefly Cluster Setup}
