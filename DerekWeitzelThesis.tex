@@ -378,6 +378,10 @@ An important technology used in Condor is the ClassAd mechanism.  ClassAds are t
 Another component of Condor is the grid computing agent Condor-G \cite{frey2002condor}.  Condor-G communicates with Globus \cite{foster1997globus} sites.  Condor provides job submission, error recovery, and creation of a minimal execution environment.  Along with Condor-G, Condor can also submit jobs to other systems including Amazon EC2 \cite{amazonec2} and PBS \cite{pbstorque}.
 
 \subsection{Open Science Grid}
+The Open Science Grid (OSG) \cite{pordes2007open} is a national cyber infrastructure consortium that provides dedicated and opportunistic use of computation and storage resources.  The OSG also provides infrastructure, software, and engagement to the users.  The OSG consists of nationally distributed universities and national laboratories that provide access to shared computing and storage.
+
+The OSG provides a common interface to computing and storage resources: Globus and SRM/GridFTP respectively.  Clients can access the resources by a OSG provided client.  Both Globus and SRM/GridFTP where developed by consortium members and included into the OSG packaging.  Many software modules have been contributed to the OSG software stack such as Condor and the Berkeley Storage Manager \cite{Bestman}.
+
 
 
 % Do we need this?  Probably not, this is what the paper is about.
