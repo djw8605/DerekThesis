@@ -41,6 +41,7 @@ linkbordercolor=white
 \usepackage{calc}
 \usepackage{url}
 \usepackage{listings}
+\usepackage{subfig}
 
 \newlength{\imgwidth}
 
@@ -957,43 +958,27 @@ In total, Purdue has 7 collectors and 6 schedds participating in the flocking.  
 \subsection{User submission}
 User submission is by design very similar to submission on a dedicated Condor resource.   The user will specify the executable and where to store the stdout and stderr.  Input files are transferred per-job to the execute machine.  Condor will automatically determine output files by scanning the sandbox directory for any new files created.  The new files will be transferred back to the submitter.
 
-Condor will only transfer files when the variables \texttt{should\_transfer\_files} and \texttt{when\_to\_transfer\_output} are set.  A typical submission file is shown in Figure \ref{fig:submission}.  In the example, Condor will transfer 
+Condor will only transfer files when the variables \texttt{should\_transfer\_files} and \texttt{when\_to\_transfer\_output} are set.  A typical submission file is shown in Figure \ref{fig:submission}.  In the example, Condor will transfer the executable (\texttt{/bin/hostname}) to the execute host.  Condor will return the stdout and stderr from the execute host back to the submitter.
 
 \begin{figure}[h!t]
 
-\subfloat[Non-Campus grid submission]{
+
 
 \lstset{
 backgroundcolor=\color{white},
 showspaces=false}
 \begin{lstlisting}[frame=tblr]
-universe = vanilla
-output = condor_out/ouptut
-error = condor_out/error
-executable = /bin/hostname
-log = test.log
-queue
+universe = vanilla 
+output = condor_out/ouptut 
+error = condor_out/error 
+executable = /bin/hostname 
+log = test.log 
+when_to_transfer_output = ON_EXIT 
+should_transfer_files = YES 
+queue 
 \end{lstlisting}
 
-} % subfloat
-\hspace{20pt}
-\subfloat[Campus grid submission]{
 
-\lstset{
-backgroundcolor=\color{white},
-showspaces=false}
-\begin{lstlisting}[frame=tblr]
-universe = vanilla
-output = condor_out/ouptut
-error = condor_out/error
-executable = /bin/hostname
-log = test.log
-when_to_transfer_output = ON_EXIT
-should_transfer_files = YES
-queue
-\end{lstlisting}
-
-} % subfloat
 
 
 \caption{Test test submission script} \label{fig:submission}
