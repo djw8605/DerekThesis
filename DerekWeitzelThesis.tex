@@ -940,10 +940,15 @@ The Condor instance that runs on the gatekeeper is configured to allow flocked j
 
 
 \subsection{GlideinWMS OSG Interface Setup}
+The GldieinWMS interface is running the GlideinWMS Frontend software, as well as a Condor installation.  The Frontend periodically queries the queues of multiple machines to detect idle jobs.  When idle jobs are present, the Frontend sends a request for glideins to be submitted to the Factory.  The HCC Frontend requests glideins from the central OSG factory run at UCSD.  
+
+Glideins are submitted to resources across the country on behalf of HCC.  When the Glidein jobs start on the remote resources, they pull condor executables from the central factory, starts them, and contacts the HCC Frontend to request jobs.
+
+
+\subsection{Flocking to Purdue Setup}
 
 
 
-\subsection{Flock to Purdue Setup}
 
 \subsection{User submission}
 
