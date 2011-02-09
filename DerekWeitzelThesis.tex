@@ -925,15 +925,27 @@ Prairiefire is setup as running both Condor and PBS.  This is very similar to ho
 
 Condor runs on the head node of the cluster.  The head node has both a public and private interface.  Each worker node connects to the outside world through a NAT.  Since Condor must have direct communication between the submitter (possibly outside of Prairiefire) and the execute host (worker nodes), Prairiefire must run the Condor Connection Broker (CCB).  The CCB runs on the head node and negotiates connections for nodes behind the NAT to connect with the submitter.
 
-Prairiefire is setup to allow jobs from Firefly and the GlideWMS submit machine to run.  To do this, the configuration variable \texttt{FLOCK\_FROM} was set to \texttt{ff-grid.unl.edu, glidein.unl.edu}.   Further, the security is setup such that jobs coming from outside of the Prairiefire pool will use the user \texttt{nobody} when running the job.  Condor uses this underprivileged account so that a rogue user can cause minimal impact to the system, and to protect other users of the system.  The security on the machine is IP based, it trusts all users from certain hosts.
+Prairiefire is setup to allow jobs from Firefly and the GlideWMS submit machine to run.  Prairiefire's head node can also flock jobs to Firefly.  To do this, the configuration variable \texttt{FLOCK\_FROM} was set to \texttt{ff-grid.unl.edu, glidein.unl.edu} and \texttt{FLOCK\_FROM} to \texttt{ff-grid.unl.edu}.   Further, the security is setup such that jobs coming from outside of the Prairiefire pool will use the user \texttt{nobody} when running the job.  Condor uses this underprivileged account so that a rogue user can cause minimal impact to the system, and to protect other users of the system.  The security on the machine is IP based, it trusts all users from certain hosts.
+
+
 
 
 \subsection{Firefly Cluster Setup}
+Firefly is running the Campus Grid Factory (CGF).  It is running on the grid gatekeeper since it needs access to both the public ip and PBS submission.  Additionally, unlike the login node, the grid gatekeeper does not have a firewall.
+
+The CGF runs as a local unprivileged user on the gatekeeper.  Condor is installed in the user's home directory and runs as the user as well.  The CGF runs as a condor job, therefore it is maintained and monitored by the Condor daemons.  Submissions to PBS are to the default user queue.
+
+The Condor instance that runs on the gatekeeper is configured to allow flocked jobs from Prairiefire and the GlideinWMS submission node.  Also, users can submit jobs to the Condor instance, allowing them to run on Firefly or by being flocked to Prairiefire.
+
+
 
 \subsection{GlideinWMS OSG Interface Setup}
 
+
+
 \subsection{Flock to Purdue Setup}
 
+\subsection{User submission}
 
 \begin{itemize}
 %\item   Performance metrics 
