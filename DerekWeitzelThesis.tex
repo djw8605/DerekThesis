@@ -946,8 +946,11 @@ Glideins are submitted to resources across the country on behalf of HCC.  When t
 
 
 \subsection{Flocking to Purdue Setup}
+Flocking to Purdue is enabled by publishing a list of collectors and schedds at Purdue and Nebraska.  This list is then inserted into the configurations of machines that will send and receive jobs.  The collector locations are placed in \texttt{FLOCK\_TO} and the schedds are specified in \texttt{FLOCK\_FROM}.
 
+Security between the hosts are established with the \texttt{CLAIMTOBE} environment in Condor.  In this environment, Condor trusts the daemons to give accurate information on job ownership and authentication.  The security is further refined by limiting the authentication to only the Collector and Schedd hosts specified above.
 
+In total, Purdue has 7 collectors and 6 schedds participating in the flocking.  Nebraska has 2 collectors and 3 Schedds.
 
 
 \subsection{User submission}
