@@ -506,7 +506,7 @@ The Virginia campus grid has many attributes shared with other Campus Grids.  Th
 
 
 \subsection{Oxford Campus Grid}
-The Oxford Campus Grid \cite{wallom2006oxgrid} built a comprehensive campus grid including both compute and data provisioning.  The compute provisioning used Condor-G \cite{frey2002condor} and a information server.  The information server injected resource specific information into the Condor-G matchmaker, allowing Condor to match jobs to appropriate resources as well as follow resource policies.  For data provisioning, the Storage Resource Broker (SRB) \cite{baru1998sdsc} was used with a dedicated data vault.  Authentication is handled through on-campus kerberos.  Accounting is done by a custom daemon written at Oxford that keeps detailed statistics for every job.
+The Oxford Campus Grid \cite{wallom2006oxgrid} built a comprehensive campus grid including both compute and data provisioning.  The compute provisioning uses Condor-G \cite{frey2002condor} and a information server.  The information server injected resource specific information into the Condor-G matchmaker, allowing Condor to match jobs to appropriate resources as well as follow resource policies.  For data provisioning, the Storage Resource Broker (SRB) \cite{baru1998sdsc} was used with a dedicated data vault.  Authentication is handled through on-campus kerberos.  Accounting is done by a custom daemon written at Oxford that keeps detailed statistics for every job.
 
 The Oxford campus grid very closely resembles the Open Science Grid model.  Each resource has a gatekeeper, a central node that provides access to the underlying nodes.  The information server and virtual organization management both have analogies in the OSG.  
 The resource broker and data vault conflict with the design of the OSG.  Both of these resources are single points of failure that can severely degrade the usability of the campus grid.  
@@ -988,9 +988,31 @@ queue
 Here I will evaluate the HCC campus grid on the characteristics defined in Section \ref{sec:attributes}.  
 
 \subsection{Trust relationships}
-On most campuses, trust relationships are very strong.  On some campuses, a single group maintains the campus clusters.  On others, proximity of administrators have facilitated trust.  
+On most campuses, trust relationships are very strong.  On some campuses, a single group maintains the campus clusters.  On others, proximity of administrators have facilitated trust.
+
+At HCC, one group administers the clusters on campus, therefore the trust relationship is strong.  The execution gateways in the campus grid restrict access by IP address.  Therefore, there is a set of trusted submission hosts.  Each host trusts each other's claimed user authentication.   Additionally, jobs running on the CGF use a valid user account rather than a un-privileged account.
+
+When we compare this to other campus grids, we can see that the IP based filtering policy is consistent with other campuses, and less restrictive than others.  
+
+In the Virginia Campus Grid the user uses an authentication method consistent with on-campus policies to create a token that is inconsistent with on-campus policies.  The user first authenticates with local LDAP servers, then creates a PKI certificate to interact with the on campus clusters.  The series of interactions complicates the authentication with the servers, and necessitated the creation of a separate daemon called CredEx.  The HCC policy requires only one authentication with a submit host to have access to the campus grid.
+
+In the Oxford Campus Grid, Kerberos is used for on campus submissions, while PKI is used for external access.  This is consistent with on-campus policies.
+
+The OSG focuses on the security of execution gateways (Compute Elements) as opposed to the security of submission hosts.  I believe this to be a mistake.  Though a compromise of a gateway can lead to access of many short lived, limited proxies.  The compromise of a submission host can give access to a long lived, unlimited proxy of a few users.  Further, since the OSG allows multiple submission hosts, and they are relatively easy to setup, there are many submission hosts.  Also, gateways are traditionally mantained by professional or knowledgable administrators, where submission hosts are usually maintained by scientists with limited knowledge of security.  Therefore, submission hosts could be compromised without knowledge of their owners, and could give access to unlimited certificates.
+
+The GLOW and Purdue campus grids are similarly IP security based grids.  The IP based security simplifies the setup of a grid based on Condor flocking that GLOW, Purdue, and HCC use.  The IP based security protects gateway hosts by only allowing very specific submission hosts.  Further, the submission host is protected since it only submits jobs to known good hosts.
+
+The trust relationships inside campuses are simple compared to those outside of campus.  When jobs begin flowing outside the local domain, the authentication must match that of the external entity.  In the case of HCC, jobs flow out of the grid through flocking to external campuses and to the OSG through the GlideinWMS interface.
+
+When flocking to external campuses, the HCC grid again uses IP based security as negotiated with the campuses.  In practice, this involves publishing a list of trusted hosts on each campus.  Since campuses usually use a single authentication method for all of their machines, this creates a scenario where either a campus will trust the entirety of another campus, or not at all.  For example, HCC trusts all of Purdue's submit hosts, and therefore all of the Purdue users.  More accurately, we trust the Purdue admins to monitor the usage of their users, and to contain and contact us about possible security threats.
+
+When jobs move the OSG, we must match the authentication methods used on the grid, PKI.  GlideinWMS simplifies this as we use a single certificate to authenticate the GlideinWMS pilot, and user jobs may not require further credentials when running.
+
+The HCC campus grid creates a trust web inside campus composed of IP based security.  Outside of campus, it conforms to the external requirements for authentication with either a published list of trusted hosts, or an PKI certificate.
 
 \subsection{Job Submission}
+Although users can submit jobs on both Firefly and Prairiefire, the primary submission machine is the GlideinWMS gateway.
+
 
 \subsection{Resource Independence}
 
