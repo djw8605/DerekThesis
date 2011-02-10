@@ -1011,7 +1011,15 @@ When jobs move the OSG, we must match the authentication methods used on the gri
 The HCC campus grid creates a trust web inside campus composed of IP based security.  Outside of campus, it conforms to the external requirements for authentication with either a published list of trusted hosts, or an PKI certificate.
 
 \subsection{Job Submission}
-Although users can submit jobs on both Firefly and Prairiefire, the primary submission machine is the GlideinWMS gateway.
+Users have the most interaction with the job submission mechanism.  Therefore, it must be simple and intuitive.  Most campuses further refine their submissions to distribute work across multiple resources.
+
+The Virginia campus grid and the Oxford grid use globus to submit and receive jobs.  Oxford further created a resource broker to balance load among campus resources.
+
+In the HCC, GLOW. and Purdue campuses, jobs are flocked to execute hosts inside the campus, automatically spreading out the load to available resources.  Condor takes a greedy approach to scheduling jobs, if there an empty slot, it will fill it without thinking of future submission or other resources.  Therefore, a user submits many jobs, and the first resource that it contacts has many idle slots, it will fill those slots without looking at other resources.  Though, Condor will fair share across all users of the pool.
+
+Submission on the HCC, GLOW and Purdue grid requires only 2 more lines to the regular Condor submit file.  Additionally, all negotiation and load balancing are handled by Condor internally, therefore there is less dependency on outside sources.  
+
+
 
 
 \subsection{Resource Independence}
