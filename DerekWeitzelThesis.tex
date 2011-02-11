@@ -1041,7 +1041,7 @@ The HCC campus grid is resistant to failure due design decisions regarding the p
 \subsection{Accounting}
 Accounting has two perspectives: How many resources have I used?  Who and has used my resources?
 
-The first perspective is easier than the second.  In the first perspective, the submitter or group of submitters want to know their usage time.  Installing accounting software on the submitter machines will account for usage of the submitters.  Since  submitter machines are tightly controlled in the HCC campus grid, it is simple to install accounting software on each.  Therefore, we used the accounting software from the OSG, Gratia, to do accounting on the submitter machines.  Gratia uploads records for each job to a HCC Gratia collector.  The collector can then make usage graphs such as Figure \ref{fig:hccaccounting}
+The first perspective is easier than the second.  In the first perspective, the submitter or group of submitters want to know their usage time.  Installing accounting software on the submitter machines will account for usage of the submitters.  Since  submitter machines are tightly controlled in the HCC campus grid, it is simple to install accounting software on each.  Therefore, we used the accounting software from the OSG, Gratia, to do accounting on the submitter machines.  Gratia uploads records for each job to a HCC Gratia collector.  The collector can then make usage graphs such as Figure \ref{fig:hccaccounting}.  The Gratia collector is a MySQL database.
 
 
 \begin{figure}[h!tb]
@@ -1052,7 +1052,9 @@ The first perspective is easier than the second.  In the first perspective, the 
 \end{center}
 \end{figure}
 
+Accounting on the resource's side is very useful, and is the current model in the OSG.  When a job is submitted in the OSG, it always passes through a gatekeeper on the local resource.  Accounting is done on the gatekeeper since it will see every job running at the resource.
 
+Unfortunately, due to the nature of flocking, accounting on the execute side is more difficult.  When flocking occurs, the submitter and the execute resource communicate directly, bypassing the gatekeeper.   The only way to keep accurate accounting data is to collect it from the execute side.  In the CGF installs, the accounting would need to run on the glideins submitted to PBS.  Condor does not support outputting Gratia compatible records on the execute site.  This will be left for future work.
 
 
 \subsection{Data Management}
