@@ -1020,9 +1020,17 @@ In the HCC, GLOW. and Purdue campuses, jobs are flocked to execute hosts inside 
 Submission on the HCC, GLOW and Purdue grid requires only 2 more lines to the regular Condor submit file.  Additionally, all negotiation and load balancing are handled by Condor internally, therefore there is less dependency on outside sources.  
 
 
-
-
 \subsection{Resource Independence}
+In the OSG, resource independence is guaranteed by strict separation of resources.  This is accomplished by independent clusters having all necessary infrastructure installed locally, while only sending non-blocking information to a distributed set of central services.  This is very similar to the design of the HCC campus grid.
+
+The HCC Campus grid installs all infrastructure to distribute jobs on the local resource.  For a Condor cluster, this is simply the existing Condor instance.  While on the PBS cluster, the CGF install is installed locally on the gatekeeper node.  Therefore, possible failures are:
+\begin{itemize}
+\item \textbf{Submitter failure}: The user's submission machine is taken offline only jobs submitted on this resource will be effected.  Any jobs that where currently running will be recoverable for a short time while the job lease is active.
+\item \textbf{Condor cluster failure}: If the cluster becomes disconnected from the network, obs running on the cluster with remote owners will terminate after their job leases have expired.  Jobs submitted locally will continue to run on local resources, but will be unable to run on remote resources.  If the Condor instance is terminated, the locally submitted jobs will live for the lease time, then terminate.
+\item \textbf{CGF installed cluster failure}:  Remotely submitted jobs will terminate after their lease has expired.  Locally submitted jobs will continue to run on local resources, including glideins previously running under PBS.  If the CGF is terminated, no more glideins will be submitted to PBS, but jobs will continue to execute on existing glideins.  Additionally, Condor will attempt to restart the CGF if it terminates abnormally.  If Condor is terminated, local jobs will execute until their job leases have expired, and glideins will shut down after receiving no new jobs.
+\end{itemize}
+
+
 
 \subsection{Accounting}
 
