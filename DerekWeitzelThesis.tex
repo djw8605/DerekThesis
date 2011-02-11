@@ -1065,10 +1065,10 @@ The OSG promotes staging data to a nearby storage element which is difficult for
 HCC does not have a central filesystem, and is therefore forced to transfer files differently.  In practice, each job transfers input files and executables directly from the submission to the execute host.  This method has several benefits over the others.
 
 \begin{itemize}
-\item Removes gateway bottleneck by transferring files directly from submitter to execute host.
+\item Removes the gateway as a bottleneck by transferring files directly from submitter to execute host.
 \item Reduces dependence on the gateway as a failure point.  The gateway could terminate while a job is running and Condor would still be able to transfer back the output, and even start another job.  The only major failure point is the submitter, which is an acceptable risk.
-\item Greatly reduces the work that the gateway needs to perform.  The authentication and authorization work is all done by the execute and submission host.
-\item Not reliant on the reliability or bandwidth of the shared filesystem.  Further, the submitter is relatively unaffected other users that are not running on the same submission host.
+\item Greatly reduces the work that the gateway needs to perform.  The authentication and authorization is all done by the execute and submission host.
+\item Not dependent on the reliability or bandwidth of the shared filesystem.  Further, the submitter is relatively unaffected by other users that are not running on the same submission host.
 \end{itemize}
 
 
