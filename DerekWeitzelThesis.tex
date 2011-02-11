@@ -1020,6 +1020,8 @@ In the HCC, GLOW. and Purdue campuses, jobs are flocked to execute hosts inside 
 Submission on the HCC, GLOW and Purdue grid requires only 2 more lines to the regular Condor submit file.  Additionally, all negotiation and load balancing are handled by Condor internally, therefore there is less dependency on outside sources. 
 
 
+
+
 \subsection{Resource Independence}
 In the OSG, resource independence is guaranteed by strict separation of resources.  This is accomplished by independent clusters having all necessary infrastructure installed locally, while only sending non-blocking information to a distributed set of central services.  This is very similar to the design of the HCC campus grid.
 
@@ -1036,7 +1038,29 @@ The HCC campus grid is very resistant to failure due design decisions regarding 
 
 \subsection{Accounting}
 
+
+
+
 \subsection{Data Management}
+
+
+\section{Usage}
+
+\begin{figure}[h!tb]
+\begin{center}
+\includegraphics[scale=0.6]{images/allsites}
+\caption{Snapshot of usage of the HCC Campus Grid}
+\label{fig:snapshothccgrid}
+\end{center}
+\end{figure}
+
+In Figure \ref{fig:snapshothccgrid} you can see a snapshot of production jobs running on the HCC campus grid.  The first thing to notice is the total number of jobs running, (TODO: UPDATE WITH PICTURE).  This is larger than the total number of cores on the Nebraska campus. This particular picture, you can see many resources running jobs.  
+
+\begin{itemize}
+\item Local Resources: ff.unl.edu (prairiefire was full).
+\item Peered campus resources: bluearc.rcac.purdue.edu, lustrea.rcac.purdue.edu, 
+\end{itemize}
+
 
 \begin{itemize}
 %\item   Performance metrics 
