@@ -1017,11 +1017,13 @@ The Virginia campus grid and the Oxford grid use globus to submit and receive jo
 
 In the HCC, GLOW. and Purdue campuses, jobs are flocked to execute hosts inside the campus, automatically spreading out the load to available resources.  Condor takes a greedy approach to scheduling jobs, if there an empty slot, it will fill it without thinking of future submission or other resources.  Therefore, a user submits many jobs, and the first resource that it contacts has many idle slots, it will fill those slots without looking at other resources.  Though, Condor will fair share across all users of the pool.
 
-Submission on the HCC, GLOW and Purdue grid requires only 2 more lines to the regular Condor submit file.  Additionally, all negotiation and load balancing are handled by Condor internally, therefore there is less dependency on outside sources.  
+Submission on the HCC, GLOW and Purdue grid requires only 2 more lines to the regular Condor submit file.  Additionally, all negotiation and load balancing are handled by Condor internally, therefore there is less dependency on outside sources. 
 
 
 \subsection{Resource Independence}
 In the OSG, resource independence is guaranteed by strict separation of resources.  This is accomplished by independent clusters having all necessary infrastructure installed locally, while only sending non-blocking information to a distributed set of central services.  This is very similar to the design of the HCC campus grid.
+
+While resources on the OSG are independent, user job submission methods are not.  When using GlideinWMS, if the Factory is disconnected or is terminated, then you cannot run on even local resources.  When using Panda, all jobs require access to the central Panda server located at CERN.
 
 The HCC Campus grid installs all infrastructure to distribute jobs on the local resource.  For a Condor cluster, this is simply the existing Condor instance.  While on the PBS cluster, the CGF install is installed locally on the gatekeeper node.  Therefore, possible failures are:
 \begin{itemize}
@@ -1030,7 +1032,7 @@ The HCC Campus grid installs all infrastructure to distribute jobs on the local 
 \item \textbf{CGF installed cluster failure}:  Remotely submitted jobs will terminate after their lease has expired.  Locally submitted jobs will continue to run on local resources, including glideins previously running under PBS.  If the CGF is terminated, no more glideins will be submitted to PBS, but jobs will continue to execute on existing glideins.  Additionally, Condor will attempt to restart the CGF if it terminates abnormally.  If Condor is terminated, local jobs will execute until their job leases have expired, and glideins will shut down after receiving no new jobs.
 \end{itemize}
 
-
+The HCC campus grid is very resistant to failure due design decisions regarding the placement of the Campus Factory, especially when compared to the GlideinWMS Factory.
 
 \subsection{Accounting}
 
