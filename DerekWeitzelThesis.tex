@@ -1034,6 +1034,9 @@ The HCC Campus grid installs all infrastructure to distribute jobs on the local 
 \item \textbf{CGF installed cluster failure}:  Remotely submitted jobs will terminate after their lease has expired.  Locally submitted jobs will continue to run on local resources, including glideins previously running under PBS.  If the CGF is terminated, no more glideins will be submitted to PBS, but jobs will continue to execute on existing glideins.  Additionally, Condor will attempt to restart the CGF if it terminates abnormally.  If Condor is terminated, local jobs will execute until their job leases have expired, and glideins will shut down after receiving no new jobs.
 \end{itemize}
 
+
+
+
 The HCC campus grid is very resistant to failure due design decisions regarding the placement of the Campus Factory, especially when compared to the GlideinWMS Factory.
 
 \subsection{Accounting}
@@ -1054,7 +1057,7 @@ The HCC campus grid is very resistant to failure due design decisions regarding 
 \end{center}
 \end{figure}
 
-In Figure \ref{fig:snapshothccgrid} you can see a snapshot of production jobs running on the HCC campus grid.  The first thing to notice is the total number of jobs running, (7016).  This is larger than the total number of cores in any single Nebraska cluster, and almost as large as the total cores at Nebraska (8000). This particular picture, Derrick Stolee is running a graph search workflow.
+In Figure \ref{fig:snapshothccgrid} you can see a snapshot of production jobs running on the HCC campus grid.  The first thing to notice is the total number of jobs running, (8612).  This is larger than the total number of cores in any single Nebraska cluster, and even larger than the sum total of all cores managed by HCC (8000). This particular picture, Derrick Stolee is running a graph search workflow.
 
 \begin{itemize}
 \item \textbf{Local Resources}: ff.unl.edu, prairiefire.unl.edu
@@ -1062,7 +1065,7 @@ In Figure \ref{fig:snapshothccgrid} you can see a snapshot of production jobs ru
 \item \textbf{OSG through GlideinWMS}: USCMS-FNAL-WC1-CE3 (Fermilab), Omaha (Globus submission to Firefly), Michigan, Caltech, NERSC-CARVER, Nebraska (Nebraska Tier 2), UCSD, UConn, BNL (Brookhaven), Wisconsin, MIT, OSCER\_ATLAS (OU).
 \end{itemize}
 
-Another interesting observation is that number of jobs running at the peered campus Purdue.   Purdue has large resources and peering with them have been very valuable to UNL researchers.
+Another interesting observation is that number of jobs running at the peered campus Purdue.   Purdue has large resources and peering with them has been very valuable to UNL researchers.  As described in Figure \ref{fig:campusgrid}, the submitter first looks at local resources ff.unl.edu (CGF) and prairiefire.unl.edu (Condor).  Both had few resources available, so the submitter moved onto the OSG and peered campuses.  The peered campus had many resources available (especially lustrea.rcac.purdue.edu).  Also, many sites in the OSG where running jobs (see Fermilab, Wisconsin, MIT).  
 
 \begin{itemize}
 %\item   Performance metrics 
