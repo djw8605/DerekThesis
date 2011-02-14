@@ -438,7 +438,7 @@ Globus is a translation layer between the (globus specific?) Resource Specificat
 
 Placing Globus gatekeepers on each cluster would allow jobs to be submitted to each cluster without modifying the underlying batch system.  But, this would require a higher layer of abstraction over the Globus gatekeepers to optimally balance load between clusters.  Additionally, Globus has well known limitations such as job a low submission rate, and high resource usage.  Additionally, Globus implements GSI (certificates) security that is inconstant with most existing campus security architectures.  Also, it does not provide a method for transparent execution on other clusters, which experience on the OSG has shown is important to users.
 
-\subsection{Condor Flocking} \label{sec:flocking}
+\subsection{Condor Flocking} %\label{sec:flocking}
 Another single vendor solution is Condor.  Each resource can run Condor on their clusters and 'flock' \cite{epema1996worldwide} to each other.  In this solution, jobs would be balanced on each resource due to Condor's greedy scheduler algorithm.  
 
 Flocking jobs is accomplished by a multi-step process.  First, the \texttt{condor\_schedd} reports to the remote \texttt{condor\_collector} that it has idle jobs available to run.  During it's next iteration, the remote \texttt{condor\_negotiator} contacts the \texttt{condor\_schedd} to match available resources to the requested jobs.  When the \texttt{condor\_schedd} receives a match, it contacts the resource directly to claim it.  After the claim is successful, the job starts on the remote resource.
@@ -492,7 +492,7 @@ One solution to build a grid is to use a single vendor/software solution.  For e
 
 
 
-\section{Other Campus Grids}
+\section{Other Campus Grids} \label{sec:others}
 %\subsection*{Other efforts that exist to solve related problems that are
 %relevant, how are they relevant, and why are they less effective than our
 %solution for this problem}
