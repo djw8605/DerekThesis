@@ -1107,80 +1107,15 @@ The framework described in this paper creates a grid of clusters that transparen
 
 The framework includes many components developed by external organizations such as BLAHp by gLite, Condor by University of Wisconsin -- Madison, and GlideinWMS by the CMS collaboration.  These components are glued together by Condor and the CGF to create a uniform grid.
 
+The HCC campus grid is a production grid, running many users' jobs.
+
 Data management and accounting are left for future work.  Data management has proven difficult in the OSG, and it is no different in a campus grid.  Transparent access to storage has been a goal for the OSG and major collaborators for some time.  CMS and ATLAS are moving towards cache based data distribution methods.  The campus grids should follow this model as well.  Whether this is as simple as using web caching, or more complicated such as utilizing Xrootd \cite{dorigo2005xrootd} for data distribution.
 
-\subsubsection*{The problem we have solved}
-\begin{itemize}
+Accounting also will be improved in the future.  It is important for resource owners to determine the hours given to external entities.  This can only be accomplished with the execution side reporting usage.  This model is not used in the OSG, and will need to be developed.
 
-%\item   The most succinct statement of the problem in the paper. Ideally one
-%sentence. More realistically two or three. Remember that you simply state it
-%without argument. If you have written a good paper you are simply reminding the
-%reader of what they now believe and of how much they agree with you.
-
-\item
-The framework that I have described here creates a grid of clusters that can overflow to each other, and out to the other grids such as the Open Science Grid, or other campuses.  
-
-\end{itemize}
+The campus grid ideas outlined in this paper are being used in other states for their campus grids.  Institutions such as Florida State and Louisiana Tech are installing the software and evaluating it in their campus grids.  The OSG Campus Grid Initiative is a priority goal inside the OSG that will include the software and ideas developed here.
 
 
-
-\subsubsection*{Our solution to the problem}
-\begin{itemize}
-
-%\item    
-%Again, the succinct statement that you have presented a solution
-
-%\item   Sometimes it works well to leave it at that and not even describe your
-%solution here. If you do, then again state your solution in one or two
-%sentences taking the rhetorical stance that this is all obvious. If you have a
-%good solution and have written an effective paper, then the reader already
-%agrees with you.
-
-\item
-Combination of Condor, Glidein, and BLAHP.
-
-\end{itemize}
-
-
-
-\subsubsection*{Why our solution is worthwhile in some significant way}
-\begin{itemize}
-
-%\item   
-%Again, a succinct restatement in just a few sentences of why your solution is
-%worthwhile assuming the reader already agrees with you
-
-\item
-This solution keeps the administrator in control of priorities and access policies.  It can also follow the campus' security model.
-
-\end{itemize}
-
-
-
-%Why the reader should be impressed and/or pleased to have read the paper
-\begin{itemize}
-
-%\item   A few sentences about why your solution is valuable, and thus why the
-%reader should be glad to have read the paper and why they should be glad you
-%did this work.
-
-\item
-Provides a cookie cutter, well packaged solution for campuses to deploy a campus grid.
-
-\end{itemize}
-
-
-
-\subsubsection*{What we will (or could) do next}
-\begin{itemize}
-%\item   Improve our solution
-%\item   Apply our solution to harder or more realistic versions of this problem
-%\item   Apply our solution or a related solution to a related problem
-
-\item 
-Scale this solution to other universities and institutions.  Already doing this with the OSG Campus Grid Initiative.
-
-\end{itemize}
 
 
 \backmatter
