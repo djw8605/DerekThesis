@@ -119,7 +119,7 @@ The Holland Computing Center (HCC) created a campus grid that spans two clusters
 The HCC campus grid bridges clusters and the national infrastructure while running production processing jobs from on-campus researchers. Over the last X (TODO find stats on number of hours) we have ran Y hours on the campus grid, along with Z hours bridging to other campus grids.
 
 
-Generally, users are provided a uniform interface to submit jobs to remote clusters inside their campus.  In many campus grids, the user manually submits to specific clusters.  In others, a layer of software distributes the computation among clusters in the grid. 
+In many campus grids, the user manually submits to specific clusters.  In others, a layer of software distributes the computation among clusters in the grid.  Generally, users are provided a uniform interface to submit jobs to remote clusters inside their campus.
 
 Building a campus grid represents a significant commitment for both users and resource providers, which should be 
 evaluated against the benefits.  The primary benefits are:
@@ -157,7 +157,7 @@ unlikely to complete.
 preventing distribution.  Software with strict licenses may also be illegal to use across the grid.
 \end{itemize}
 
-An common advantage for using campus grids is to alleviate demand on newer parallel machines by moving single core jobs to other clusters that have idle cycles.  Recently, the single core performance has been stagnant, therefore moving the single core jobs to the older hardware will not significantly decrease performance.  Also, by moving the single core jobs, it can free the newest hardware for large parallel jobs which can benefit from better interconnects, larger and faster storage, and increased core count that are on the newest hardware.
+A common advantage for using campus grids is to alleviate demand on newer parallel machines by moving single core jobs to other clusters that have idle cycles.  Recently, the single core performance has been relatively stagnant, therefore moving the single core jobs to the older hardware will not significantly decrease performance.  Also, by moving the single core jobs, it can free the newest hardware for large parallel jobs which can benefit from better interconnects, larger and faster storage, and increased core count that are on the newest hardware.
 
 
 %As the speed of innovation in computing increases, it is common for a campus to have multiple generations of clusters.  These clusters are commonly bought as independent systems, not meant to share work between them.  This causes users to flock to the newest generation hardware, hoping to increase the performance of their application.  This movement of users leads to under utilization of older hardware, and increased demand on the newest.
@@ -170,7 +170,6 @@ An common advantage for using campus grids is to alleviate demand on newer paral
 %\item \textbf{Parallel jobs:} While a cluster is draining nodes for a large parallel job, the cluster could fill those drained slots with pre-emptable usage.
 %\end{itemize}
 
-One way to alleviate this demand is to move single core jobs to other clusters that have idle cycles.  Recently, the single core performance has been stagnant, therefore moving the single core jobs to the older hardware will not significantly decrease performance.  Also, by moving the single core jobs, it can free the newest hardware for large parallel jobs which can benefit from better interconnects, larger and faster storage, and increased core count that are on the newest hardware.
 
 
 
@@ -183,7 +182,7 @@ One way to alleviate this demand is to move single core jobs to other clusters t
 %Your new idea need not solve every problem but it should solve at least one
 %that is not already solved
 
-There have been several attempts to create a distributed campus grid.  They all use some technology to distribute and schedule the jobs on the grid.  Some methods for distribution are commercial products such as Moab \cite{website:moabgrid}.  Others are translation layers between a generic description language and a scheduler, such as Globus \cite{foster1997globus}.  Still others are entire resource managers that can span multiple clusters like Condor \cite{thain2005distributed}.  Each of these solutions can be built to create a campus grid, but they all have drawbacks that are highlighted below.
+There have been several attempts to create a distributed campus grid.  They all use some technology to distribute and schedule the jobs on the grid.  Some methods for distribution are commercial products such as Moab \cite{website:moabgrid}.  Others are translation layers between a generic description language and a scheduler, such as Globus \cite{foster1997globus}.  Still others are entire resource managers that can span multiple clusters like Condor \cite{thain2005distributed}.  Each of these solutions can be built to create a campus grid, but they all have drawbacks that are highlighted in Section \ref{sec:others}.
 
 
 
@@ -208,11 +207,11 @@ There have been several attempts to create a distributed campus grid.  They all 
 %\subsubsection* {Why our solution is worth considering and why is it effective
 %in some way that others are not}
 
-The framework described in this paper creates a production campus grid.  The campus grid includes technology to allow clusters to join the campus grid.  It integrates clusters that use several schedulers, and uses production quality software integrated into a solution that is deployed at several cluster in the U.S.
+The framework described in this paper creates a production campus grid.  The campus grid includes technology to allow clusters to participate in the campus grid.  It integrates clusters that use several schedulers, and uses production quality software integrated into a solution that is deployed at several clusters in the U.S.
 
 The campus grid framework provides a method for users to run jobs transparently on distributed resources.  The jobs are sent to available resources on distributed clusters on the campus grid.  Further, it can expand beyond the campus and onto other campuses by simple configuration changes.
 
-The campus grid is used in production at the University of Nebraska, connecting two geographically separate clusters.  Users utilize the campus grid by submitting to one connected clusters, while their jobs run on either cluster.  The jobs are transported with their input files to a execution sandbox on the worker node.  Further, the campus grid expands beyond Nebraska, reaching Purdue and Clemson university.
+The campus grid is used in production at the University of Nebraska, connecting two geographically separate clusters.  Users can utilize the campus grid by submitting to one of the connected clusters, while their jobs run on either.  The jobs are transported with their input files to a execution sandbox on the worker node.  Further, the campus grid expands beyond Nebraska, peering with the Purdue campus grid.
 
 
 % This will largely be from CHEP paper
@@ -230,7 +229,7 @@ a resource provider to grant campus users controlled access to the resource, and
 In the OSG, the trust model used is designed to be homogeneous and to meet the most stringent requirements of 
 all participating sites.  The implementation involves using Globus's Grid Security Infrastructure (GSI) with VOMS 
 attributes a PKI extension \cite{farrell2002rfc3281}.  The GSI model is widely 
-accepted, allowing the OSG to participate in the Worldwide LHC Computing Grid (WLCG).  Fermigrid's campus grid user 
+accepted, allowing the OSG to participate in the Worldwide LHC Computing Grid (WLCG) \cite{wlcg}.  Fermigrid's campus grid user 
 authentication is based on the GSI model.  While it provides a highly secure, decentralized authorization model and 
 proven at the worldwide scale, it is more difficult for end users compared to traditional username/password 
 authentication.  Thus, campus grids may be motivated to use alternate trust models.
@@ -361,9 +360,9 @@ have significantly decreased the operational cost of data management systems.
 
 \section{Background}
 \subsection{High Throughput Computing}
-High Throughput Computing (HTC) is defined as tasks that require as much computing power (throughput) as possible over long periods of time \cite{gridbook-htc}.  This is in contrast to High Performance Computing (HPC), where users are concerned with response time.  This style is typified by ensembles of independent single processor jobs with no communication between them.  This is not to say there isn't coordination, many workflow managers can utilize HTC to solve complex problems with many steps.  
+High Throughput Computing (HTC) is defined as tasks that require as much computing power (throughput) as possible over long periods of time \cite{gridbook-htc}.  This is in contrast to High Performance Computing (HPC), where users are concerned with response time.  HTC workflows are usually ensembles of independent single processor jobs with no communication between them.  This is not to say there isn't coordination, many workflow managers can utilize HTC to solve complex problems with many steps.  
 
-As there is no parallel communication between the jobs in a given task, they can be distributed across multiple resources.  This increases 
+As there is no communication between the jobs in a given task, they can be distributed across multiple resources.  This increases 
 throughput, the end-goal of HTC.  HTC can use pooled resources mostly interchangeably and as such is well suited to 
 distributed and grid computing models.  The OSG has demonstrated its technologies are successful; in Q4 2010, the OSG 
 averaged over a 400,000 jobs and a million computational hours a day using HTC.
@@ -372,7 +371,7 @@ averaged over a 400,000 jobs and a million computational hours a day using HTC.
 \subsection{Condor}
 Condor is a high--throughput batch computing system developed at the University of Wisconsin - Madison.  An overview from \cite{thain2005distributed}:
 \begin{quotation}
-Condor is a high-throughput distributed batch computing system.  Like other batch systems, Condor provides a job management mechanism, scheduling policy, priority scheme, resource monitoring, and resource management.  Users submit their jobs to Condor, and Condor subsequently chooses when and where to run them based upon a policy, monitors their progress, and ultimately informs the suer upon completion.  
+Condor is a high-throughput distributed batch computing system.  Like other batch systems, Condor provides a job management mechanism, scheduling policy, priority scheme, resource monitoring, and resource management.  Users submit their jobs to Condor, and Condor subsequently chooses when and where to run them based upon a policy, monitors their progress, and ultimately informs the user upon completion.  
 \end{quotation}
 
 An important technology used in Condor is the ClassAd mechanism.  ClassAds are the language that Condor uses to communicate between daemons.  A ClassAd is a list of keys and values, where the values can be strings, numbers, or expressions.  All resources are described by ClassAds.  Job ClassAds have attributes such as log file, output, input, and job requirements.  Resource ClassAds have requirements to run on the resource, ownership, and policies.  ClassAds are used for matching jobs to resources by evaluating requirements of both the jobs and the resources.
@@ -382,7 +381,7 @@ Another component of Condor is the grid computing agent Condor-G \cite{frey2002c
 \subsection{Open Science Grid}
 The Open Science Grid (OSG) \cite{pordes2007open} is a national cyber infrastructure consortium that provides dedicated and opportunistic use of computation and storage resources.  The OSG consists of nationally distributed universities and national laboratories that provide access to shared computing and storage.  The OSG provides infrastructure, software, and engagement to the users.  
 
-The OSG provides a common interface to computing and storage resources: Globus and SRM/GridFTP respectively.  Clients can access the resources by a OSG provided client.  Both Globus and SRM/GridFTP where developed by consortium members and included into the OSG packaging.  Many software modules have been contributed to the OSG software stack such as Condor and the Berkeley Storage Manager \cite{Bestman}.
+The OSG provides a common interface to computing and storage resources: Globus and SRM/GridFTP respectively.  Clients can access the resources by a OSG provided client.  Both Globus and SRM/GridFTP where developed by consortium members and are included into the OSG packaging.  Many software modules have been contributed to the OSG software stack such as Condor and the Berkeley Storage Manager \cite{Bestman}.
 
 
 
@@ -413,7 +412,7 @@ The OSG provides a common interface to computing and storage resources: Globus a
 
 
 \section{Paper Overview}
-The rest of this paper first discusses related work in
+The rest of this paper first discusses technology to create campus grids as well as existing campus grids in
 \secref{sec:RelatedWork}, and then describes our implementation in
 \secref{sec:Implementation}. \secref{sec:Evaluation} describes how we evaluated
 our system and presents the results. \secref{sec:Conclusion} presents our
