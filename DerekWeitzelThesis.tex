@@ -1099,51 +1099,15 @@ Another usage metric is installation of the Campus Grid Factory.  Currently, the
 
 
 
-\begin{itemize}
-%\item   Performance metrics 
-%\item   Performance parameters
-%\item   Experimental design
-
-\item Production jobs on Firefly
-
-\end{itemize}
-
-
-\subsubsection*{How our solution performed, how its performance compared to
-that of other solutions mentioned in related work, and how these results show
-that our solution is effective}
-
-\begin{itemize}
-%\item   Presentation and Interpretation
-%\item   Why, how, and to what degree our solution is better
-%\item   Why the reader should be impressed with our solution
-%\item   Comments
-
-\item
-Faster job submission and start than globus.  Should be easy to show.
-
-\item
-Run at other campuses.
-
-\item
-Submit jobs between campuses.
-
-\end{itemize}
-
-
-\subsubsection*{Context and limitations of our solution as required for 
-summation}
-\begin{itemize}
-%\item   What the results {\em do} and {\em do not} say
-\item
-Therefore, my solution is awesome.
-
-\end{itemize}
-
-
 
 \chapter{Conclusions and Future Work}
 \label{sec:Conclusion}
+
+The framework described in this paper creates a grid of clusters that transparently overflow to each other.  Also, the grid can overflow to national cyberinfrastructure and peered campuses through interfaces that have been developed by external entities.  The CGF was developed to connect a PBS cluster into the transparent execution grid.  
+
+The framework includes many components developed by external organizations such as BLAHp by gLite, Condor by University of Wisconsin -- Madison, and GlideinWMS by the CMS collaboration.  These components are glued together by Condor and the CGF to create a uniform grid.
+
+Data management and accounting are left for future work.  Data management has proven difficult in the OSG, and it is no different in a campus grid.  Transparent access to storage has been a goal for the OSG and major collaborators for some time.  CMS and ATLAS are moving towards cache based data distribution methods.  The campus grids should follow this model as well.  Whether this is as simple as using web caching, or more complicated such as utilizing Xrootd \cite{dorigo2005xrootd} for data distribution.
 
 \subsubsection*{The problem we have solved}
 \begin{itemize}
