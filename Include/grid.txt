@@ -1,0 +1,8 @@
+universe = vanilla 
+output = condor_out/ouptut 
+error = condor_out/error 
+executable = /bin/hostname 
+log = test.log
+when_to_transfer_output = ON_EXIT 
+should_transfer_files = YES  
+queue 
