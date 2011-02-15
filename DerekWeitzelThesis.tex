@@ -433,23 +433,22 @@ conclusions and describes future work.
 %your idea relates to other work as possible
 
 \subsection{Globus} \label{sec:globus}
-Globus is a translation layer between the (globus specific?) Resource Specification Language, and the local resource manager.  It has been very successful in that is has a large install base.  Globus also has deep integration with standard grid credentials such as PKI.
+Globus is a translation layer between the Resource Specification Language, and the local resource manager.  It has been very successful in that is has a large install base.  Globus also has deep integration with standard grid credentials such as PKI.
 
-Placing Globus gatekeepers on each cluster would allow jobs to be submitted to each cluster without modifying the underlying batch system.  But, this would require a higher layer of abstraction over the Globus gatekeepers to optimally balance load between clusters.  Additionally, Globus has well known limitations such as job a low submission rate, and high resource usage.  Additionally, Globus implements GSI (certificates) security that is inconstant with most existing campus security architectures.  Also, it does not provide a method for transparent execution on other clusters, which experience on the OSG has shown is important to users.
+Placing Globus gatekeepers on each cluster would allow jobs to be submitted to each cluster without modifying the underlying batch system.  But, this would require a higher layer of abstraction over the Globus gatekeepers to optimally balance load between clusters.  Additionally, Globus has well known limitations such as a low submission rate and high resource usage.  Additionally, Globus implements GSI (certificates) security that is inconstant with most existing campus security architectures.  Also, it does not provide a method for transparent execution on other clusters, which experience on the OSG has shown is important to users.
 
 \subsection{Condor Flocking} %\label{sec:flocking}
-Another single vendor solution is Condor.  Each resource can run Condor on their clusters and 'flock' \cite{epema1996worldwide} to each other.  In this solution, jobs would be balanced on each resource due to Condor's greedy scheduler algorithm.  
+A single vendor solution is Condor.  Each resource can run Condor on their clusters and 'flock' \cite{epema1996worldwide} to each other.  In this solution, jobs would be balanced on each resource due to Condor's greedy scheduler algorithm.  
 
-Flocking jobs is accomplished by a multi-step process.  First, the \texttt{condor\_schedd} reports to the remote \texttt{condor\_collector} that it has idle jobs available to run.  During it's next iteration, the remote \texttt{condor\_negotiator} contacts the \texttt{condor\_schedd} to match available resources to the requested jobs.  When the \texttt{condor\_schedd} receives a match, it contacts the resource directly to claim it.  After the claim is successful, the job starts on the remote resource.
+Flocking jobs is accomplished by a multi-step process.  First, the \texttt{condor\_schedd} reports to the remote \texttt{condor\_collector} that it has idle jobs available to run.  During it's next iteration, the remote \texttt{condor\_negotiator} contacts the \texttt{condor\_schedd} to match available resources to the requested jobs.  When the \texttt{condor\_schedd} receives a match, it contacts the resource directly to claim it.  After the claim is successful, the job starts on the remote resource.  Flocking is further described in Section \ref{sec:flocking}.
 
 Condor flocking has many advantages.  Since the job submitter (\texttt{condor\_schedd}) directly contacts the executing resource, there is no additional load on any central node.  Flocking handles failures gracefully.  If an execution resource becomes disconnected, Condor will attempt to reconnect, or re-run the job elsewhere.  Jobs will still execute on previously claimed resources if the central manager becomes disconnected.
 
-But, this solution again requires each resource to run Condor as their scheduler and resource manager.  Additionally, Condor must be running on each worker node, increasing the administration requirements.  This suffers from the same problem as Moab, restricting further innovation to the confines of a single solution.
-
+But, this solution again requires each resource to run Condor as their scheduler and resource manager.  Additionally, Condor must be running on each worker node, increasing the administration requirements.
 
 
 \subsection{GlideinWMS}
- The Glidein Workflow Management System (GlideinWMS) \cite{sfiligoi2008glideinwms} is a job submission method that abstracts the grid interface, leaving only a batch system interface.  GlideinWMS separates the system into two components, the frontend and the factory.  The frontend monitors the local user queue and requests glideins from the factory.  The factory submits the pilots to the grid resources, while serving requests from multiple frontends.  The factory only submits jobs to grid interfaces on multiple resources and can be optimized for that purpose.  While the frontend only deals with the local batch system, and can be optimized for the user's jobs.
+ The Glidein Workflow Management System (GlideinWMS) \cite{sfiligoi2008glideinwms} is a job submission method that abstracts the grid interface, leaving only a batch system interface.  GlideinWMS separates the system into two components, the frontend and the factory.  The frontend monitors the local user queue and requests glideins from the factory.  The factory serves requests from multiple frontends and submits pilots to the grid resources on their behalf.  The factory only submits jobs to grid interfaces on multiple resources and can be optimized for that purpose.  While the frontend only deals with the local batch system, and can be optimized for the user's jobs.
  
 The GlideinWMS system is managed by Condor.  It uses Condor to submit to the grid resources, as well as mange user jobs on the frontend.  The frontend and factory are daemons that run on the user submit host and a central machine, respectively.  
 
@@ -467,7 +466,7 @@ PANDA has very strong data management since it is integrated with the ATLAS data
 The PANDA system is very reliant on the uptime of the central server.  Though the resource independence is high when the resources are grid sites, the system still is reliant on the central PANDA server for any jobs to start.  Though, in practice, this has been very reliable.
 
 \subsection{Moab}
-One solution to build a grid is to use a single vendor/software solution.  For example, Cluster Resources offer a solution Moab Grid Suite\cite{website:moabgrid}.  This solution requires each resource to run a single piece of proprietary software, Moab.  Moab is a meta-scheduler, using PBS to manage the underlying resources.  By using Moab, the development of new grid technologies are limited to what can be done in Moab.
+Another solution to build a grid is to use a single vendor/software solution.  For example, Cluster Resources offer a solution Moab Grid Suite \cite{website:moabgrid}.  This solution requires each resource to run a single piece of proprietary software, Moab.  Moab is a meta-scheduler, using PBS to manage the underlying resources.  By using Moab, the development of new grid technologies are limited to what can be done in Moab.
 
 
 
@@ -499,9 +498,9 @@ One solution to build a grid is to use a single vendor/software solution.  For e
 \subsection{Virginia Campus Grid}
 The Virginia Campus Grid \cite{humphrey2005university} designed a campus grid using the Web Services Resource Framework (WSRF) with Globus.  The goal of the campus grid was use as much existing infrastructure as possible.  The grid utilized the existing authentication system by developing a new credential generator called CredEx \cite{del2005credex} that interacts with the local LDAP servers to create PKI certificates.  Globus version 4 (now depreciated) was used to interact with the Linux clusters on campus.
 
-Another focus of the Virginia campus grid was policy expression and enforcement.  This is a common theme for many grids since they span multiple administrative domains.  In the virginia grid, a enforcement service would enforce these rules by cutting off and redirecting users to and from resources.  The load balancing would be enforced by the enforcement services, as well as policies regarding a resources preference for jobs.  Additionally, a broker was developed to distribute jobs.
+Another focus of the Virginia campus grid was policy expression and enforcement.  This is a common theme for many grids since they span multiple administrative domains.  In the Virginia grid, a enforcement service would enforce these rules by cutting off and redirecting users to and from resources.  The load balancing would be enforced by the enforcement services, as well as policies regarding a resources preference for jobs.  Additionally, a broker was developed to distribute jobs.
 
-The Virginia campus grid has many attributes shared with other Campus Grids.  The Virginia grid approaches trust relationships by utilizing the existing campus authentication infrastructure.  Job submission is handled by WSRF and distributed with a custom developed broker.  Resource independence is not discussed in the paper, but there are many central services such as the enforcement service and the broker.  A downtime in either of these services would limit usefulness the grid.  Accounting is handled with the central IT along with authentication.  Data management is not addressed in the campus grid.  Data management is very important to any campus grid given the rising demands of data intensive computing for scientific applications.
+The Virginia campus grid has many attributes shared with other Campus Grids.  The Virginia grid approaches trust relationships by utilizing the existing campus authentication infrastructure.  Job submission is handled by WSRF and distributed with a custom developed broker.  There are many central services such as the enforcement service and the broker which limits resource independence of the grid.  A downtime in either of these services would limit usefulness the grid.  Accounting and authentication are handled by central IT.  Data management is not addressed in the campus grid.  Data management is very important to any campus grid given the rising demands of data intensive computing for scientific applications.
 
 
 \subsection{Oxford Campus Grid}
@@ -510,14 +509,6 @@ The Oxford Campus Grid \cite{wallom2006oxgrid} built a comprehensive campus grid
 The Oxford campus grid very closely resembles the Open Science Grid model.  Each resource has a gatekeeper, a central node that provides access to the underlying nodes.  The information server and virtual organization management both have analogies in the OSG.  
 The resource broker and data vault conflict with the design of the OSG.  Both of these resources are single points of failure that can severely degrade the usability of the campus grid.  
 
-
-\subsection{GLOW}
-GLOW \cite{gridworkshopweb, glowwebsite} is an University of Wisconsin grid used at the Madison campus to distribute 
-jobs on their all-Condor grid.  Security is based on IP whitelisting.  Since all resources are based on Condor, job 
-submission and distribution is managed through the same Condor-only mechanisms as Purdue.  While there is a central 
-team available to assist with management, each resource is free to define its own policies and priorities for local 
-and remote usage.  Cluster ownership is distributed, although there's also a general-purpose cluster available.  
-Software and data is managed by an AFS \cite{morris1986andrew} install and Condor file transfer.
 
 \subsection{Purdue}
 The Purdue campus grid \cite{smith2008implementing, gridworkshopweb} is part of a larger grid, Diagrid, which serves a 
@@ -532,6 +523,16 @@ largest resources are centrally administered by a single organization, but there
 configured and managed.  Usage accounting is done through Condor and a homegrown system.  On large subsets of the grid, 
 data is kept on a shared file system but no single file system is exported to all resources.  Condor file transfer can 
 be used throughout the grid.
+
+\subsection{GLOW}
+GLOW \cite{gridworkshopweb, glowwebsite} is an University of Wisconsin grid used at the Madison campus to distribute 
+jobs on their all-Condor grid.  Security is based on IP whitelisting.  Since all resources are based on Condor, job 
+submission and distribution is managed through the same Condor-only mechanisms as Purdue.  While there is a central 
+team available to assist with management, each resource is free to define its own policies and priorities for local 
+and remote usage.  Cluster ownership is distributed, although there's also a general-purpose cluster available.  
+Software and data are managed by an AFS \cite{morris1986andrew} install and Condor file transfer.
+
+
 
 \subsection{FermiGrid}
 Fermigrid \cite{gridworkshopweb, chadwick2008fermigrid} is made up of resources located at the Fermi National 
