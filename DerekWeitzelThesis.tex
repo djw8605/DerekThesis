@@ -1102,13 +1102,12 @@ Another usage metric is installation of the Campus Grid Factory.  Currently, the
 \chapter{Conclusions and Future Work}
 \label{sec:Conclusion}
 
-The framework described in this paper creates a grid of clusters that transparently overflow to each other.  Also, the grid can overflow to national cyberinfrastructure and peered campuses through interfaces that have been developed by external entities.  The CGF was developed to connect a PBS cluster into the transparent execution grid.  
+The framework described in this paper creates a grid of clusters that transparently overflow to each other.  Also, the grid can overflow to national cyberinfrastructure and peered campuses through production interfaces.  The CGF was developed to connect a PBS cluster into the Condor campus grid.  The HCC campus grid is a production grid, running many users' jobs.
 
 The framework includes many components developed by external organizations such as BLAHp by gLite, Condor by University of Wisconsin -- Madison, and GlideinWMS by the CMS collaboration.  These components are glued together by Condor and the CGF to create a uniform grid.
 
-The HCC campus grid is a production grid, running many users' jobs.
 
-Data management and accounting are left for future work.  Data management has proven difficult in the OSG, and it is no different in a campus grid.  Transparent access to storage has been a goal for the OSG and major collaborators for some time.  CMS and ATLAS are moving towards cache based data distribution methods.  The campus grids should follow this model as well.  Whether this is as simple as using web caching, or more complicated such as utilizing Xrootd \cite{dorigo2005xrootd} for data distribution.
+Futher refinement of data management and accounting are left for future work.  Data management has proven difficult in the OSG, and it is no different in a campus grid.  Transparent access to storage has been a goal for the OSG and major collaborators for some time.  CMS and ATLAS are moving towards cache based data distribution methods.  The campus grids should follow this model as well.  Whether this is as simple as using web caching, or more complicated such as utilizing Xrootd \cite{dorigo2005xrootd} for data distribution.
 
 Accounting also will be improved in the future.  It is important for resource owners to determine the hours given to external entities.  This can only be accomplished with the execution side reporting usage.  This model is not used in the OSG, and will need to be developed.
 
