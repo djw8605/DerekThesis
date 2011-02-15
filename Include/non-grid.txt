@@ -1,0 +1,8 @@
+universe = vanilla 
+output = condor_out/ouptut 
+error = condor_out/error 
+executable = /bin/hostname 
+log = test.log 
+
+
+queue 

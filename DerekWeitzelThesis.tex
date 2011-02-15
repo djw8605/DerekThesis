@@ -962,24 +962,23 @@ Condor will only transfer files when the variables \texttt{should\_transfer\_fil
 \begin{figure}[h!t]
 
 
-
+\centering
 \lstset{
 backgroundcolor=\color{white},
-showspaces=false}
-\begin{lstlisting}[frame=tblr]
-universe = vanilla 
-output = condor_out/ouptut 
-error = condor_out/error 
-executable = /bin/hostname 
-log = test.log 
-when_to_transfer_output = ON_EXIT 
-should_transfer_files = YES 
-queue 
-\end{lstlisting}
+showspaces=false,
+basicstyle=\footnotesize}
+\subfloat[Non-Campus Grid submission]{
+
+\lstinputlisting[boxpos=b]{Include/non-grid.txt}
+}
+\hspace{10pt}
+\subfloat[Campus grid submission]{
+\lstinputlisting[boxpos=b]{Include/grid.txt}
+}
 
 
 
-\caption{Test test submission script} \label{fig:submission}
+\caption{Test test submission scripts} \label{fig:submission}
 \end{figure}
 
 
