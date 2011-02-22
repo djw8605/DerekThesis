@@ -552,19 +552,21 @@ used on the OSG.  A central cluster file system is available to most clusters, b
 heavily used.
 
 
-\begin{table}
+\begin{table}[h!t]
 \centering
+%\small 
 % Grid & Auth & Accounting & Storage & Submission
 \begin{tabular}{ | l | | l | l | l | l |}
 \hline
 Grid & Authorization & Accounting & Storage & Submission \\ 
+& & & & Type \\
 \hline \hline
-Virginia & LDAP/PKI & None & None & Central Broker \\ \hline
-Oxford & Kerberos/PKI & Custom & SRB & Central Broker \\ \hline
-Purdue & Host & Custom & Condor Transfer & Distributed Brokers \\ \hline
-Glow &  Host & None &  Condor Transfer & Distributed Brokers \\ \hline
-FermiGrid & PKI & OSG Gratia & Central Filesystem & Central Broker \\ \hline
-OSG & PKI & OSG Gratia & Distributed & Distributed Brokers \\ \hline
+Virginia & LDAP/PKI & None & None & Central \\ \hline
+Oxford & Kerberos/PKI & Custom & SRB & Central \\ \hline
+Purdue & Host & Custom & Condor Transfer & Distributed \\ \hline
+Glow &  Host & None &  Condor Transfer & Distributed \\ \hline
+FermiGrid & PKI & OSG Gratia & Central Filesystem & Central \\ \hline
+OSG & PKI & OSG Gratia & Distributed & Distributed \\ \hline
 \end{tabular}
 \caption{Campus grid attributes}
 \end{table}
