@@ -551,6 +551,26 @@ software that is
 used on the OSG.  A central cluster file system is available to most clusters, but Globus-based file transfer is also 
 heavily used.
 
+
+\begin{table}[h!t]
+\centering
+%\small 
+% Grid & Auth & Accounting & Storage & Submission
+\begin{tabular}{ | l | | l | l | l | l |}
+\hline
+Grid & Authorization & Accounting & Storage & Submission \\ 
+& & & & Type \\
+\hline \hline
+Virginia & LDAP/PKI & None & None & Central \\ \hline
+Oxford & Kerberos/PKI & Custom & SRB & Central \\ \hline
+Purdue & Host & Custom & Condor Transfer & Distributed \\ \hline
+Glow &  Host & None &  Condor Transfer & Distributed \\ \hline
+FermiGrid & PKI & OSG Gratia & Central Filesystem & Central \\ \hline
+OSG & PKI & OSG Gratia & Distributed & Distributed \\ \hline
+\end{tabular}
+\caption{Campus grid attributes}
+\end{table}
+
 %\item 
 %Many times no one has solved your exact problem before, but others have solved
 %closely related problems or problems with aspects that are strongly analogous
