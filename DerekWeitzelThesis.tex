@@ -383,6 +383,23 @@ An important technology used in Condor is the ClassAd mechanism.  ClassAds are t
 
 Another component of Condor is the grid computing agent Condor-G \cite{frey2002condor}.  Condor-G communicates with Globus \cite{foster1997globus} sites.  Condor provides job submission, error recovery, and creation of a minimal execution environment.  Along with Condor-G, Condor can also submit jobs to other systems including Amazon EC2 \cite{amazonec2} and PBS \cite{pbstorque}.
 
+Commonly used Condor daemons and their functions are described Table \ref{table:condordaemons}.
+
+\begin{table}
+\centering
+\begin{tabular}{| l | l |}
+\hline
+Daemon & Function \\
+\hline \hline
+\texttt{condor\_master} & Maintains Condor daemons   \\ \hline
+\texttt{condor\_collector} & Information Provider \\ \hline
+\texttt{condor\_schedd} & User Job Queue \\ \hline
+\texttt{condor\_negotiator} & Scheduler: Matches jobs with resources \\ \hline
+\texttt{condor\_startd} & Execution manager.  Runs on the resource \\ \hline
+\end{tabular}
+\caption{Condor daemon functions} \label{table:condordaemons}
+\end{table}
+
 \subsection{Open Science Grid}
 The Open Science Grid (OSG) \cite{pordes2007open} is a national cyber infrastructure consortium that provides dedicated and opportunistic use of computation and storage resources.  The OSG consists of nationally distributed universities and national laboratories that provide access to shared computing and storage.  The OSG provides infrastructure, software, and engagement to the users.  
 
@@ -625,14 +642,63 @@ OSG & PKI & OSG Gratia & Distributed & Distributed \\ \hline
 
 In designing a campus grid for the Holland Computing Center, we attempted to meet three goals:
 \begin{itemize}
-\item \textbf{Encompass}: The campus grid should reach all clusters managed by HCC.
-\item \textbf{Transparent execution environment}:  There should be an identical user interface for all resources, whether 
+\item \textbf{Encompassing}: The campus grid should reach all clusters managed by HCC.
+\item \textbf{Transparent}:  There should be an identical user interface for all resources, whether 
 running locally or remotely.
-\item \textbf{Decentralization}: A user should be able to utilize his local resource even if it becomes disconnected from 
+\item \textbf{Decentralized}: A user should be able to utilize his local resource even if it becomes disconnected from 
 the rest of the campus.  An error on a given cluster should only affect that cluster.
 \end{itemize}
 
 Along with these goals, the technologies in this section will address the characteristics of a campus grid described in Section \ref{sec:attributes}: trust relationships, job submission, resource independence, accounting, and data management.
+
+
+\section{Flocking} \label{sec:flocking}
+
+In the GLOW and Purdue campus grid, every resource runs the same scheduler, Condor.  They use Flocking to distribute jobs between clusters.  It is easy to link the resources since the only requirement is Condor to talk to Condor.  
+
+Flocking \cite{epema1996worldwide} is a method of linking Condor clusters into a larger grid.  Condor daemons are described in Table \ref{table:condordaemons}.  When a user submit jobs to Condor, they are stored and managed by the \texttt{condor\_schedd}.  The \texttt{condor\_schedd} acts as an agent on the user's behalf to keep track of jobs, and place jobs efficiently.  Flocking improves the job submission and transparent execution environment of campus grid jobs by eliminating the need to explicitly specify pools for execution.  It improves data management by directly transferring files from the submitter to the execute host, bypassing the gatekeeper.  Typically in the OSG, job data is staged to the gatekeeper before transferring to the worker node.  It also allows for decentralization since pools can leave and appear in the campus grid independent of the submitters.
+
+After the jobs have been submitted, the \texttt{condor\_schedd} will maintain a \texttt{FlockLevel}.  At first, the \texttt{FlockLevel} will be set to 0 and jobs will only run on the local resources.  After a few minutes, if there are still idle jobs, then the \texttt{FlockLevel} will increase by 1.  Each time the \texttt{FlockLevel} increases, the \texttt{condor\_schedd} will advertise to another Condor pool that it has idle jobs to run.  When the remote Condor pools see idle jobs, the \texttt{condor\_negotiator} for that pool will contact the \texttt{condor\_schedd} to attempt to match jobs to the remote resources.
+
+Flocking does not delegate responsibility for a job.  The original \texttt{condor\_schedd} will maintain the job, transferring input and output, and monitoring it's status.  When flocking a job, first the negotiator for the remote pool contacts the local \texttt{condor\_schedd}.  If a match is found, the schedd directly contacts the execute host.  After transferring files, the schedd will monitor the status of the job.  This is analogous to a hub and spokes: the job ownership never moves, but the jobs can execute at multiple resources.
+
+
+\section{Condor \& BLAHP} \label{sec:blahp}
+\label{sec:condorandblahp}
+
+If the grid does not have a uniform scheduler, such as Condor, there needs to be a translation layer from one scheduler to another.  The Batch system Local ASCII Helper Protocol (BLAHP) was designed to offer a simple abstraction layer over different Local resource manager service, providing uniform access to the underlying computing resources \cite{blahp}. BLAHP is maintained by the gLite \cite{glite} collaboration at CERN.  The BLAHP supplements the encompass goal by allowing execution of Condor jobs to the underlying resource manager.  
+
+BLAHP is distributed with Condor as an additional library.  Condor uses BLAHP to submit jobs when specifying the PBS or LSF \texttt{universe} in the submission file.  The Campus Grid Factory submits glidein jobs to the underlying resource manager through the BLAHP.  Submitting glideins to Condor and allowing the BLAHP to manage the jobs simplifies the factory.  
+
+
+\section{Glidein Jobs} \label{sec:glideins}
+Glidein jobs compliment the job submission method and are used to present a transparent execution environment to the submitter.  Additionally, it allows for better data management since the submitter directly connects to the execute host to transfer files and job information.
+
+Glidein \cite{frey2002condor} is a pilot job based grid submission that creates an overlay network.  Glidein is designed to use standard Condor mechanisms to advertise its availablity to a Condor Collector process, which is queried by the Scheduler to learn about available resources.  Each user job running in a glidein is run in a sandbox on the local disk and is provided with a consistent execution environment across hosts and clusters.
+
+Pilot jobs are used by many physics experiments \cite{nilsson2008experience, zvada2010cdf, bradley2010use}.  Physics experiments create pilot frameworks because they have need for very large distributed workflow management systems.  Pilot workflow management systems are commonly used for multiple reasons:
+\begin{itemize}
+\item \textbf{Scheduling Optimization:} The pilot reports only when a cpu is immediately available to run a job.
+\item \textbf{Input/Output Automation:} The pilot can transfer input and output seamlessly for the user.
+\item \textbf{Monitoring:} The monitoring of a job can be more accurate while the job is running.
+\item \textbf{Fault Tolerance:} A job failure can be more accurately detected and recovered.
+\item \textbf{Multiple Runs:} Each pilot can run multiple jobs serially, reducing submissions through the site gatekeeper.
+\end{itemize}
+
+The factory uses glideins on non-condor resources in order to create a overlay condor cluster that can execute remote jobs via flocking.  The glideins report to a Collector unique to each Cluster and are configured to exit after a configurable amount of time. 
+
+The glidein job requires six condor daemons packaged with a wrapper script.  When the job starts, the Glidein job will:
+
+\begin{enumerate}
+\item Create a temporary directory on the local disk.  This will be used for the job sandboxes.
+\item Unpackage the glidein executables into the local disk.
+\item Set the late binding environment variables for Condor to point to the temporary directory.
+\item Start the  \texttt{condor\_master} daemon included in the glidein executables.
+\end{enumerate}
+
+The \texttt{condor\_master} will start the \texttt{condor\_startd} daemon which will advertise itself to the glidein collector, therefore making the node available for remote jobs.  
+
+Glideins are being used in production in the Open Science Grid using the software GlideinWMS \cite{sfiligoi2008glideinwms}.  They provide several advantages over regular job submission.  Each glidein sandboxes and monitors the user jobs it runs.  The glidein can run multiple user jobs inside a single Local Resource Management (LRM) job, and will continue to run until the configured time to stop.  A Glidein host connects directly with the submitter host, removing the need for staging data.
 
 
 
@@ -667,14 +733,14 @@ if a non-Condor cluster becomes disconnected from the factory, even jobs that ar
 be unable to run on the cluster since the factory cannot reach it, violating the decentralization goal.  The current 
 CGF merges the roles of the frontend and factory in the GlideinWMS architecture, removing some complexity from the 
 submit host.  At the core of GlideinWMS is the use of GSI for security; while HCC uses GSI security for its OSG work, 
-we want to avoid making it a requirement for the campus.
+it is preferable to avoid making it a requirement for the campus.
 
 The GlideinWMS system does a superior job of preparing and validating runtime environments compared to the CGF, an 
-essential element for removing a common source of grid frustration.  However, we believe the runtime environment 
+essential element for removing a common source of grid frustration.  However, the runtime environment 
 problem is mitigated on campuses because of the smaller number of resources and the closer working relationships 
 between system administrators.
 
-The Campus Factory is a python daemon that runs as a persistent condor job.  Since it runs as a condor job, the condor daemons will ensure that it stays alive, eliminating the need to monitoring an additional daemon.  
+The Campus Factory is a python daemon that runs as a persistent condor job.  Since it runs as a condor job, the condor daemons will ensure that it stays alive, eliminating the need to monitor an additional daemon.  
 
 The factory depends on Condor daemons to carry out many tasks such as:
 \begin{itemize}
@@ -685,7 +751,7 @@ The factory depends on Condor daemons to carry out many tasks such as:
 \end{itemize}
 
 
-\subsection{Determining when to submit glideins}
+\subsection{Glidein Submission Determination }
 The factory decides whether to submit glideins to the underlying non-condor cluster.  The factory has two configuration options relating to submission of glideins to the LRM: \texttt{MaxIdleGlideins} and \texttt{MaxQueuedJobs}.
 
 \begin{description}
@@ -713,12 +779,12 @@ The factory submission logic is as follows:
 \label{alg:glideins}
 \end{algorithm}
 
-Additionally, the factory has logic to detect glideins that are not reporting to the collector.  This can happen when the the LRM cannot transfer files, if the BLAHP is incorrectly reporting the status of a job, or if there is something wrong with the glideins jobs.
+Additionally, the factory has logic to detect glideins that are not reporting to the collector.  This can happen when the LRM cannot transfer files, if the BLAHP is incorrectly reporting the status of a job, or if there is something wrong with the glideins jobs.
 
 
 \subsection{OfflineAds} \label{sec:offlineads}
 OfflineAds are used to optimize the submission of glideins to the underlying batch system.   
-Offline ads where designed to be used for power management. When a node hasn't been matched for a configurable amount of time, the machine can be turned off to save power. When the machine is preparing to turn off, it sends an offline ad to the collector that describes the machine. The OfflineAd includes all of the features that can be used when matching against an online resource, such as memory, disk space, and installed software.  When the offline ad describing the machine is matched to a job by the Condor negotiator, the negoiator inserts a new attributed into the offline ad called \texttt{MachineLastMatchTime}.  When using power management, the Condor Rooster periodically queries the collector for the offline ads, and wakes the powered off matched nodes to run the job.
+Offline ads were designed to be used for power management. When a node hasn't been matched for a configurable amount of time, the machine can be turned off to save power. When the machine is preparing to turn off, it sends an offline ad to the collector that describes the machine. The OfflineAd includes all of the features that can be used when matching against an online resource, such as memory, disk space, and installed software.  When the offline ad describing the machine is matched to a job by the Condor negotiator, the negoiator inserts a new attributed into the offline ad called \texttt{MachineLastMatchTime}.  When using power management, the Condor Rooster periodically queries the collector for the offline ads, and wakes the powered off matched nodes to run the job.
 
 %The collector maintains the offline ads for a configurable amount of time using the configuration variable OFFLINE\_EXPIRE\_ADS\_AFTER. During this time, 
 
@@ -728,7 +794,7 @@ Since the OfflineAds are exact copies of active glideins, the OfflineAds will in
 
 
 \subsubsection{Influence OfflineAds have on the Factory}
-The OfflineAds do not completely replace all logic described in Algorithm \ref{alg:glideins}. The site must still meet the idle glideins and idle slots requirements that were originally used to throttle new glideins. The OfflineAds do replace the need for the factory to query remote schedd's to for idle jobs.  This improves the efficiency and simplicity of the factory by eliminating communication.  The negotiator and collector take care of all job matching with accurate glidein classads.
+The OfflineAds do not completely replace all logic described in Algorithm \ref{alg:glideins}. The site must still meet the idle glideins and idle slots requirements that were originally used to throttle new glideins. The OfflineAds do replace the need for the factory to query remote schedd's for idle jobs.  This improves the efficiency and simplicity of the factory by eliminating communication.  The negotiator and collector take care of all job matching with accurate glidein classads.
 
 The logic of the factory follows:
 
@@ -764,57 +830,13 @@ PreviousName & Name & Value of 'Name' attribute of the original ad. Useful for d
 
 
 \subsubsection{Managing OfflineAds}
-By default, the factory will attempt to maintain a specific number of offline ads. This can be done in a number of ways, such as always maintaining the newest 10 ads. Or you can sort by different 'types' of machines (big memory, big disk), and keep an assortment of unique ads.  Currently, the factory only keeps the latest 10 ads.
+By default, the factory will attempt to maintain a specific number of offline ads. This can be done in a number of ways, such as always maintaining the newest 10 ads. Or you can sort by different 'types' of machines (big memory, big disk), and keep an assortment of unique ads.  Currently, the factory only keeps the latest 10 ads.  10 was determined to be an appropriate sample size as it is large enough to represent multiple nodes (8 cores/jobs per node standard).  Larger number of ads will cause a heavier load on the head node as it matches the offline ads to idle jobs.
 
 To maintain the classads, the factory queries the collector for offline ads. If it detects more than 10, it will only keep the newest 10. If less then ten, the offline ad manager will list the site as Delinquent, and will recommend submitting more glideins.
 
 
 
 
-\section{Glidein Jobs} \label{sec:glideins}
-Glidein jobs compliment the job submission method and are used to present a transparent execution environment to the submitter.  Additionally, it allows for better data management since the submitter directly connects to the execute host to transfer files and job information.
-
-Glidein \cite{frey2002condor} is a pilot job based grid submission that creates an overlay network.  Glidein is designed to used standard Condor mechanisms to advertise it's availablity to a Condor Collector process, which is queried by the Scheduler to learn about available resources.  Each user job running in a glidein is run in a sandbox on the local disk and is provided with a consistent execution environment across hosts and clusters.
-
-Pilot jobs are used by many physics experiments \cite{nilsson2008experience, zvada2010cdf, bradley2010use}.  Physics experiments create pilot frameworks because they have need for very large distributed workflow management systems.  Pilot workflow management systems are commonly used for multiple reasons:
-\begin{itemize}
-\item \textbf{Scheduling Optimization:} The pilot reports only when a cpu is immediately available to run a job.
-\item \textbf{Input/Output Automation:} The pilot can transfer input and output seamlessly for the user.
-\item \textbf{Monitoring:} The monitoring of a job can be more accurate while the job is running.
-\item \textbf{Fault Tolerance:} A job failure can be more accurately detected and recovered.
-\item \textbf{Multiple Runs:} Each pilot can run multiple jobs serially, reducing submissions through the site gatekeeper.
-\end{itemize}
-
-The factory uses glideins on non-condor resources in order to create a overlay condor cluster that can execute remote jobs via flocking.  The glideins report to a Collector unique to each Cluster and are configured to exit after a configurable amount of time. 
-
-The glidein job requires six condor daemons packaged with a wrapper script.  When the job starts, the Glidein job will:
-
-\begin{enumerate}
-\item Create a temporary directory on the local disk.  This will be used for the job sandboxes.
-\item Unpackage the glidein executables into the local disk.
-\item Set the late binding environment variables for Condor to point to the temporary directory.
-\item Start the  \texttt{condor\_master} daemon included in the glidein executables.
-\end{enumerate}
-
-The \texttt{condor\_master} will start the \texttt{condor\_startd} daemon which will advertise itself to the glidein collector, therefore making the node available for remote jobs.  
-
-Glideins are being used in production in the Open Science Grid using the software GlideinWMS \cite{sfiligoi2008glideinwms}.  They provide several advantages over regular job submission.  Each glidein sandboxes and monitors the user jobs it runs.  The glidein can run multiple user jobs inside a single Local Resource Management (LRM) job, and will continue to run until the configured time to stop.  Glidein host connects directly with the submitter host, removing the need for staging data.
-
-
-\section{Flocking} \label{sec:flocking}
-
-Flocking \cite{epema1996worldwide} is a method of linking Condor clusters into a larger grid.  When a user submit jobs to Condor, they are stored and managed by the \texttt{condor\_schedd}.  The \texttt{condor\_schedd} acts as an agent on the user's behalf to keep track of jobs, and place jobs efficiently.  Flocking improves the job submission and transparent execution environment of campus grid jobs by eliminating the need to explicitly specify pools for execution.  It improves data management by directly transferring files from the submitter to the execute host, bypassing the gatekeeper.  Typically in the OSG, job data is staged to the gatekeeper before transferring to the worker node.  It also allows for decentralization since pools can leave and appear in the campus grid independent of the submitters.
-
-After the jobs have been submitted, the \texttt{condor\_schedd} will maintain a \texttt{FlockLevel}.  At first, the \texttt{FlockLevel} will be set to 0 and jobs will only run on the local resources.  After a few minutes, if there are still idle jobs, then the \texttt{FlockLevel} will increase by 1.  Each time the \texttt{FlockLevel} increases, the \texttt{condor\_schedd} will advertise to another Condor pool that it has idle jobs to run.  When the remote Condor pools see idle jobs, the \texttt{condor\_negotiator} for that pool will contact the \texttt{condor\_schedd} to attempt to match jobs to the remote resources.
-
-Flocking does not delegate responsibility for a job.  The original \texttt{condor\_schedd} will maintain the job, transferring input and output, and monitoring it's status.  When flocking a job, first the negotiator for the remote pool contacts the local \texttt{condor\_schedd}.  If a match is found, the schedd directly contacts the execute host.  After transferring files, the schedd will monitor the status of the job.  This is analogous to a hub and spokes: the job ownership never moves, but the jobs can execute at multiple resources.
-
-
-\section{Condor \& BLAHP} \label{sec:blahp}
-\label{sec:condorandblahp}
-The Batch system Local ASCII Helper Protocol (BLAHP) was designed to offer a simple abstraction layer over different Local resource manager service, providing uniform access to the underlying computing resources \cite{blahp}. BLAHP is maintained by the gLite \cite{glite} collaboration at CERN.  The BLAHP supplements the encompass goal by allowing execution of Condor jobs to the underlying resource manager.  
-
-BLAHP is distributed with Condor as an additional library.  Condor uses BLAHP to submit jobs when specifying the PBS or LSF \texttt{universe} in the submission file.  The Campus Grid Factory submits glidein jobs to the underlying resource manager through the BLAHP.  Submitting glideins to Condor and allowing the BLAHP to manage the jobs simplifies the factory.  
 
 
 
@@ -874,7 +896,7 @@ It is important to note the ever-widening circle of resources expands from the l
 the user knows best (and has the best support for) to the most foreign one.  This is a very natural progression, and 
 each step described comes with more complexity, and new failure modes.  If the user is ever frustrated at one 
 transition, he can just remain contented with the resources he has, as opposed to having to switch between ``local 
-mode" and ``grid mode".  Another usability boost is that all end-user interfaces are Condor vanilla universe.  The user 
+mode" and ``grid mode".  Another usability advantage is that all end-user interfaces are Condor vanilla universe.  The user 
 never encounters errors translated between systems (a common user frustration) and the user needs to develop expertise 
 in Condor alone.
 
