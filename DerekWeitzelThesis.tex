@@ -605,14 +605,60 @@ heavily used.
 
 In designing a campus grid for the Holland Computing Center, we attempted to meet three goals:
 \begin{itemize}
-\item \textbf{Encompass}: The campus grid should reach all clusters managed by HCC.
-\item \textbf{Transparent execution environment}:  There should be an identical user interface for all resources, whether 
+\item \textbf{Encompassing}: The campus grid should reach all clusters managed by HCC.
+\item \textbf{Transparent}:  There should be an identical user interface for all resources, whether 
 running locally or remotely.
-\item \textbf{Decentralization}: A user should be able to utilize his local resource even if it becomes disconnected from 
+\item \textbf{Decentralized}: A user should be able to utilize his local resource even if it becomes disconnected from 
 the rest of the campus.  An error on a given cluster should only affect that cluster.
 \end{itemize}
 
 Along with these goals, the technologies in this section will address the characteristics of a campus grid described in Section \ref{sec:attributes}: trust relationships, job submission, resource independence, accounting, and data management.
+
+
+\section{Flocking} \label{sec:flocking}
+
+Flocking \cite{epema1996worldwide} is a method of linking Condor clusters into a larger grid.  When a user submit jobs to Condor, they are stored and managed by the \texttt{condor\_schedd}.  The \texttt{condor\_schedd} acts as an agent on the user's behalf to keep track of jobs, and place jobs efficiently.  Flocking improves the job submission and transparent execution environment of campus grid jobs by eliminating the need to explicitly specify pools for execution.  It improves data management by directly transferring files from the submitter to the execute host, bypassing the gatekeeper.  Typically in the OSG, job data is staged to the gatekeeper before transferring to the worker node.  It also allows for decentralization since pools can leave and appear in the campus grid independent of the submitters.
+
+After the jobs have been submitted, the \texttt{condor\_schedd} will maintain a \texttt{FlockLevel}.  At first, the \texttt{FlockLevel} will be set to 0 and jobs will only run on the local resources.  After a few minutes, if there are still idle jobs, then the \texttt{FlockLevel} will increase by 1.  Each time the \texttt{FlockLevel} increases, the \texttt{condor\_schedd} will advertise to another Condor pool that it has idle jobs to run.  When the remote Condor pools see idle jobs, the \texttt{condor\_negotiator} for that pool will contact the \texttt{condor\_schedd} to attempt to match jobs to the remote resources.
+
+Flocking does not delegate responsibility for a job.  The original \texttt{condor\_schedd} will maintain the job, transferring input and output, and monitoring it's status.  When flocking a job, first the negotiator for the remote pool contacts the local \texttt{condor\_schedd}.  If a match is found, the schedd directly contacts the execute host.  After transferring files, the schedd will monitor the status of the job.  This is analogous to a hub and spokes: the job ownership never moves, but the jobs can execute at multiple resources.
+
+
+\section{Condor \& BLAHP} \label{sec:blahp}
+\label{sec:condorandblahp}
+The Batch system Local ASCII Helper Protocol (BLAHP) was designed to offer a simple abstraction layer over different Local resource manager service, providing uniform access to the underlying computing resources \cite{blahp}. BLAHP is maintained by the gLite \cite{glite} collaboration at CERN.  The BLAHP supplements the encompass goal by allowing execution of Condor jobs to the underlying resource manager.  
+
+BLAHP is distributed with Condor as an additional library.  Condor uses BLAHP to submit jobs when specifying the PBS or LSF \texttt{universe} in the submission file.  The Campus Grid Factory submits glidein jobs to the underlying resource manager through the BLAHP.  Submitting glideins to Condor and allowing the BLAHP to manage the jobs simplifies the factory.  
+
+
+\section{Glidein Jobs} \label{sec:glideins}
+Glidein jobs compliment the job submission method and are used to present a transparent execution environment to the submitter.  Additionally, it allows for better data management since the submitter directly connects to the execute host to transfer files and job information.
+
+Glidein \cite{frey2002condor} is a pilot job based grid submission that creates an overlay network.  Glidein is designed to used standard Condor mechanisms to advertise it's availablity to a Condor Collector process, which is queried by the Scheduler to learn about available resources.  Each user job running in a glidein is run in a sandbox on the local disk and is provided with a consistent execution environment across hosts and clusters.
+
+Pilot jobs are used by many physics experiments \cite{nilsson2008experience, zvada2010cdf, bradley2010use}.  Physics experiments create pilot frameworks because they have need for very large distributed workflow management systems.  Pilot workflow management systems are commonly used for multiple reasons:
+\begin{itemize}
+\item \textbf{Scheduling Optimization:} The pilot reports only when a cpu is immediately available to run a job.
+\item \textbf{Input/Output Automation:} The pilot can transfer input and output seamlessly for the user.
+\item \textbf{Monitoring:} The monitoring of a job can be more accurate while the job is running.
+\item \textbf{Fault Tolerance:} A job failure can be more accurately detected and recovered.
+\item \textbf{Multiple Runs:} Each pilot can run multiple jobs serially, reducing submissions through the site gatekeeper.
+\end{itemize}
+
+The factory uses glideins on non-condor resources in order to create a overlay condor cluster that can execute remote jobs via flocking.  The glideins report to a Collector unique to each Cluster and are configured to exit after a configurable amount of time. 
+
+The glidein job requires six condor daemons packaged with a wrapper script.  When the job starts, the Glidein job will:
+
+\begin{enumerate}
+\item Create a temporary directory on the local disk.  This will be used for the job sandboxes.
+\item Unpackage the glidein executables into the local disk.
+\item Set the late binding environment variables for Condor to point to the temporary directory.
+\item Start the  \texttt{condor\_master} daemon included in the glidein executables.
+\end{enumerate}
+
+The \texttt{condor\_master} will start the \texttt{condor\_startd} daemon which will advertise itself to the glidein collector, therefore making the node available for remote jobs.  
+
+Glideins are being used in production in the Open Science Grid using the software GlideinWMS \cite{sfiligoi2008glideinwms}.  They provide several advantages over regular job submission.  Each glidein sandboxes and monitors the user jobs it runs.  The glidein can run multiple user jobs inside a single Local Resource Management (LRM) job, and will continue to run until the configured time to stop.  Glidein host connects directly with the submitter host, removing the need for staging data.
 
 
 
@@ -751,50 +797,6 @@ To maintain the classads, the factory queries the collector for offline ads. If 
 
 
 
-\section{Glidein Jobs} \label{sec:glideins}
-Glidein jobs compliment the job submission method and are used to present a transparent execution environment to the submitter.  Additionally, it allows for better data management since the submitter directly connects to the execute host to transfer files and job information.
-
-Glidein \cite{frey2002condor} is a pilot job based grid submission that creates an overlay network.  Glidein is designed to used standard Condor mechanisms to advertise it's availablity to a Condor Collector process, which is queried by the Scheduler to learn about available resources.  Each user job running in a glidein is run in a sandbox on the local disk and is provided with a consistent execution environment across hosts and clusters.
-
-Pilot jobs are used by many physics experiments \cite{nilsson2008experience, zvada2010cdf, bradley2010use}.  Physics experiments create pilot frameworks because they have need for very large distributed workflow management systems.  Pilot workflow management systems are commonly used for multiple reasons:
-\begin{itemize}
-\item \textbf{Scheduling Optimization:} The pilot reports only when a cpu is immediately available to run a job.
-\item \textbf{Input/Output Automation:} The pilot can transfer input and output seamlessly for the user.
-\item \textbf{Monitoring:} The monitoring of a job can be more accurate while the job is running.
-\item \textbf{Fault Tolerance:} A job failure can be more accurately detected and recovered.
-\item \textbf{Multiple Runs:} Each pilot can run multiple jobs serially, reducing submissions through the site gatekeeper.
-\end{itemize}
-
-The factory uses glideins on non-condor resources in order to create a overlay condor cluster that can execute remote jobs via flocking.  The glideins report to a Collector unique to each Cluster and are configured to exit after a configurable amount of time. 
-
-The glidein job requires six condor daemons packaged with a wrapper script.  When the job starts, the Glidein job will:
-
-\begin{enumerate}
-\item Create a temporary directory on the local disk.  This will be used for the job sandboxes.
-\item Unpackage the glidein executables into the local disk.
-\item Set the late binding environment variables for Condor to point to the temporary directory.
-\item Start the  \texttt{condor\_master} daemon included in the glidein executables.
-\end{enumerate}
-
-The \texttt{condor\_master} will start the \texttt{condor\_startd} daemon which will advertise itself to the glidein collector, therefore making the node available for remote jobs.  
-
-Glideins are being used in production in the Open Science Grid using the software GlideinWMS \cite{sfiligoi2008glideinwms}.  They provide several advantages over regular job submission.  Each glidein sandboxes and monitors the user jobs it runs.  The glidein can run multiple user jobs inside a single Local Resource Management (LRM) job, and will continue to run until the configured time to stop.  Glidein host connects directly with the submitter host, removing the need for staging data.
-
-
-\section{Flocking} \label{sec:flocking}
-
-Flocking \cite{epema1996worldwide} is a method of linking Condor clusters into a larger grid.  When a user submit jobs to Condor, they are stored and managed by the \texttt{condor\_schedd}.  The \texttt{condor\_schedd} acts as an agent on the user's behalf to keep track of jobs, and place jobs efficiently.  Flocking improves the job submission and transparent execution environment of campus grid jobs by eliminating the need to explicitly specify pools for execution.  It improves data management by directly transferring files from the submitter to the execute host, bypassing the gatekeeper.  Typically in the OSG, job data is staged to the gatekeeper before transferring to the worker node.  It also allows for decentralization since pools can leave and appear in the campus grid independent of the submitters.
-
-After the jobs have been submitted, the \texttt{condor\_schedd} will maintain a \texttt{FlockLevel}.  At first, the \texttt{FlockLevel} will be set to 0 and jobs will only run on the local resources.  After a few minutes, if there are still idle jobs, then the \texttt{FlockLevel} will increase by 1.  Each time the \texttt{FlockLevel} increases, the \texttt{condor\_schedd} will advertise to another Condor pool that it has idle jobs to run.  When the remote Condor pools see idle jobs, the \texttt{condor\_negotiator} for that pool will contact the \texttt{condor\_schedd} to attempt to match jobs to the remote resources.
-
-Flocking does not delegate responsibility for a job.  The original \texttt{condor\_schedd} will maintain the job, transferring input and output, and monitoring it's status.  When flocking a job, first the negotiator for the remote pool contacts the local \texttt{condor\_schedd}.  If a match is found, the schedd directly contacts the execute host.  After transferring files, the schedd will monitor the status of the job.  This is analogous to a hub and spokes: the job ownership never moves, but the jobs can execute at multiple resources.
-
-
-\section{Condor \& BLAHP} \label{sec:blahp}
-\label{sec:condorandblahp}
-The Batch system Local ASCII Helper Protocol (BLAHP) was designed to offer a simple abstraction layer over different Local resource manager service, providing uniform access to the underlying computing resources \cite{blahp}. BLAHP is maintained by the gLite \cite{glite} collaboration at CERN.  The BLAHP supplements the encompass goal by allowing execution of Condor jobs to the underlying resource manager.  
-
-BLAHP is distributed with Condor as an additional library.  Condor uses BLAHP to submit jobs when specifying the PBS or LSF \texttt{universe} in the submission file.  The Campus Grid Factory submits glidein jobs to the underlying resource manager through the BLAHP.  Submitting glideins to Condor and allowing the BLAHP to manage the jobs simplifies the factory.  
 
 
 
