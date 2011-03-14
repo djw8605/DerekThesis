@@ -76,7 +76,7 @@ linkbordercolor=white
 
 \begin{abstract}
 
-It is common at research institutions to maintain multiple clusters.  These might fullfill different needs, different policies, or  represent generations of hardware.  Many of these clusters are under utilized while researchers at other departments may require these resources.  Linking these clusters with traditional grid software would require changes in security and execution environments.  In this paper we will describe a framework and technology that are used to link departmental clusters such that submission at one cluster could lead to execution on another.  The framework is implemented spanning two campuses at the Holland Computing Center.  We evaluate the framework for five important attributes found in campus grids.  This framework is then further expanded to bridge campus grids into a regional grid.
+It is common at research institutions to maintain multiple clusters.  These might fulfill different needs, different owners and policies, or represent generations of hardware.  Many of these clusters are under utilized while researchers at other departments may require these resources.  Linking these clusters with traditional grid software would require changes in security and execution environments.  In this paper we will describe a framework and technology that are used to link departmental clusters such that submission at one cluster could lead to execution on another.  The framework is implemented spanning two campuses at the Holland Computing Center.  We evaluate the framework for five characteristics of campus grids.  This framework is then further expanded to bridge campus grids into a regional grid.
 
 %the framework is designed as lightweight, and leveraging existing security infrastructure.   All of these components are functional and are running research jobs in production.
 
@@ -548,8 +548,18 @@ data is kept on a shared file system but no single file system is exported to al
 be used throughout the grid.
 
 \subsection{GLOW}
-GLOW \cite{gridworkshopweb, glowwebsite} is a University of Wisconsin grid used at the Madison campus to distribute 
-jobs on their all-Condor grid.  Security is based on IP whitelisting.  Since all resources are based on Condor, job 
+
+
+\begin{figure}
+\centering
+\includegraphics[scale=0.6]{images/GLOW-Campus}
+\caption{Grid Laboratory of Wisconsin Campus Grid}
+\label{fig:GLOWCampus}
+\end{figure}
+
+
+Grid Laboratory of Wisconsin (GLOW) \cite{gridworkshopweb, glowwebsite} is a University of Wisconsin grid used at the Madison campus to distribute 
+jobs on their all-Condor grid.  A diagram of the campus grid is shown in \ref{fig:GLOWCampus}.  Security is based on IP whitelisting.  Since all resources are based on Condor, job 
 submission and distribution is managed through the same Condor-only mechanisms as Purdue.  While there is a central 
 team available to assist with management, each resource is free to define its own policies and priorities for local 
 and remote usage.  Cluster ownership is distributed, although there's also a general-purpose cluster available.  
@@ -846,8 +856,7 @@ To maintain the classads, the factory queries the collector for offline ads. If 
 \begin{figure}[h!tbp]
 \begin{center}
 \includegraphics[scale=0.8]{images/CHEP-Campus}
-\caption{The full Campus Grid architecture, complete with connections to other campuses and the OSG.  As each resource 
-becomes fully utilized, the user's jobs will extend out to increasingly remote clusters.}
+\caption{The full Campus Grid architecture}
 \label{fig:campusgrid}
 \end{center}
 \end{figure}
@@ -1031,7 +1040,7 @@ basicstyle=\footnotesize}
 
 
 
-\caption{Test test submission scripts} \label{fig:submission}
+\caption{Campus Grid submission scripts} \label{fig:submission}
 \end{figure}
 
 
