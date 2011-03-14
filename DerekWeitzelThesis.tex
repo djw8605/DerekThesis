@@ -461,22 +461,30 @@ conclusions and describes future work.
 %your idea relates to other work as possible
 
 \subsection{Globus} \label{sec:globus}
-Globus is a translation layer between the Resource Specification Language, and the local resource manager.  It has been very successful in that is has a large install base.  Globus also has deep integration with standard grid credentials such as PKI.
+Globus GRAM is a translation layer between the Resource Specification Language, and the local resource manager.  It has been very successful and has a large install base.  Globus also has deep integration with standard grid authentication methods such as PKI.
 
-Placing Globus gatekeepers on each cluster would allow jobs to be submitted to each cluster without modifying the underlying batch system.  But, this would require a higher layer of abstraction over the Globus gatekeepers to optimally balance load between clusters. Globus has well known limitations such as a low submission rate and high resource usage.  Additionally, it implements GSI (certificates) security that is inconstant with most existing campus security architectures.  Also, it does not provide a method for transparent execution on other clusters: each submission must target a specific execute resource.  Therefore, there is no overflow capability in Globus, which experience on the OSG has shown is important to users.
+Placing Globus gatekeepers on each cluster allows jobs to be submitted to each cluster without modifying the underlying batch system.  This requires a higher layer of abstraction over the Globus gatekeepers to optimally balance load between clusters.   
+Globus GRAM implements GSI (certificates) security that is inconsistent with most existing campus security architectures such as LDAP authentication or Kerberos.  It does not provide a method for transparent execution on other clusters: each submission must target a specific execute resource.  Therefore, there is no overflow capability in Globus, which experience on the OSG has shown is important to users.
 
 \subsection{Condor Flocking} %\label{sec:flocking}
-A single software solution is Condor.  Each resource can run Condor on their clusters and 'flock' \cite{epema1996worldwide} to each other.  In this solution, jobs would be balanced on each resource due to Condor's greedy scheduler algorithm.  
+A single software solution is Condor.  Each resource can run Condor on their clusters and `flock' \cite{epema1996worldwide} to each other.  In this solution, jobs may not be balanced on each resource due to Condor's greedy scheduler algorithm, but they will find any idle slots available on the resources.  
 
-Flocking jobs is accomplished by a multi-step process.  First, the \texttt{condor\_schedd} reports to the remote \texttt{condor\_collector} that it has idle jobs available to run.  During its next iteration, the remote \texttt{condor\_negotiator} contacts the \texttt{condor\_schedd} to match available resources to the requested jobs.  When the \texttt{condor\_schedd} receives a match, it contacts the resource directly to claim it.  After the claim is successful, the job starts on the remote resource.  Flocking is further described in Section \ref{sec:flocking}.
+\begin{figure}[h!t]
+\centering
+\includegraphics[scale=0.8]{images/Flocking}
+\caption{Overview of Flocking}
+\label{fig:Flocking}
+\end{figure}
 
-Condor flocking has many advantages.  Since the job submitter (\texttt{condor\_schedd}) directly contacts the executing resource, there is no additional load on any central node.  Flocking handles failures gracefully.  If an execution resource becomes disconnected, Condor will attempt to reconnect, or re-run the job elsewhere.  Jobs will still execute on previously claimed resources if the central manager becomes disconnected.
+Flocking jobs is accomplished by a multi-step process, displayed in Figure \ref{fig:Flocking}.  First, the \texttt{condor\_schedd} reports to the remote \texttt{condor\_collector} that it has idle jobs available to run.  During the next negotiation cycle, the remote \texttt{condor\_negotiator} contacts the \texttt{condor\_schedd} to match any available remote resources to the requested jobs.  If there is a match, it is sent to the \texttt{condor\_schedd} and it contacts the resource directly to claim it.  After the claim is successful, the job starts on the remote resource.  Flocking is further described in Section \ref{sec:flocking}.
 
-But, this solution again requires each resource to run Condor as their scheduler and resource manager.  Additionally, Condor must be running on each worker node, increasing the administration requirements.
+Condor flocking has many advantages.  Since the job submitter (\texttt{condor\_schedd}) directly contacts the executing resource, there is no central service that is relied on.  Flocking handles failures gracefully.  If an execution resource becomes disconnected, Condor will attempt to reconnect, or re-run the job elsewhere.  Jobs will still execute on previously claimed resources if the central manager becomes disconnected.  Condor treats flocked jobs just as it would a local job.
+
+This solution requires each resource to run Condor as their scheduler and resource manager. Condor must be running on each worker node, increasing the administration requirements.
 
 
 \subsection{GlideinWMS}
- The Glidein Workflow Management System (GlideinWMS) \cite{sfiligoi2008glideinwms} is a job submission method that abstracts the grid interface, leaving only a batch system interface.  GlideinWMS separates the system into two components, the frontend and the factory.  The frontend monitors the local user queue and requests glideins from the factory.  The factory serves requests from multiple frontends and submits pilots to the grid resources on their behalf.  The factory only submits jobs to grid interfaces on multiple resources and can be optimized for that purpose.  The frontend only deals with the local batch system, and can be optimized for the user's jobs.
+ The Glidein Workflow Management System (GlideinWMS) \cite{sfiligoi2008glideinwms} is a job submission method that abstracts the grid interface, leaving only a batch system interface.  GlideinWMS separates the system into two general pieces, the frontend and the factory.  The frontend monitors the local user queue and requests glideins from the factory.  The factory serves requests from multiple frontends and submits pilots, container jobs that will pull down user jobs, to the grid resources on their behalf.  The factory only submits jobs to grid interfaces on multiple resources and can be optimized for that purpose.  The frontend only deals with the local batch system, and can be optimized for the user's jobs.
  
 The GlideinWMS system is managed by Condor.  It uses Condor to submit to the grid resources, as well as mange user jobs on the frontend.  The frontend and factory are daemons that run on the user submit host and a central machine, respectively.  
 
