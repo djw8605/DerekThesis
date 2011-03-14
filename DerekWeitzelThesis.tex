@@ -411,7 +411,7 @@ The Open Science Grid (OSG) \cite{pordes2007open} is a national cyber infrastruc
 
 The OSG Production Grid provides a common interface to computing and storage resources: Globus and Storage Resource Manager (SRM)/GridFTP respectively.  Clients can access the resources by a OSG provided client.  Both Globus and SRM/GridFTP were developed by consortium members and are included into the OSG packaging.  Many software added have been contributed to the OSG software stack such as Condor and the Berkeley Storage Manager \cite{Bestman}.
 
-
+A typical OSG site has a compute element that can run jobs and a storage element that can store data.  The storage element is both physically close, and well connected to the compute element, in order to minimize latency for data.  Since most sites have their own storage element, they are used to stage data into and out of the site.  
 
 
 % Do we need this?  Probably not, this is what the paper is about.
@@ -484,25 +484,26 @@ This solution requires each resource to run Condor as their scheduler and resour
 
 
 \subsection{GlideinWMS}
- The Glidein Workflow Management System (GlideinWMS) \cite{sfiligoi2008glideinwms} is a job submission method that abstracts the grid interface, leaving only a batch system interface.  GlideinWMS separates the system into two general pieces, the frontend and the factory.  The frontend monitors the local user queue and requests glideins from the factory.  The factory serves requests from multiple frontends and submits pilots, container jobs that will pull down user jobs, to the grid resources on their behalf.  The factory only submits jobs to grid interfaces on multiple resources and can be optimized for that purpose.  The frontend only deals with the local batch system, and can be optimized for the user's jobs.
+ The Glidein Workflow Management System (GlideinWMS) \cite{sfiligoi2008glideinwms} is a job submission method that abstracts the grid interface, leaving only a batch system interface.  GlideinWMS accomplishes this abstraction by using pilot jobs.  Pilot jobs are containers that once started, will request work from the user's queue.  User jobs will not wait in remote queues, therefore user jobs do not waste time in remote queues when idle resources are available.  GlideinWMS separates the system into two general pieces, the frontend and the factory.  The frontend monitors the local user queue and requests glideins from the factory.  The factory serves requests from multiple frontends and submits pilots to the grid resources on their behalf.  The factory only submits jobs to grid interfaces on multiple resources and can be optimized for that purpose.  The frontend only deals with the local batch system, and can be optimized for the user's jobs.
  
-The GlideinWMS system is managed by Condor.  It uses Condor to submit to the grid resources, as well as mange user jobs on the frontend.  The frontend and factory are daemons that run on the user submit host and a central machine, respectively.  
+The GlideinWMS system is uses Condor throughout.  It uses Condor-G \cite{frey2002condor} to submit to the grid resources, as well as manage user jobs on the frontend.  The frontend and factory are daemons that run on the user submit host and a central machine, respectively.  
 
-GlideinWMS is heavily used on the the Open Science Grid.  A major user and developer of the software is CMS \cite{bradley2010use}.  They have demonstrated recently that GlideinWMS can scale beyond 25,000 running jobs.
+GlideinWMS is heavily used on the the Open Science Grid.  A major user and developer of the software is high energy physics, specifically the Compact Muon Solenoid (CMS) experiment \cite{bradley2010use} and the Collider Detector at Fermilab (CDF) \cite{zvada2010cdf}.  They have demonstrated recently that GlideinWMS can scale beyond 25,000 running jobs.
 
 GlideinWMS does have a few drawbacks.  GlideinWMS uses an external factory that acts as a single point of failure.  If the factory quits submitting jobs to grid resources, then users cannot run jobs.  Also, GlideinWMS is designed to only submit to GSI secured sites.  GSI is typically used only on production grids, and is rarely used inside a campus where the trust relationship is implicitly stronger.  
 
 \subsection{Panda}
-Panda is a distributed production pilot based submission system developed by US ATLAS for analysis of the ATLAS Experiment \cite{atlas} data.  Panda is designed with tight integration with the ATLAS distributed data management system.  It has integrated monitoring for production and analysis operations, user analysis interfaces, data access and site status.  
+Panda is a distributed pilot-based submission system developed by US ATLAS for analysis of the ATLAS Experiment \cite{atlas} data.  Panda is designed with tight integration with the ATLAS distributed data management system.  It has integrated monitoring for production and analysis operations, user analysis interfaces, data access and site status.  
 
 PANDA is designed to be based around a central server.  All jobs are submitted to this single server that centrally manages all job information.  The user submits jobs using HTTP interface to the central server.  The end-users are insulated from the grid by only accessing the central PANDA server.
 
-PANDA has very strong data management since it is integrated with the ATLAS data management system.  The client interface is generic enough that jobs can be submitted to multiple grids transparently.  Accounting and monitoring are tightly integrated into the system and can be easily monitored since all jobs are run from a central server.
+PANDA has very strong data management as it is integrated with the ATLAS data management system.  The client interface is generic enough that jobs can be submitted to multiple grids transparently.  Since all submissions are from a central server, accounting and monitoring of jobs are trivial and very accurate.
 
-The PANDA system is very reliant on the uptime of the central server.  Though the resource independence is high when the resources are grid sites, the system still is reliant on the central PANDA server for any jobs to start.  However, in practice, this has been very reliable.
+The PANDA system is very reliant on the uptime of the central global server.  Though the resource independence is high when the resources are grid sites, the system still is reliant on the central PANDA server for any jobs to start.  However, in practice, this has been very reliable.
 
-\subsection{Moab}
-Another solution to build a grid is to use a single vendor/software solution.  For example, Cluster Resources offer a solution Moab Grid Suite \cite{website:moabgrid}.  This solution requires each resource to run a single piece of proprietary software, Moab.  Moab is a meta-scheduler, using PBS to manage the underlying resources.  By using Moab, the development of new grid technologies are limited to what can be done in Moab.
+% Weak argument
+%\subsection{Moab}
+%Another solution to build a grid is to use a single vendor/software solution.  For example, Cluster Resources offer a solution Moab Grid Suite \cite{website:moabgrid}.  This solution requires each resource to run a single piece of proprietary software, Moab.  Moab is a meta-scheduler, using PBS to manage the underlying resources.  By using Moab, the development of new grid technologies are limited to what can be done in Moab.
 
 
 
@@ -536,13 +537,13 @@ The Virginia Campus Grid \cite{humphrey2005university} designed a campus grid us
 
 Another focus of the Virginia campus grid was policy expression and enforcement.  This is a common theme for many grids since they span multiple administrative domains.  In the Virginia grid, an enforcement service would enforce these rules by cutting off and redirecting users to and from resources.  The load balancing would be enforced by the enforcement services, as well as policies regarding a resources preference for jobs.  Additionally, a broker was developed to distribute jobs.
 
-The Virginia campus grid has many attributes shared with other Campus Grids.  The Virginia grid approaches trust relationships by utilizing the existing campus authentication infrastructure.  Job submission is handled by WSRF and distributed with a custom developed broker.  There are many central services such as the enforcement service and the broker which limits resource independence of the grid.  A downtime in either of these services would limit usefulness the grid.  Accounting and authentication are handled by central IT.  Data management is not addressed in the campus grid.  Data management is very important to any campus grid given the rising demands of data intensive computing for scientific applications.
+The Virginia campus grid has many attributes shared with other Campus Grids.  The Virginia grid approaches trust relationships by utilizing the existing campus authentication infrastructure.  Job submission is handled by WSRF and distributed with a custom developed broker.  There are many central services such as the enforcement service and the broker which limits resource independence of the grid.  A downtime in either of these services would limit usefulness the grid.  Accounting and authentication are handled by central IT.  Data management is not addressed in the campus grid.  
 
 
 \subsection{Oxford Campus Grid}
-The Oxford Campus Grid \cite{wallom2006oxgrid} built a comprehensive campus grid including both compute and data provisioning.  The compute provisioning uses Condor-G \cite{frey2002condor} and a information server.  The information server injected resource specific information into the Condor-G matchmaker, allowing Condor to match jobs to appropriate resources as well as to follow resource policies.  For data provisioning, the Storage Resource Broker (SRB) \cite{baru1998sdsc} was used with a dedicated data vault.  Authentication is handled through on-campus kerberos.  Accounting is done by a custom daemon written at Oxford that keeps detailed statistics for every job.
+The Oxford Campus Grid \cite{wallom2006oxgrid} built a comprehensive campus grid including both compute and data provisioning.  The compute provisioning uses Condor-G \cite{frey2002condor} and a information server.  The information server injected resource specific information into the Condor-G matchmaker, allowing Condor to match jobs to appropriate resources as well as to follow resource policies.  For data provisioning, the Storage Resource Broker (SRB) \cite{baru1998sdsc} was used with a dedicated data node.  Authentication is handled through on-campus Kerberos.  Accounting is done by a custom daemon written at Oxford that keeps detailed statistics for every job.
 
-The Oxford campus grid very closely resembles the Open Science Grid model.  Each resource has a gatekeeper, a central node that provides access to the underlying nodes.  The information server and virtual organization management both have analogies in the OSG.  
+The Oxford campus grid resembles the Open Science Grid model.  Each resource has a gatekeeper, a central node that provides access to the underlying nodes.  The information server and virtual organization management both have analogies in the OSG.  
 The resource broker and data vault conflict with the design of the OSG.  Both of these resources are single points of failure that can severely degrade the usability of the campus grid.  
 
 
