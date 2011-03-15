@@ -78,7 +78,10 @@ linkbordercolor=white
 
 \begin{abstract}
 
-It is common at research institutions to maintain multiple clusters.  These might fulfill different needs, different owners and policies, or represent generations of hardware.  Many of these clusters are under utilized while researchers at other departments may require these resources.  Linking these clusters with traditional grid software would require changes in security and execution environments.  In this paper we will describe a framework and technology that are used to link departmental clusters such that submission at one cluster could lead to execution on another.  The framework is implemented spanning two campuses at the Holland Computing Center.  We evaluate the framework for five characteristics of campus grids.  This framework is then further expanded to bridge campus grids into a regional grid.
+It is common at research institutions to maintain multiple clusters.  These might fulfill different needs, different owners and policies, or represent generations of hardware.  Many of these clusters are under utilized while researchers at other departments may require these resources.  
+This is often solved by linking clusters with grid middleware.  This thesis describes a distributed high throughput computing framework to link clusters without changing security or execution environments.  
+The framework will keep jobs local to the submitter, overflowing to the campus, and if necessary, to the regional grid.
+The framework is implemented spanning two campuses at the Holland Computing Center.  We evaluate the framework for five characteristics of campus grids.  This framework is then further expanded to bridge campus grids into a regional grid, and overflow to national cyberinfrastructure.
 
 %the framework is designed as lightweight, and leveraging existing security infrastructure.   All of these components are functional and are running research jobs in production.
 
