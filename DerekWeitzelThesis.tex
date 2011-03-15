@@ -831,6 +831,7 @@ The factory submission logic is as follows:
 
 \begin{algorithm}
 \begin{algorithmic}
+\STATE $idleuserjobs \gets$ QueryUserQueues()
 \IF {idlejobs $<$ MaxIdleGlideins \&\& queuedglideins $<$ MaxQueuedJobs}
 	\STATE $toSubmit \gets$ min(MaxIdleGlideins - idlejobs, MaxQueuedJobs - queuedglideins, idleuserjobs)
 \ELSE
@@ -843,6 +844,8 @@ The factory submission logic is as follows:
 \label{alg:glideins}
 \end{algorithm}
 
+Note that the QueryUserQueues function requires the factory to implement external communication with the user queues.
+
 Additionally, the factory has logic to detect pilots that are not reporting to the collector.  Pilots that have been submitted to the factory's Condor will show their status as reported by PBS and BLAHp.  The factory will look for the same number reporting as `Running', and reporting to \texttt{condor\_collector}.  If these two number differ by more than $10\%$, the factory will stop submitting jobs.  This can happen when the LRM cannot transfer files, if the BLAHP is incorrectly reporting the status of a job, or if there is something wrong with the pilot jobs.
 
 
@@ -852,28 +855,38 @@ Offline ads are a Condor feature that were designed to be used for power managem
 
 %The collector maintains the offline ads for a configurable amount of time using the configuration variable OFFLINE\_EXPIRE\_ADS\_AFTER. During this time, 
 
-In the \texttt{campus\_factory}'s implementation, the OfflineAds are used to match possible pilot resources to idle jobs.  Dead pilots are though as ``offline machines''.  Again, the \texttt{condor\_negotiator} will treat the offline ads just as it would a real ad and matches it to idle jobs. Since the Negotiator sees no difference between running and offline ads, the offline ads will be matched even when flocking from another condor pool.
+In the \texttt{campus\_factory}'s implementation, the OfflineAds are used to match possible pilot resources to idle jobs.  Dead pilots are though as ``offline machines''.  Again, the \texttt{condor\_negotiator} will treat the offline ads just as it would a real ad and matches it to idle jobs.  Since the offline ad is an exact copy of a running glidein, it is reasonably expected that one can get a similar glidein when you submit to the local scheduler.  As the negotiator sees no difference between running and offline ads, the offline ads will be matched even when flocking from another Condor pool.
 
-Since the OfflineAds are exact copies of active glideins, the OfflineAds will increase the accuracy of matching with idle jobs by resembling running glideins.  Descriptions of the glidein host and installed software will be represented in the OfflineAds just as it would a regular glidein ad.
+The OfflineAds are exact copies of previously live pilots, the OfflineAds increases the accuracy of matching with idle jobs by exactly resembling running glideins.  In GlideinWMS and previous pilot implementations, filters where applied to the user queues to determine if a job was capable of running on the resource.  The filters where customized by admins to best describe the pilot environment at the resources. 
 
 
 \subsubsection{Influence OfflineAds have on the Factory}
-The OfflineAds do not completely replace all logic described in Algorithm \ref{alg:glideins}. The site must still meet the idle glideins and idle slots requirements that were originally used to throttle new glideins. The OfflineAds do replace the need for the factory to query remote schedd's for idle jobs.  This improves the efficiency and simplicity of the factory by eliminating communication.  The negotiator and collector take care of all job matching with accurate glidein classads.
+The OfflineAds do not completely replace all logic described in Algorithm \ref{alg:glideins}. The site must still meet the idle glideins and idle slots requirements that were originally used to throttle new pilot submissions. The OfflineAds replace the need for the factory to query remote schedd's for idle jobs.  This improves the efficiency and simplicity of the factory by eliminating communication.  But the large benefit is the increased accuracy of the pilot descriptions.  The factory will only submit jobs when the offline ads detect a definite match to the cluster's resources.  The negotiator and collector take care of all job matching with accurate glidein classads.
 
-The logic of the factory follows:
+The logic of the factory follows is described in Algorithm \ref{alg:glideinswithofflineads}. 
 
-\begin{enumerate}
-\item Are there idle startd's?
-\item Are there idle glideins in queue?
-\item Have any of the idle offline ads matched in the last x seconds?
-\item If we get this far, submit some glideins. 
-\end{enumerate}
 
+\begin{algorithm}
+\begin{algorithmic}
+\STATE $idleuserjobs \gets$ QueryOfflineAds()
+\IF {idlejobs $<$ MaxIdleGlideins \&\& queuedglideins $<$ MaxQueuedJobs}
+	\STATE $toSubmit \gets$ min(MaxIdleGlideins - idlejobs, MaxQueuedJobs - queuedglideins, idleuserjobs)
+\ELSE
+	\STATE $toSubmit \gets 0$
+\ENDIF
+\RETURN $toSubmit$
+
+\end{algorithmic}
+\caption{Algorithim for determining how many glideins to submit with OfflineAds}
+\label{alg:glideinswithofflineads}
+\end{algorithm}
+
+In contrast to Algorithm \ref{alg:glideins}, this does not have any external communication.  The QueryOfflineAds queries the local \texttt{condor\_collector}.
 
 \subsubsection{Creating OfflineAds}
-During operation of the factory, it will submit glideins to the underlying batch system.  The factory detects the classads of running glideins, copies the classads, and re-advertises them as offline ads. Since the offline ad is an exact copy of a running glidein, it is reasonably expected that you can get a similar glidein when you submit to the local scheduler.
+After the \texttt{campus\_factory} submits pilot jobs, it detects the classads of running pilot jobs, copies the classads, and re-advertises them as offline ads. 
 
-The changes required to transform a glidein classad into an offline ad is in Table \ref{tab:offlineads}. 
+The changes required to transform a glidein classad into an offline ad are listed in Table \ref{tab:offlineads}. 
 
 \begin{table}[h!t]
 \centering
@@ -894,9 +907,9 @@ PreviousName & Name & Value of 'Name' attribute of the original ad. Useful for d
 
 
 \subsubsection{Managing OfflineAds}
-By default, the factory will attempt to maintain a specific number of offline ads. This can be done in a number of ways, such as always maintaining the newest 10 ads. Or you can sort by different 'types' of machines (big memory, big disk), and keep an assortment of unique ads.  Currently, the factory only keeps the latest 10 ads.  10 was determined to be an appropriate sample size as it is large enough to represent multiple nodes (8 cores/jobs per node standard).  Larger number of ads will cause a heavier load on the head node as it matches the offline ads to idle jobs.
+By default, the factory will attempt to maintain a specific number of OfflineAds. By default, it maintains the newest 10 ads.  One can sort by different `types' of machines (big memory, big disk), and keep an assortment of unique ads.  This method will better represent the heterogeneous nature of the resource.  Ten was determined to be an appropriate sample size as it is large enough to represent multiple nodes (currently 8 cores per node standard).  Larger number of ads will cause a heavier load on the CGF as it matches the OfflineAds to idle jobs.
 
-To maintain the classads, the factory queries the collector for offline ads. If it detects more than 10, it will only keep the newest 10. If less then ten, the offline ad manager will list the site as Delinquent, and will recommend submitting more glideins.
+The factory will maitain the newest ten OfflineAds.  If it detects less then ten, the OfflineAd manager will list the site as Delinquent in an internal structure, and will recommend the factory submit more pilots.
 
 
 
