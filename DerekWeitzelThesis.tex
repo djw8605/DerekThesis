@@ -16,7 +16,7 @@ bookmarks=true,%
 bookmarksopen=true,%
 bookmarksnumbered=true,%
 bookmarkstype=toc,%
-pdftitle={Derek Weitzel Thesis - Campus Grids},%
+pdftitle={Derek Weitzel Thesis--Campus Grids},%
 pdfsubject={},%
 pdfauthor={Derek Weitzel},%
 pdfkeywords={Weitzel, Grid, Campus},
@@ -44,6 +44,8 @@ linkbordercolor=white
 \usepackage{subfig}
 \usepackage{multirow}
 \usepackage{bbding}
+\usepackage{rotating}
+\usepackage{array}
 
 \newlength{\imgwidth}
 
@@ -91,6 +93,7 @@ The framework is implemented spanning two campuses at the Holland Computing Cent
 \tableofcontents
 \newpage
 \listoffigures
+\listoftables
 
 % \doublespace
 \mainmatter
@@ -122,13 +125,13 @@ A computational grid is a hardware and software infrastructure that provides dep
 
 A campus grid has become necessary to alleviate demand on newer parallel machines by moving single core jobs to other resources that have idle cycles, such as previous generations of parallel machines and idle workstations.  By moving the single core jobs, it can free the newest hardware for large parallel jobs that can benefit from better interconnects, larger and faster storage, and increased core count that are on the newest hardware.
 
-A campus grid requires a framework for distributing computation among independent clusters within a campus.  A campus typically contains multiple compute clusters that are independently administered.  A campus grid's purpose is to increase the processing power accessible to users by connecting compute resources.   By offloading jobs from clusters that are full to idle clusters, they can increase utilization.  Additionally, the users can benefit by increased processing power.  
+A campus grid requires a framework for distributing computation among independent clusters within a campus.  A campus typically contains multiple compute clusters that are independently administered.  A campus grid's purpose is to increase the processing power accessible to users by connecting compute resources.   By \mbox{offloading} jobs from clusters that are full to idle clusters, they can increase utilization.  Additionally, the users can benefit by increased processing power.  
 
 The framework described in this thesis is used to create a production campus grid.  The campus grid includes technology to allow clusters to participate in the campus grid.  It integrates clusters that use several schedulers, and uses production quality software integrated into a solution that is deployed at several clusters in the U.S.  The campus grid framework provides a method for users to run jobs transparently on distributed resources.  The jobs are sent to available resources on distributed clusters on the campus grid.  Further, it can expand beyond the campus and onto other campuses by simple configuration changes.
 
-At the Holland Computing Center (HCC), I created a campus grid that spans two clusters and can overflow onto national grid infrastructure.  The HCC grid borrowed concepts and techniques from earlier campus grids and a national grid, the Open Science Grid (OSG).  The OSG focuses on High Throughput Computing (HTC), concentrating on tasks that require as much computing power (throughput) as possible over long periods of time \cite{gridbook-htc}.  The HCC Campus grid also focuses on HTC tasks.  
+At the Holland Computing Center (HCC), I created a campus grid that spans two clusters and can overflow onto national grid infrastructure.  The HCC grid borrowed concepts and techniques from earlier campus grids and a national grid, the Open Science Grid (OSG).  The OSG focuses on High Throughput Computing (HTC), concentrating on tasks that require as much computing power (throughput) as possible over long periods of time \cite{gridbook-htc}.  The HCC campus grid also focuses on HTC tasks.  
 
-The HCC campus grid bridges clusters and the national infrastructure while running production processing jobs from on-campus researchers. Since the beginning of 2010 we have run 8,151,607 jobs for 9,022,655 hours on the campus grid infrastructure.
+The HCC campus grid bridges clusters and the national infrastructure while running production processing jobs from on-campus researchers. Since the beginning of 2010, we have run 8,151,607 jobs for 9,022,655 hours on the campus grid infrastructure.
 
 
 Building a campus grid represents a significant commitment for both users and resource providers, which should be 
@@ -146,9 +149,9 @@ reduces the need for high levels of redundancy and stretches the campus computin
 \end{itemize}
 
 An obvious requirement for campus grids is having multiple resources on campus.  However, this is not sufficient for 
-resource providers - the resources should also be interchangeable.  A grid composed of a single AIX cluster, Linux 
+resource providers--the resources should also be interchangeable.  A grid composed of a single AIX cluster, Linux 
 cluster, and Windows cluster, will likely never see any resource pooling or sharing.  This does not necessarily imply 
-the resources need to be identical - complete homogeneity is typically impossible due to individual resource 
+the resources need to be identical--complete homogeneity is typically impossible due to individual resource 
 requirements or ownership.  Often it is undesirable to have homogeneity as resources can fulfill different 
 resource requirements such as large memory or local scratch space.
 
@@ -218,7 +221,7 @@ preventing distribution.  Software with strict licenses may also be illegal to u
 
 
 
-There have been several methods to create a distributed campus grid.  They all use some technology to distribute and schedule the jobs on the grid.  Some methods for distribution are commercial products such as  the meta scheduler Moab \cite{website:moabgrid}.  Others are translation layers between a generic description language and a scheduler, such as Globus \cite{foster1997globus}, CREAM \cite{andreetto2006cream}, and ARC \cite{eerola2006roadmap}.  Still others are entire resource managers that can span multiple clusters like Condor \cite{thain2005distributed}.  Each of these solutions can utilized to create a campus grid, but they all have drawbacks that are highlighted in Section \ref{sec:others}.
+There have been several methods to create a distributed campus grid.  They all use some technology to distribute and schedule the jobs on the grid.  Some methods for distribution are commercial products such as  the meta scheduler Moab \cite{website:moabgrid}.  Others are translation layers between a generic description language and a scheduler, such as Globus \cite{foster1997globus}, CREAM \cite{andreetto2006cream}, and ARC \cite{eerola2006roadmap}.  Still others are entire resource managers that can span multiple clusters like Condor \cite{thain2005distributed}.  Each of these solutions can be utilized to create a campus grid, but they all have drawbacks that are highlighted in \mbox{\secref{sec:others}}.
 
 
 
@@ -236,7 +239,7 @@ found campus grids can be characterized by how they approach trust relationships
 independence, accounting, and data management.
 
 
-\subsection{Trust relationships}
+\subsection{Trust Relationships}
 A campus grid must have an acceptable trust model in order to succeed.  A trust relationship enables 
 a resource provider to grant campus users controlled access to the resource, and may be established through 
  sociology and/or technology-based security methods.
@@ -244,13 +247,13 @@ a resource provider to grant campus users controlled access to the resource, and
 In the OSG, the trust model used is designed to be homogeneous and to meet the most stringent requirements of 
 all participating sites.  The implementation involves using Globus's Grid Security Infrastructure (GSI) with Virtual Organization Membership Service (VOMS)  
 attributes, a Public Key Infrastructure (PKI) extension \cite{farrell2002rfc3281}.  The GSI model is widely 
-accepted, allowing the OSG to participate in the Worldwide LHC Computing Grid (WLCG) \cite{wlcg}.  Fermigrid, located at the Fermi National Accelerator Laboratory in Batavia, IL, uses GSI authentication on their campus grid. 
-While it provides a highly secure, decentralized authorization model and 
-proven at the worldwide scale, it is more difficult for end users compared to traditional username/password 
+accepted, allowing the OSG to participate in the Worldwide LHC Computing Grid (WLCG) \cite{wlcg}.  FermiGrid, located at the Fermi National Accelerator Laboratory in Batavia, Illinois, uses GSI authentication on its campus grid. 
+While it provides a highly secure, decentralized authorization model,
+it is more difficult for end users compared to traditional username/password 
 authentication.  Thus, campus grids may be motivated to use alternate trust models.
 
 On-campus resource providers may have a higher implicit degree of trust than at the national level due to 
-sociological reasons.  This trust is partially be based on locality -- it is easier to establish a working relationship 
+sociological reasons.  This trust is partially based on locality--it is easier to establish a working relationship 
 with a colleague locally on campus than 1000 miles away.  Additionally, a national lab such as Fermilab is higher profile 
 than most universities and therefore requires stronger trust relationships to maintain security and accountability.
 
@@ -259,7 +262,7 @@ not have strict policies governing user job separation or traceability requireme
 satisfied with running any job originating from elsewhere on the campus to an unprivileged account.  When a job crosses 
 domains (from local cluster to across campus, or from campus to the national grid), it must 
 satisfy the security requirements for the destination domain.  Thus, if a campus grid would like to bridge to the 
-national grid, users most be able to associate GSI credentials with their jobs.
+national grid, users must be able to associate GSI credentials with their jobs.
 
 A technical reason for different trust relationships between campuses and larger grids is the location of user 
 job submit hosts.  Unlike the OSG, where users can submit jobs from any worldwide host, campus users often submit from 
@@ -269,7 +272,7 @@ campuses, as the security such as username and password is applied to submit hos
 
 
 
-\subsection{Job submission}
+\subsection{Job Submission}
 In order for a HTC-oriented campus grid to function, users need a usable job submission interface.
 The Globus Toolkit \cite{foster1997globus} provides the Globus Resource Allocation Manager (GRAM) interface for job 
 submission and corresponding clients.  The GRAM layer abstracts the batch system; the 
@@ -278,15 +281,15 @@ The GRAM interface is used by the OSG at the scale of over 100 million jobs a ye
 interface abstracts many batch system constructs, and is also used 
 on the TeraGrid to submit larger jobs running on hundreds or thousands of cores.  While GRAM can be used directly, 
 users almost exclusively prefer to interact with it via Condor-G  \cite{frey2002condor} , which provides a batch 
-system interface on top of GRAM.  Fermigrid relies on Condor-G submission to GRAM for job submission.
+system interface on top of GRAM.  FermiGrid relies on Condor-G submission to GRAM for job submission.
 
 An abstraction layer like GRAM introduces a new user experience (even if Condor-G is used), requiring new expertise. An 
 alternate approach is to use batch system software that can interact with multiple instances of itself.  By 
 linking resources at the batch system level rather than adding an abstraction layer on top, we improve the user 
-experience - users no longer need to learn additional tools.  The client tools do not need to translate errors across 
+experience--users no longer need to learn additional tools.  The client tools do not need to translate errors across 
 different domains, easing a common source of frustration in the grid.  When Condor-G is used, we have a batch-system 
-interface abstracting an API which, in turn, abstracts remote batch systems - error propagation is extremely difficult.  
-In the Purdue, GLOW, and HCC campus grids, 
+interface abstracting an API which, in turn, abstracts remote batch systems; thus, error propagation is extremely difficult.  
+In some campus grids described in \secref{sec:others}, 
 resources are linked through use of a common batch system, Condor, through a mechanism Condor refers to as 
 ``flocking".  A hybrid between Condor-only and GRAM is given by GlideinWMS \cite{sfiligoi2008making}.
 
@@ -300,29 +303,28 @@ Compared to a corporate IT environment, one unique aspect of universities is the
 computing 
 resources.  On a campus, several distinct teams may manage distinct clusters due to campus 
 organization or ownership.  Management of resources may be divided by college, departmental, or lab level.  One 
-characteristic of campus grids is thus the independence of resources - the level of decision-making delegated out to 
+characteristic of campus grids is the independence of resources--the level of decision-making delegated out to 
 the resource providers.
 
 The simplest campus grids can be formed by requiring all clusters on campus to run the same batch system and linking 
-batch system instances - GLOW's use of Condor is an example.  Every cluster in GLOW runs the Condor batch system, 
-providing a common interface.  System administrators are not free to chose their own batch systems if they want to 
+batch system instances--Grid Laboratory of Wisconsin's (GLOW) use of Condor is an example.  Every cluster in GLOW runs the Condor batch system, 
+providing a common interface.  System administrators are not free to choose their own batch systems if they want to 
 participate in this grid (participation is voluntary, and participants obviously believe the benefits of GLOW 
 membership outweighs this drawback).  It may be desirable for a specialized cluster to have a distinct batch system  
 from the rest of the campus; resource independence allows the cluster owners to best optimize their resource to suit 
 their needs.
 
 Resource independence comes at a cost to the end-user.  Extremely heterogeneous resources can be difficult to 
-integrate at the software level - a binary compiled for Linux will not be compatible with Windows.  Some guarantees 
+integrate at the software level--an application compiled for Linux will not be compatible with Windows.  Some guarantees 
 about the runtime environment or other interfaces need to be clearly articulated and agreed upon to prevent frustration.  Differences 
 that are unavoidable or are expected to be handled by the user should be clearly expressed to the user \cite
 {raman2002matchmaking}.  At the OSG level, we have found the users often frustrated by the amount of heterogeneity, especially unexpected heterogeneity, compared to using a single site or a grid with a smaller number of sites \cite{zvada2010cdf}.
 
 
 \subsection{Accounting}
-Accounting may not seem to be an important grid characteristic -- it certainly isn't required for 
-users to successfully run a job.  However, it is critical for long term health as it provides a quantitative 
-measurement of the grid's value.  Accounting is also required for resource providers and users to ``barter" computing hours, one  
-economic model for the grid.
+Accounting may not seem to be an important grid characteristic--it certainly isn't required for 
+users to successfully run a job.  However, it is critical for the long-term health of the campus grid as it provides a quantitative 
+measurement of the grid's value.  One economic model for the grid is for resource providers and users to ``barter" for computing hours as reported by accounting services. 
 
 Accounting systems do not need to be technically advanced.  Most batch systems provide a local accounting 
 system.  The most basic method is for each cluster to parse these logs into a CSV file per cluster, and to 
@@ -333,18 +335,18 @@ clusters involved use the same batch system.
 Many research computing centers have written their own accounting systems at some point; most implementations are in 
 the style of  PHP-based web interface on top of a custom database, again fed by custom log-parsing scripts. Both the 
 OSG and TeraGrid have spent effort on accounting software to suite their needs.  The OSG's Gratia \cite{gratiaweb} is 
-designed to be reusable by other organizations, and is in use at the FermGrid campus grid.
+designed to be reusable by other organizations, and is in use at the FermiGrid campus grid.
 
-Any site-local accounting systems -- homegrown, vendor provided, or designed for the national 
-grids -- can work at the campus grid level as long as they can answer the following questions for a given time 
+Any site-local accounting systems--homegrown, vendor provided, or designed for the national 
+grids--can work at the campus grid level as long as they can answer the following questions for a given time 
 period:
 \begin{itemize}
 \item How much computing resource was consumed overall?
 \item How much computing resource did a specific user/group consume?
-\item How much computing resource did a specific user/group consume on resources they did not own? I.e., 
-ÒHow much did I get from resource sharing?Ó
+\item How much computing resource did a specific user/group consume on resources they did not own; i.e., 
+Òhow much did I get from resource sharing?Ó
 \item How much computing resource did a specific cluster provide?
-\item How much computing resource did a specific cluster provide to groups that did not own it?  I.e., ÒHow 
+\item How much computing resource did a specific cluster provide to groups that did not own it;  i.e., Òhow 
 much did I give away due to resource sharing?Ó
 \end{itemize}
 
@@ -364,13 +366,13 @@ solution breaks down outside the campus and may break down in highly-distributed
 More complex solutions include declaring data dependencies for jobs explicitly inside the job 
 submissions (gLite WMS \cite{andreetto2008glite}, Condor), promoting data to be a top-level abstraction equal to jobs (Stork \cite
 {kosar2005stork}), or promoting data to be the central concept above jobs (iRODS \cite{irodswebsite, 
-rajasekar2007irods}).  The CMS model separates the data management and job submissions systems, allowing the job 
+rajasekar2007irods}).  The Compact Moun Solenoid (CMS) experiment's model separates the data management and job submissions systems, allowing the job 
 submissions to simply assume all data is available (CMS PhEDEx \cite{phedex}).
 
 While any system can be used for campus grids, the examples we consider in Sections \ref{sec:others} and \ref
 {sec:hcc} either export a file system or utilize the tools from the job submission system.  The addition of a separate 
 data management system often presents complexity to the users.  In some situations, it is easier for the user to not use distributed computing rather than deal with a complex data system.
-distributed computing is the cheaper alternative.  However, we note iRODS is an increasingly popular option and may 
+Distributed computing is the cheaper alternative.  However, we note iRODS is an increasingly popular option and may 
 have significantly decreased the operational cost of data management systems.
 
 
@@ -385,16 +387,16 @@ averaged over a 400,000 jobs and a million computational hours a day using HTC.
 
 
 \subsection{Condor}
-Condor was developed at the University of Wisconsin - Madison.  An overview from \cite{thain2005distributed}:
+Condor was developed at the University of Wisconsin--Madison.  An overview from \cite{thain2005distributed}:
 \begin{quotation}
 Condor is a high-throughput distributed batch computing system.  Like other batch systems, Condor provides a job management mechanism, scheduling policy, priority scheme, resource monitoring, and resource management.  Users submit their jobs to Condor, and Condor subsequently chooses when and where to run them based upon a policy, monitors their progress, and ultimately informs the user upon completion.  
 \end{quotation}
 
-An important technology used in Condor is the Classified Advertisement (ClassAd) mechanism.  ClassAds are the language that Condor uses to communicate between daemons and for matchmaking \cite{raman1998matchmaking}.  A ClassAd is a list of keys and values, where the values can be strings, numbers, or expressions.  All resources are described by ClassAds.  Job ClassAds have attributes such as log file, output, input, and job requirements.  Resource ClassAds have requirements to run on the resource, ownership, and policies.  ClassAds are used for matching jobs to resources by evaluating requirements of both the jobs and the resources.
+An important technology used in Condor is the Classified Advertisement (\mbox{ClassAd}) mechanism.  ClassAds are the language that Condor uses to communicate between daemons and for matchmaking \cite{raman1998matchmaking}.  A ClassAd is a list of keys and values, where the values can be strings, numbers, or expressions.  All resources are described by ClassAds.  Job ClassAds have attributes such as log file, output, input, and job requirements.  Resource ClassAds have attributes such as  requirements to run on the resource, ownership, and policies.  ClassAds are used for matching jobs to resources by evaluating requirements of both the jobs and the resources.
 
 Another component of Condor is the grid computing agent Condor-G \cite{frey2002condor}.  Condor-G communicates with Globus \cite{foster1997globus} sites.  Condor provides job submission, error recovery, and creation of a minimal execution environment.  Along with Condor-G, Condor can also submit jobs to other systems including Amazon EC2 \cite{amazonec2} and PBS \cite{pbstorque}.
 
-Commonly used Condor daemons and their functions are described Table \ref{table:condordaemons}.
+Commonly used Condor daemons and their functions are described in Table \ref{table:condordaemons}.
 
 \begin{table}
 \centering
@@ -408,13 +410,13 @@ Daemon & Function \\
 \texttt{condor\_negotiator} & Scheduler: Matches jobs with resources \\ \hline
 \texttt{condor\_startd} & Execution manager.  Runs on the resource \\ \hline
 \end{tabular}
-\caption{Condor daemon functions} \label{table:condordaemons}
+\caption{Condor Daemon Functions} \label{table:condordaemons}
 \end{table}
 
 \subsection{Open Science Grid}
 The Open Science Grid (OSG) \cite{pordes2007open} is a national cyber infrastructure consortium that provides dedicated and opportunistic use of computation and storage resources.  The OSG consists of nationally distributed universities and national laboratories that provide access to shared computing and storage.  The OSG provides infrastructure, services, software, and engagement to the users.  
 
-The OSG Production Grid provides a common interface to computing and storage resources: Globus and Storage Resource Manager (SRM)/GridFTP respectively.  Clients can access the resources by a OSG provided client.  Both Globus and SRM/GridFTP were developed by consortium members and are included into the OSG packaging.  Many software added have been contributed to the OSG software stack such as Condor and the Berkeley Storage Manager \cite{Bestman}.
+The OSG Production Grid provides a common interface to computing and storage resources: Globus and Storage Resource Manager (SRM)/GridFTP respectively.  Clients can access the resources by a OSG provided client.  Both Globus and SRM/ GridFTP were developed by consortium members and are included into the OSG packaging.  Many software tools have been contributed to the OSG software stack such as Condor and the Berkeley Storage Manager \cite{Bestman}.
 
 A typical OSG site has a compute element that can run jobs and a storage element that can store data.  The storage element is both physically close and tightly coupled to the compute element in order to minimize latency for data.  Since most sites have their own storage element, they are used to stage data into and out of the site.
 
@@ -462,7 +464,7 @@ conclusions and describes future work.
 %\subsubsection*{Other efforts that exist to solve this problem and why are they
 %less effective than our method}
 
-\section{Technology to create a campus grid}
+\section{Technology to Create a Campus Grid}
 
 %\item
 %Resist the urge to point out only flaws in other work. Do your best to point
@@ -473,7 +475,7 @@ conclusions and describes future work.
 Globus GRAM is a translation layer between the Resource Specification Language, and the local resource manager.  It has been very successful and has a large install base.  Globus also has deep integration with standard grid authentication methods such as PKI.
 
 Placing Globus gatekeepers on each cluster allows jobs to be submitted to each cluster without modifying the underlying batch system.  This requires a higher layer of abstraction over the Globus gatekeepers to optimally balance load between clusters.   
-Globus GRAM implements GSI (certificates) security that is inconsistent with most existing campus security architectures such as LDAP authentication or Kerberos.  It does not provide a method for transparent execution on other clusters: each submission must target a specific execute resource.  Therefore, there is no overflow capability in Globus, which experience on the OSG has shown is important to users.
+Globus GRAM implements the Grid Security Infrastructure (GSI) security that is inconsistent with most existing campus security architectures such as LDAP \cite{howes1997ldap} authentication or Kerberos \cite{steiner1988kerberos}.  It does not provide a method for transparent execution on other clusters: each submission must target a specific execute resource.  Therefore, there is no overflow capability in Globus, which experience on the OSG has shown is important to users.
 
 \subsection{Condor Flocking} %\label{sec:flocking}
 A single software solution is Condor.  Each resource can run Condor on their clusters and `flock' \cite{epema1996worldwide} to each other.  In this solution, jobs may not be balanced on each resource due to Condor's greedy scheduler algorithm, but they will find any idle slots available on the resources.  
@@ -493,22 +495,22 @@ This solution requires each resource to run Condor as their scheduler and resour
 
 
 \subsection{GlideinWMS}
- The Glidein Workflow Management System (GlideinWMS) \cite{sfiligoi2008glideinwms} is a job submission method that abstracts the grid interface, leaving only a batch system interface.  GlideinWMS accomplishes this abstraction by using pilot jobs.  Pilot jobs are containers that once started, will request work from the user's queue.  User jobs will not wait in remote queues, therefore user jobs do not waste time in remote queues when idle resources are available.  GlideinWMS separates the system into two general pieces, the frontend and the factory.  The frontend monitors the local user queue and requests glideins from the factory.  The factory serves requests from multiple frontends and submits pilots to the grid resources on their behalf.  The factory only submits jobs to grid interfaces on multiple resources and can be optimized for that purpose.  The frontend only deals with the local batch system, and can be optimized for the user's jobs.
+ The Glidein Workflow Management System (GlideinWMS) \cite{sfiligoi2008glideinwms} is a job submission method that abstracts the grid interface, leaving only a batch system interface.  GlideinWMS accomplishes this abstraction by using pilot jobs.  Pilot jobs are containers that once started, will request work from the user's queue.  User jobs will not wait in remote queues; therefore, user jobs do not waste time in remote queues when idle resources are available.  GlideinWMS separates the system into two general pieces, the frontend and the factory.  The frontend monitors the local user queue and requests glideins from the factory.  The factory serves requests from multiple frontends and submits pilots to the grid resources on their behalf.  The factory only submits jobs to grid interfaces on multiple resources and can be optimized for that purpose.  The frontend only deals with the local batch system, and can be optimized for the user's jobs.
  
-The GlideinWMS system is uses Condor throughout.  It uses Condor-G \cite{frey2002condor} to submit to the grid resources, as well as manage user jobs on the frontend.  The frontend and factory are daemons that run on the user submit host and a central machine, respectively.  
+The GlideinWMS system uses Condor throughout.  It uses Condor-G \cite{frey2002condor} to submit to the grid resources, as well as manage user jobs on the frontend.  The frontend and factory are daemons that run on the user submit host and a central machine, respectively.  
 
 GlideinWMS is heavily used on the the Open Science Grid.  A major user and developer of the software is high energy physics, specifically the Compact Muon Solenoid (CMS) experiment \cite{bradley2010use} and the Collider Detector at Fermilab (CDF) \cite{zvada2010cdf}.  They have demonstrated recently that GlideinWMS can scale beyond 25,000 running jobs.
 
 GlideinWMS does have a few drawbacks.  GlideinWMS uses an external factory that acts as a single point of failure.  If the factory quits submitting jobs to grid resources, then users cannot run jobs.  Also, GlideinWMS is designed to only submit to GSI secured sites.  GSI is typically used only on production grids, and is rarely used inside a campus where the trust relationship is implicitly stronger.  
 
-\subsection{Panda}
-Panda is a distributed pilot-based submission system developed by US ATLAS for analysis of the ATLAS Experiment \cite{atlas} data.  Panda is designed with tight integration with the ATLAS distributed data management system.  It has integrated monitoring for production and analysis operations, user analysis interfaces, data access and site status.  
+\subsection{PanDA}
+PanDA is a distributed pilot-based submission system developed by US ATLAS for analysis of the ATLAS Experiment \cite{atlas} data.  PanDA is designed with tight integration with the ATLAS distributed data management system.  It has integrated monitoring for production and analysis operations, user analysis interfaces, data access and site status.  
 
-PANDA is designed to be based around a central server.  All jobs are submitted to this single server that centrally manages all job information.  The user submits jobs using HTTP interface to the central server.  The end-users are insulated from the grid by only accessing the central PANDA server.
+PanDA is designed to be based around a central server.  All jobs are submitted to this single server that centrally manages all job information.  The user submits jobs using HTTP interface to the central server.  The end-users are insulated from the grid by only accessing the central PanDA server.
 
-PANDA has very strong data management as it is integrated with the ATLAS data management system.  The client interface is generic enough that jobs can be submitted to multiple grids transparently.  Since all submissions are from a central server, accounting and monitoring of jobs are trivial and very accurate.
+PanDA has very strong data management as it is integrated with the ATLAS data management system.  The client interface is generic enough that jobs can be submitted to multiple grids transparently.  Since all submissions are from a central server, accounting and monitoring of jobs are trivial and very accurate.
 
-The PANDA system is very reliant on the uptime of the central global server.  Though the resource independence is high when the resources are grid sites, the system still is reliant on the central PANDA server for any jobs to start.  However, in practice, this has been very reliable.
+The PanDA system is very reliant on the uptime of the central global server.  Though the resource independence is high when the resources are grid sites, the system still is reliant on the central PanDA server for any jobs to start.  However, in practice, this has been very reliable.
 
 % Weak argument
 %\subsection{Moab}
@@ -541,39 +543,39 @@ The PANDA system is very reliant on the uptime of the central global server.  Th
 %relevant, how are they relevant, and why are they less effective than our
 %solution for this problem}
 
-\subsection{Virginia Campus Grid}
-The Virginia Campus Grid \cite{humphrey2005university} designed a campus grid using the Web Services Resource Framework (WSRF) with Globus.  The goal of the campus grid was to use as much existing infrastructure as possible.  The grid utilized the existing authentication system by developing a new credential generator called CredEx \cite{del2005credex} that interacts with the local LDAP servers to create PKI certificates.  Globus version 4 (now deprecated) was used to interact with the Linux clusters on campus.
+\subsection{University of Virginia Campus Grid}
+The University of Virginia Campus Grid \cite{humphrey2005university} designed a campus grid using the Web Services Resource Framework (WSRF) with Globus.  The goal of the campus grid was to use as much existing infrastructure as possible.  The grid utilized the existing authentication system by developing a new credential generator called CredEx \cite{del2005credex} that interacts with the local LDAP servers to create PKI certificates.  Globus version 4 (now deprecated) was used to interact with the Linux clusters on campus.
 
 Another focus of the Virginia campus grid was policy expression and enforcement.  This is a common theme for many grids since they span multiple administrative domains.  In the Virginia grid, an enforcement service would enforce these rules by cutting off and redirecting users to and from resources.  The load balancing would be enforced by the enforcement services, as well as policies regarding a resources preference for jobs.  Additionally, a broker was developed to distribute jobs.
 
-The Virginia campus grid has many attributes shared with other Campus Grids.  The Virginia grid approaches trust relationships by utilizing the existing campus authentication infrastructure.  Job submission is handled by WSRF and distributed with a custom developed broker.  There are many central services such as the enforcement service and the broker which limits resource independence of the grid.  A downtime in either of these services would limit usefulness the grid.  Accounting and authentication are handled by central IT.  Data management is not addressed in the campus grid.  
+The Virginia campus grid has many attributes shared with other Campus Grids.  The Virginia grid approaches trust relationships by utilizing the existing campus authentication infrastructure.  Job submission is handled by WSRF and distributed with a custom developed broker.  There are many central services such as the enforcement service and the broker which limits resource independence of the grid.  A downtime in either of these services would limit usefulness of the grid.  Accounting and authentication are handled by central IT.  Data management is not addressed in the campus grid.  
 
 
-\subsection{Oxford Campus Grid}
-The Oxford Campus Grid \cite{wallom2006oxgrid} built a comprehensive campus grid including both compute and data provisioning.  The compute provisioning uses Condor-G \cite{frey2002condor} and a information server.  The information server injected resource specific information into the Condor-G matchmaker, allowing Condor to match jobs to appropriate resources as well as to follow resource policies.  For data provisioning, the Storage Resource Broker (SRB) \cite{baru1998sdsc} was used with a dedicated data node.  Authentication is handled through on-campus Kerberos.  Accounting is done by a custom daemon written at Oxford that keeps detailed statistics for every job.
+\subsection{University of Oxford Campus Grid}
+The University of Oxford Campus Grid \cite{wallom2006oxgrid} built a comprehensive campus grid including both compute and data provisioning.  The compute provisioning uses Condor-G \cite{frey2002condor} and a information server.  The information server injected resource specific information into the Condor-G matchmaker, allowing Condor to match jobs to appropriate resources as well as to follow resource policies.  For data provisioning, the Storage Resource Broker (SRB) \cite{baru1998sdsc} was used with a dedicated data node.  Authentication is handled through on-campus Kerberos.  Accounting is done by a custom daemon written at Oxford that keeps detailed statistics for every job.
 
 The Oxford campus grid resembles the Open Science Grid model.  Each resource has a gatekeeper, a central node that provides access to the underlying nodes.  The information server and virtual organization management both have analogies in the OSG.  
 The resource broker and data vault conflict with the design of the OSG.  Both of these resources are single points of failure that can severely degrade the usability of the campus grid.  
 
 
-\subsection{Purdue}
-The Purdue campus grid \cite{smith2008implementing, gridworkshopweb} is part of a larger grid, Diagrid, which serves a 
+\subsection{Purdue University}
+The Purdue University campus grid \cite{smith2008implementing, gridworkshopweb} is part of a larger grid, DiaGrid, which serves a 
 number of 
 universities in Indiana and  Wisconsin.  This grid is based upon the Condor and Condor flocking technology.  All jobs 
 are submitted via Condor.  For security, Purdue manages a small number of submit hosts that are allowed to run jobs on 
 their grid.  External jobs can flock to Purdue and are mapped to an unprivileged user account on the execute host.  In order to 
-maximize the resources in its grid, Purdue also installs the Condor batch system next to the PBS batch system on its clusters.  Each batch system is 
-independently, except any PBS job on a given node will preempt any Condor jobs.  While idle resources are 
+maximize the resources in its grid, Purdue also installs the Condor batch system next to the Portable Batch System (PBS) batch system on its clusters.  Each batch system is 
+independent, except any PBS job on a given node will preempt any Condor jobs.  While idle resources are 
 thus utilized, PBS may unnecessarily interrupt Condor jobs and all Condor jobs are inherently lower priority.  The 
 largest resources are centrally administered by a single organization, but there are large pools independently 
 configured and managed.  Usage accounting is done through Condor and a homegrown system.  On large subsets of the grid, 
 data is kept on a shared file system but no single file system is exported to all resources.  Condor file transfer can 
 be used throughout the grid.
 
-\subsection{GLOW}
+\subsection{Grid Laboratory of Wisconsin}
 
 
-\begin{figure}
+\begin{figure}[h!t]
 \centering
 \includegraphics[scale=0.6]{images/GLOW-Campus}
 \caption{Grid Laboratory of Wisconsin Campus Grid}
@@ -586,16 +588,16 @@ jobs on their campus grid.  A diagram of the campus grid is shown in \ref{fig:GL
 submission and distribution is managed through the same Condor-only mechanisms as Purdue.  While there is a central 
 team available to assist with management, each resource is free to define its own policies and priorities for local 
 and remote usage.  Cluster ownership is distributed, although there's also a general-purpose cluster available.  
-Software and data are managed by an AFS \cite{morris1986andrew} install and Condor file transfer.  AFS is a global filesystem
+Software and data are managed by an Andrew File System (AFS) \cite{morris1986andrew} install and Condor file transfer.  AFS is a global file system
 that every worker node will mount, therefore providing a global space to store data and applications.  This simplifies data distribution
 by providing a staging area.
 
 
 
 \subsection{FermiGrid}
-Fermigrid \cite{gridworkshopweb, chadwick2008fermigrid} is made up of resources located at the Fermi National 
-Accelerator Laboratory in Batavia, IL.  The Fermigrid campus grid is the closest example found of a ``mini-OSG".  Its 
-uses the same CE software, information systems, and storage elements as the OSG.  Trust relationships on Fermigrid are 
+FermiGrid \cite{gridworkshopweb, chadwick2008FermiGrid} is made up of resources located at the Fermi National 
+Accelerator Laboratory in Batavia, Illinois.  The FermiGrid campus grid is the closest example found of a ``mini-OSG".  Its 
+uses the same Compute element software, information systems, and storage elements as the OSG.  Trust relationships on FermiGrid are 
 based on the Grid Security Infrastructure (GSI) \cite{farrell2002rfc3281}, the same authentication method used by 
 OSG.  Job submission is managed by Condor-G through a Globus submission layer to the clusters.  As this is the  same method  
 used to submit to the OSG, it provides one strategy to getting users from campus to the national grid.  Most clusters are 
@@ -606,45 +608,49 @@ used on the OSG.  A central cluster file system is available to most clusters, b
 heavily used.
 
 
+%\begin{table}[h!t]
+%\centering
+%\footnotesize 
+% Grid & Auth & Accounting & Storage & Submission
+%\begin{tabular}{ | l | | l | c | c | c | c | c | c | c | }
+%\hline
+% & & Virginia & Oxford & Purdue & GLOW & FermiGrid & OSG \\
+%\hline
+%\multirow{4}{*}{Trust Relationships} & LDAP & \Checkmark &  & & & & \\ 
+%\cline{2-8}
+%& PKI & \Checkmark & \Checkmark & &  & \Checkmark & \Checkmark\\ 
+%\cline{2-8}
+%& Kerberos & & \Checkmark & & & & \\
+%\cline{2-8}
+%& Host & & & \Checkmark & \Checkmark & & \\
+%\hline
+
+%\end{tabular}
+%\end{table}
+
+\subsection{Overview of Campus Grids}
+Table \ref{tab:campusgridoverview} compares the campus grid architectures with that of the OSG.  
+
+
 \begin{table}[h!t]
 \centering
-\footnotesize 
-% Grid & Auth & Accounting & Storage & Submission
-\begin{tabular}{ | l | | l | c | c | c | c | c | c | c | }
+\small
+\begin{tabular}{ | p{50pt} | | p{68pt} | p{54pt} | p{60pt} | p{50pt} | p{60pt} |}
 \hline
- & & Virginia & Oxford & Purdue & GLOW & FermiGrid & OSG \\
-\hline
-\multirow{4}{*}{Trust Relationships} & LDAP & \Checkmark &  & & & & \\ 
-\cline{2-8}
-& PKI & \Checkmark & \Checkmark & &  & \Checkmark & \Checkmark\\ 
-\cline{2-8}
-& Kerberos & & \Checkmark & & & & \\
-\cline{2-8}
-& Host & & & \Checkmark & \Checkmark & & \\
-\hline
-
+Grid & Trust & Job & Resource & Accounting & Data \\ 
+& Relationship & Submission & Independence & & Management \\
+\hline \hline
+Virginia &  LDAP/PKI  & None \mbox{Described} & Strict & Central & None     \\ \hline
+Oxford & Kerberos/PKI & Central & Central \mbox{Submission} & Custom & SRB  \\ \hline
+Purdue & Host &  Distributed & Strict & Custom & Condor Transfer  \\ \hline
+GLOW &  Host & Distributed & Strict & None &  Condor Transfer \\ \hline
+FermiGrid & PKI & Central & Strict & OSG \mbox{Gratia} & Central File System  \\ \hline
+OSG & PKI  & Distributed & Strict & OSG \mbox{Gratia} & Distributed \\ \hline
 \end{tabular}
+\caption{Campus Grid Attributes} \label{tab:campusgridoverview}
 \end{table}
 
 
-%\begin{table}[h!t]
-%\centering
-%\small
-% Grid & Auth & Accounting & Storage & Submission
-%\begin{tabular}{ | l | | l | l | l | l |}
-
-%Grid & Trust & Job & Resource & Accounting & Data \\ 
-%& Relationship & Submission & Independence & & Management \\
-%\hline \hline
-%Virginia & LDAP/PKI & Central & None & None & \\ \hline
-%Oxford & Kerberos/PKI & Custom & SRB & Central \\ \hline
-%Purdue & Host & Custom & Condor Transfer & Distributed \\ \hline
-%Glow &  Host & None &  Condor Transfer & Distributed \\ \hline
-%FermiGrid & PKI & OSG Gratia & Central Filesystem & Central \\ \hline
-%OSG & PKI & OSG Gratia & Distributed & Distributed \\ \hline
-%\end{tabular}
-%\caption{Campus grid attributes}
-%\end{table}
 
 %\item 
 %Many times no one has solved your exact problem before, but others have solved
@@ -867,7 +873,7 @@ In the \texttt{campus\_factory}'s implementation, the OfflineAds are used to mat
 The OfflineAds are exact copies of previously live pilots, the OfflineAds increases the accuracy of matching with idle jobs by exactly resembling running glideins.  In GlideinWMS and previous pilot implementations, filters where applied to the user queues to determine if a job was capable of running on the resource.  The filters where customized by admins to best describe the pilot environment at the resources. 
 
 
-\subsubsection{Influence OfflineAds have on the Factory}
+\subsubsection{Influence OfflineAds Have on the Factory}
 The OfflineAds do not completely replace all logic described in Algorithm \ref{alg:glideins}. The site must still meet the idle glideins and idle slots requirements that were originally used to throttle new pilot submissions. The OfflineAds replace the need for the factory to query remote schedd's for idle jobs.  This improves the efficiency and simplicity of the factory by eliminating communication.  But the large benefit is the increased accuracy of the pilot descriptions.  The factory will only submit jobs when the offline ads detect a definite match to the cluster's resources.  The negotiator and collector take care of all job matching with accurate glidein classads.
 
 The logic of the factory follows is described in Algorithm \ref{alg:glideinswithofflineads}. 
@@ -924,9 +930,9 @@ The factory will maitain the newest ten OfflineAds.  If it detects less then ten
 
 \section{Bridging Campus Grids} \label{sec:bridging}
 There are two methods for expanding the campus grid: through GlideinWMS to the OSG, 
-or by bridging campus through flocking.  Bridging provides a method for jobs to leave the boundaries of the campus. The benefits of bridging externally are obvious - increased throughput 
+or by bridging campus through flocking.  Bridging provides a method for jobs to leave the boundaries of the campus. The benefits of bridging externally are obvious--increased throughput 
 for the local user's jobs.  HCC has been able to  
-bridge to the GLOW, Purdue, and Fermigrid grids discussed in Section \ref{sec:others}.  We connect to FermiGrid and GLOW through the OSG and 
+bridge to the GLOW, Purdue, and FermiGrid grids discussed in Section \ref{sec:others}.  We connect to FermiGrid and GLOW through the OSG and 
 to Purdue via Condor flocking.
 
 Unlike the OSG, where the trust relationship is defined by a central consortium and agreed upon by all sites, trust is established between 
@@ -1095,7 +1101,7 @@ Security between the hosts are established with the \texttt{CLAIMTOBE} environme
 In total, Purdue has 7 collectors and 6 schedds participating in the flocking.  Nebraska has 2 collectors and 3 Schedds.
 
 
-\subsection{User submission}
+\subsection{User Submission}
 User submission is by design very similar to submission on a dedicated Condor resource.   The user will specify the executable and where to store the stdout and stderr.  Input files are transferred per-job to the execute machine.  Condor will automatically determine output files by scanning the sandbox directory for any new files created.  The new files will be transferred back to the submitter.
 
 Condor will only transfer files when the variables \texttt{should\_transfer\_files} and \texttt{when\_to\_transfer\_output} are set.  A typical submission file is shown in Figure \ref{fig:submission}.  In the example, Condor will transfer the executable (\texttt{/bin/hostname}) to the execute host.  Condor will return the stdout and stderr from the execute host back to the submitter.
@@ -1131,7 +1137,7 @@ basicstyle=\footnotesize}
 \section{Characteristics of Campus Grid}
 Here I will evaluate the HCC campus grid on the characteristics defined in Section \ref{sec:attributes}.  
 
-\subsection{Trust relationships}
+\subsection{Trust Relationships}
 On most campuses, trust relationships are very strong.  On some campuses, a single group maintains the campus clusters.  On others, the proximity of administrators has facilitated trust.
 
 At HCC, one group administers the clusters on campus, therefore the trust relationship is strong.  The execution gateways in the campus grid restrict access by IP address.  Therefore, there is a set of trusted submission hosts.  Each host trusts each other's claimed user authentication.   Additionally, jobs running on the CGF use a valid user account rather than a un-privileged account such as user \texttt{nobody}.
@@ -1169,7 +1175,7 @@ Submission on the HCC, GLOW and Purdue grid requires only two more lines to the 
 \subsection{Resource Independence}
 In the OSG, resource independence is guaranteed by strict separation of resources.  This is accomplished by independent clusters having all necessary infrastructure installed locally, while only sending non-blocking information to a distributed set of central services.  This is very similar to the design of the HCC campus grid.
 
-While resources on the OSG are independent, user job submission methods are not.  When using GlideinWMS, if the Factory is disconnected or is terminated, then you cannot run on even local resources.  When using Panda, all jobs require access to the central Panda server located at CERN.
+While resources on the OSG are independent, user job submission methods are not.  When using GlideinWMS, if the Factory is disconnected or is terminated, then you cannot run on even local resources.  When using PanDA, all jobs require access to the central PanDA server located at CERN.
 
 The HCC Campus grid installs all infrastructure to distribute jobs on the local resource.  For a Condor cluster, this is simply the existing Condor instance.  While on the PBS cluster, the CGF install is installed locally on the gatekeeper node.  Therefore, possible failures are:
 \begin{itemize}
