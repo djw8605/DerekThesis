@@ -915,6 +915,34 @@ The factory will maitain the newest ten OfflineAds.  If it detects less then ten
 
 
 
+\section{Bridging Campus Grids} \label{sec:bridging}
+There are two methods for expanding the campus grid: through GlideinWMS to the OSG, 
+or by bridging campus through flocking.  Bridging provides a method for jobs to leave the boundaries of the campus. The benefits of bridging externally are obvious - increased throughput 
+for the local user's jobs.  HCC has been able to  
+bridge to the GLOW, Purdue, and Fermigrid grids discussed in Section \ref{sec:others}.  We connect to FermiGrid and GLOW through the OSG and 
+to Purdue via Condor flocking.
+
+Unlike the OSG, where the trust relationship is defined by a central consortium and agreed upon by all sites, trust is established between 
+campuses with flocking on a case-by-case basis.
+The current model for trust is based on limited trusted hosts (IP based authorization).  Each site publishes a list of submit and negotiator 
+hosts that are trusted to submit and accept jobs, respectively.  This implicitly trusts an entire campus, while the OSG 
+trust model is based on virtual organizations that may have no relationship to a physical campus or submit host.
+
+\begin{figure}[h!tbp]
+\begin{center}
+\includegraphics[scale=0.8]{images/BWCircles}
+\caption{Widening circle of resources}
+\label{fig:circleresources}
+\end{center}
+\end{figure}
+
+The ever-widening circle of resources expands from the locality of the user (Figure \ref{fig:circleresources}).  It goes from the resource 
+the user knows best (and has the best support for), the local cluster, to the most foreign one, the national grid.  This is a very natural progression. 
+Each step described comes with more complexity, and new failure modes.  If the user is ever frustrated at one 
+transition, he can just remain contented with the resources he has, as opposed to having to switch between ``local 
+mode" and ``grid mode".  Another usability advantage is that all end-user interfaces are Condor vanilla universe.  The user 
+never encounters errors translated between systems (a common user frustration) and the user needs to develop expertise 
+in Condor alone.
 
 
 \section{Full Campus Infrastructure} \label{sec:fullcampus}
@@ -927,14 +955,15 @@ The factory will maitain the newest ten OfflineAds.  If it detects less then ten
 \end{center}
 \end{figure}
 
-The full campus grid architecture with bridging is shown in Figure \ref{fig:campusgrid}.  In this campus grid, the 
-user first submits jobs to the local Condor cluster (1).  If the local cluster can fulfill the user's needs, then the 
+The full campus grid architecture with bridging is shown in Figure \ref{fig:campusgrid}.  This campus infrastructure includes all the on-campus resources, as well as meets the goals of the campus grid: Encompassing, Transparent, and Decentralized.
+The 
+user first submits jobs to the local Condor cluster (1).  If the local cluster can fulfill the user's needs, then all the 
 jobs will remain there.  If the local cluster is full or cannot meet the user's demand, Condor flocking will start 
-submitting jobs to other campus clusters (2), either Condor or CGF-based.  If the on-campus 
+submitting jobs to other campus clusters (2), either pure Condor or utilizing the CGF.  If the on-campus 
 resources are unable to meet the user's request, the local Condor schedd will expand its reach again (3) by looking 
 outside the campus.  The jobs can also be sent to the OSG via flocking to a GlideinWMS 
 frontend, which creates an overlay pool of grid resources.  In this architecture, every effort is given to find 
-resources for the user (local, across campus, or externally), while maintaining the same vanilla Condor interface.
+resources for the user (local, across campus, or across the nation), while maintaining the same Condor interface for the user.
 
 
 
@@ -953,28 +982,6 @@ resources for the user (local, across campus, or externally), while maintaining 
 
 
 
-\section{Bridging Campus Grids} \label{sec:bridging}
-There are two methods for expanding the campus grid described in Section \ref{sec:fullcampus}: through GlideinWMS to the OSG, 
-or by linking campus grids through flocking.  The benefits of bridging externally are obvious - increased throughput 
-for the local user's jobs.  HCC has been able to utilize over 7,000 remote job slots at a time, and has been able to 
-bridge to the GLOW, Purdue, and Fermigrid grids discussed in Section \ref{sec:others}.  We connect to FermiGrid and GLOW through the OSG and 
-to Purdue via Condor flocking.
-
-Unlike the OSG, where the trust relationship are well-defined and common between sites, trust is established between 
-campuses with flocking on a case-by-case basis.
-The current model for trust is based on limited trusted hosts.  Each site publishes a list of submit and negotiator 
-hosts that are trusted to submit and accept jobs, respectively.  This implicitly trusts an entire campus, while the OSG 
-trust model is based on virtual organizations that may have no relationship to a physical campus or submit host.
-
-
-
-It is important to note the ever-widening circle of resources expands from the locality of the user.  It goes from the resource 
-the user knows best (and has the best support for) to the most foreign one.  This is a very natural progression, and 
-each step described comes with more complexity, and new failure modes.  If the user is ever frustrated at one 
-transition, he can just remain contented with the resources he has, as opposed to having to switch between ``local 
-mode" and ``grid mode".  Another usability advantage is that all end-user interfaces are Condor vanilla universe.  The user 
-never encounters errors translated between systems (a common user frustration) and the user needs to develop expertise 
-in Condor alone.
 
 
 
