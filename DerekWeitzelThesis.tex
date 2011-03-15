@@ -42,6 +42,8 @@ linkbordercolor=white
 \usepackage{url}
 \usepackage{listings}
 \usepackage{subfig}
+\usepackage{multirow}
+\usepackage{bbding}
 
 \newlength{\imgwidth}
 
@@ -411,7 +413,9 @@ The Open Science Grid (OSG) \cite{pordes2007open} is a national cyber infrastruc
 
 The OSG Production Grid provides a common interface to computing and storage resources: Globus and Storage Resource Manager (SRM)/GridFTP respectively.  Clients can access the resources by a OSG provided client.  Both Globus and SRM/GridFTP were developed by consortium members and are included into the OSG packaging.  Many software added have been contributed to the OSG software stack such as Condor and the Berkeley Storage Manager \cite{Bestman}.
 
-A typical OSG site has a compute element that can run jobs and a storage element that can store data.  The storage element is both physically close, and well connected to the compute element, in order to minimize latency for data.  Since most sites have their own storage element, they are used to stage data into and out of the site.  
+A typical OSG site has a compute element that can run jobs and a storage element that can store data.  The storage element is both physically close and tightly coupled to the compute element in order to minimize latency for data.  Since most sites have their own storage element, they are used to stage data into and out of the site.
+
+A user will install the OSG Client tools and submit to the sites.  The OSG tools will also include applications that can be used to stage data to the storage elements.  A user only needs a valid OSG certificate to access the grid resources.
 
 
 % Do we need this?  Probably not, this is what the paper is about.
@@ -553,8 +557,8 @@ number of
 universities in Indiana and  Wisconsin.  This grid is based upon the Condor and Condor flocking technology.  All jobs 
 are submitted via Condor.  For security, Purdue manages a small number of submit hosts that are allowed to run jobs on 
 their grid.  External jobs can flock to Purdue and are mapped to an unprivileged user account on the execute host.  In order to 
-maximize the resources in its grid, Purdue also installs Condor on its PBS-based clusters.  Each batch system makes 
-decisions independently, except any PBS job on a given node will preempt any Condor jobs.  While idle resources are 
+maximize the resources in its grid, Purdue also installs the Condor batch system next to the PBS batch system on its clusters.  Each batch system is 
+independently, except any PBS job on a given node will preempt any Condor jobs.  While idle resources are 
 thus utilized, PBS may unnecessarily interrupt Condor jobs and all Condor jobs are inherently lower priority.  The 
 largest resources are centrally administered by a single organization, but there are large pools independently 
 configured and managed.  Usage accounting is done through Condor and a homegrown system.  On large subsets of the grid, 
@@ -572,12 +576,14 @@ be used throughout the grid.
 \end{figure}
 
 
-Grid Laboratory of Wisconsin (GLOW) \cite{gridworkshopweb, glowwebsite} is a University of Wisconsin grid used at the Madison campus to distribute 
-jobs on their all-Condor grid.  A diagram of the campus grid is shown in \ref{fig:GLOWCampus}.  Security is based on IP whitelisting.  Since all resources are based on Condor, job 
+The Grid Laboratory of Wisconsin (GLOW) \cite{gridworkshopweb, glowwebsite} is a grid at the University of Wisconsin at Madison.  GLOW uses Condor to distribute 
+jobs on their campus grid.  A diagram of the campus grid is shown in \ref{fig:GLOWCampus}.  Security is based on IP whitelisting.  Since all resources are based on Condor, job 
 submission and distribution is managed through the same Condor-only mechanisms as Purdue.  While there is a central 
 team available to assist with management, each resource is free to define its own policies and priorities for local 
 and remote usage.  Cluster ownership is distributed, although there's also a general-purpose cluster available.  
-Software and data are managed by an AFS \cite{morris1986andrew} install and Condor file transfer.
+Software and data are managed by an AFS \cite{morris1986andrew} install and Condor file transfer.  AFS is a global filesystem
+that every worker node will mount, therefore providing a global space to store data and applications.  This simplifies data distribution
+by providing a staging area.
 
 
 
@@ -586,33 +592,54 @@ Fermigrid \cite{gridworkshopweb, chadwick2008fermigrid} is made up of resources 
 Accelerator Laboratory in Batavia, IL.  The Fermigrid campus grid is the closest example found of a ``mini-OSG".  Its 
 uses the same CE software, information systems, and storage elements as the OSG.  Trust relationships on Fermigrid are 
 based on the Grid Security Infrastructure (GSI) \cite{farrell2002rfc3281}, the same authentication method used by 
-OSG.  Job submission is managed by Condor-G through a Globus submission layer to the clusters.  This same method can be 
-used to submit to OSG, providing one strategy to getting users from campus to the national grid.  Some clusters are 
-managed by a central team, while others are done independently.  Some of the grid services (authorization and 
+OSG.  Job submission is managed by Condor-G through a Globus submission layer to the clusters.  As this is the  same method  
+used to submit to the OSG, it provides one strategy to getting users from campus to the national grid.  Most clusters are 
+managed by a central team, while at least one is independently managed.  Some of the grid services (authorization and 
 information services, for example) are run centrally.  Accounting is done through Gratia \cite{gratiaweb}, the same 
 software that is 
-used on the OSG.  A central cluster file system is available to most clusters, but Globus-based file transfer is also 
+used on the OSG.  A central cluster file system is available to most clusters, but Globus-based GridFTP file transfer is also 
 heavily used.
 
 
 \begin{table}[h!t]
 \centering
-%\small 
+\footnotesize 
 % Grid & Auth & Accounting & Storage & Submission
-\begin{tabular}{ | l | | l | l | l | l |}
+\begin{tabular}{ | l | | l | c | c | c | c | c | c | c | }
 \hline
-Grid & Authorization & Accounting & Storage & Submission \\ 
-& & & & Type \\
-\hline \hline
-Virginia & LDAP/PKI & None & None & Central \\ \hline
-Oxford & Kerberos/PKI & Custom & SRB & Central \\ \hline
-Purdue & Host & Custom & Condor Transfer & Distributed \\ \hline
-Glow &  Host & None &  Condor Transfer & Distributed \\ \hline
-FermiGrid & PKI & OSG Gratia & Central Filesystem & Central \\ \hline
-OSG & PKI & OSG Gratia & Distributed & Distributed \\ \hline
+ & & Virginia & Oxford & Purdue & GLOW & FermiGrid & OSG \\
+\hline
+\multirow{4}{*}{Trust Relationships} & LDAP & \Checkmark &  & & & & \\ 
+\cline{2-8}
+& PKI & \Checkmark & \Checkmark & &  & \Checkmark & \Checkmark\\ 
+\cline{2-8}
+& Kerberos & & \Checkmark & & & & \\
+\cline{2-8}
+& Host & & & \Checkmark & \Checkmark & & \\
+\hline
+
 \end{tabular}
-\caption{Campus grid attributes}
 \end{table}
+
+
+%\begin{table}[h!t]
+%\centering
+%\small
+% Grid & Auth & Accounting & Storage & Submission
+%\begin{tabular}{ | l | | l | l | l | l |}
+
+%Grid & Trust & Job & Resource & Accounting & Data \\ 
+%& Relationship & Submission & Independence & & Management \\
+%\hline \hline
+%Virginia & LDAP/PKI & Central & None & None & \\ \hline
+%Oxford & Kerberos/PKI & Custom & SRB & Central \\ \hline
+%Purdue & Host & Custom & Condor Transfer & Distributed \\ \hline
+%Glow &  Host & None &  Condor Transfer & Distributed \\ \hline
+%FermiGrid & PKI & OSG Gratia & Central Filesystem & Central \\ \hline
+%OSG & PKI & OSG Gratia & Distributed & Distributed \\ \hline
+%\end{tabular}
+%\caption{Campus grid attributes}
+%\end{table}
 
 %\item 
 %Many times no one has solved your exact problem before, but others have solved
@@ -665,54 +692,52 @@ OSG & PKI & OSG Gratia & Distributed & Distributed \\ \hline
 %you have to convince someone you know enough to have a good chance of building
 %a solution, but that you have not {\em already} done so.
 
-In designing a campus grid for the Holland Computing Center, we attempted to meet three goals:
-\begin{itemize}
+The design of the Campus Grid at HCC attempts to meet these three goals:
+\begin{enumerate}
+\label{lst:hccgoals}
+%\renewcommand{\labelenumi}{\textbf{Goal \arabic{enumi}} -- }
 \item \textbf{Encompassing}: The campus grid should reach all clusters managed by HCC.
 \item \textbf{Transparent}:  There should be an identical user interface for all resources, whether 
 running locally or remotely.
 \item \textbf{Decentralized}: A user should be able to utilize his local resource even if it becomes disconnected from 
 the rest of the campus.  An error on a given cluster should only affect that cluster.
-\end{itemize}
+\end{enumerate}
 
-Along with these goals, the technologies in this section will address the characteristics of a campus grid described in Section \ref{sec:attributes}: trust relationships, job submission, resource independence, accounting, and data management.
+Along with these goals, the technologies in this chapter can be characterized by the framework described in Section \ref{sec:attributes}: trust relationships, job submission, resource independence, accounting, and data management.
 
 
 \section{Flocking} \label{sec:flocking}
 
-In the GLOW and Purdue campus grid, every resource runs the same scheduler, Condor.  They use Flocking to distribute jobs between clusters.  It is easy to link the resources since the only requirement is Condor to talk to Condor.  
+In the GLOW and Purdue campus grid, every resource runs the same scheduler, Condor.  They use Condor's Flocking mechanisms to distribute jobs between clusters.
 
-Flocking \cite{epema1996worldwide} is a method of linking Condor clusters into a larger grid.  Condor daemons are described in Table \ref{table:condordaemons}.  When a user submit jobs to Condor, they are stored and managed by the \texttt{condor\_schedd}.  The \texttt{condor\_schedd} acts as an agent on the user's behalf to keep track of jobs, and place jobs efficiently.  Flocking improves the job submission and transparent execution environment of campus grid jobs by eliminating the need to explicitly specify pools for execution.  It improves data management by directly transferring files from the submitter to the execute host, bypassing the gatekeeper.  Typically in the OSG, job data is staged to the gatekeeper before transferring to the worker node.  It also allows for decentralization since pools can leave and appear in the campus grid independent of the submitters.
+Flocking \cite{epema1996worldwide} is a method of linking Condor clusters into a larger grid.  Flocking was illustrated in Figure \ref{fig:Flocking}.  Condor daemons are described in Table \ref{table:condordaemons}.  When a user submit jobs to Condor, they are stored and managed by the \texttt{condor\_schedd}.  The \texttt{condor\_schedd} acts as an agent on the user's behalf to keep track of jobs, and place jobs efficiently.  Flocking improves the job submission and transparent execution environment of campus grid jobs by eliminating the need to explicitly specify pools for execution.  It improves data management by directly transferring files from the submitter to the execute host, bypassing the gatekeeper.  Job file dependencies are described in the submission file.  Typically in the OSG, job data is staged to the gatekeeper or a storage element before transferring to the worker node.  Condor will handle faults in flocked jobs such as resources going away or disconnections to remote resources just as it would a local job, leading to better decentralization of the campus grid.
 
-After the jobs have been submitted, the \texttt{condor\_schedd} will maintain a \texttt{FlockLevel}.  At first, the \texttt{FlockLevel} will be set to 0 and jobs will only run on the local resources.  After a few minutes, if there are still idle jobs, then the \texttt{FlockLevel} will increase by 1.  Each time the \texttt{FlockLevel} increases, the \texttt{condor\_schedd} will advertise to another Condor pool that it has idle jobs to run.  When the remote Condor pools see idle jobs, the \texttt{condor\_negotiator} for that pool will contact the \texttt{condor\_schedd} to attempt to match jobs to the remote resources.
+After the jobs have been submitted, the \texttt{condor\_schedd} will maintain an integer \texttt{FlockLevel}.  At first, the \texttt{FlockLevel} will be set to 0 and jobs will only run on the local resources.  After a few minutes, if there are still idle jobs in the queue, the the \texttt{FlockLevel} will increase by 1.  Each time the \texttt{FlockLevel} increases, the \texttt{condor\_schedd} will advertise to another Condor pool in the flocking list that it has idle jobs to run.  When the remote Condor pools see idle jobs, the \texttt{condor\_negotiator} for that pool will contact the \texttt{condor\_schedd} to attempt to match jobs to the remote resources.    If a match is found, the schedd directly contacts the execute host to begin running the job.  
 
-Flocking does not delegate responsibility for a job.  The original \texttt{condor\_schedd} will maintain the job, transferring input and output, and monitoring it's status.  When flocking a job, first the negotiator for the remote pool contacts the local \texttt{condor\_schedd}.  If a match is found, the schedd directly contacts the execute host.  After transferring files, the schedd will monitor the status of the job.  This is analogous to a hub and spokes: the job ownership never moves, but the jobs can execute at multiple resources.
+Flocking does not delegate responsibility for a job.  The original \texttt{condor\_schedd} will maintain the job, transferring input and output, and monitoring it's status.  This is analogous to hub-and-spokes: the job ownership never moves, but the jobs can execute at multiple resources.
 
 
 \section{Condor \& BLAHP} \label{sec:blahp}
 \label{sec:condorandblahp}
 
-If the grid does not have a uniform scheduler, such as Condor, there needs to be a translation layer from one scheduler to another.  The Batch system Local ASCII Helper Protocol (BLAHP) was designed to offer a simple abstraction layer over different Local resource manager service, providing uniform access to the underlying computing resources \cite{blahp}. BLAHP is maintained by the gLite \cite{glite} collaboration at CERN.  The BLAHP supplements the encompass goal by allowing execution of Condor jobs to the underlying resource manager.  
+If the grid does not have a the same scheduler on all clusters, there needs to be a translation layer from one scheduler to another.  The Batch system Local ASCII Helper Protocol (BLAHP) was designed to offer a simple abstraction layer over different Local resource manager service, providing uniform access to the underlying computing resources \cite{blahp}. BLAHP is maintained by the gLite \cite{glite} collaboration at CERN.  The BLAHP supplements the encompass goal by allowing execution of Condor jobs to the underlying resource manager.  
 
-BLAHP is distributed with Condor as an additional library.  Condor uses BLAHP to submit jobs when specifying the PBS or LSF \texttt{universe} in the submission file.  The Campus Grid Factory submits glidein jobs to the underlying resource manager through the BLAHP.  Submitting glideins to Condor and allowing the BLAHP to manage the jobs simplifies the factory.  
+BLAHP is distributed with Condor as an additional library.  Condor uses BLAHP to submit jobs when specifying the PBS or LSF \texttt{universe} in the submission file.  
 
 
 \section{Glidein Jobs} \label{sec:glideins}
-Glidein jobs compliment the job submission method and are used to present a transparent execution environment to the submitter.  Additionally, it allows for better data management since the submitter directly connects to the execute host to transfer files and job information.
+Glidein \cite{frey2002condor} is a pilot job based grid submission that creates an overlay network on remote resources.  Glidein uses the pilot method for job execution.  When a Glidein starts, it advertises it's availability to run jobs.   Glidein is designed to use standard Condor mechanisms to advertise its availablity to a Condor Collector process, which is queried by the Scheduler to learn about available resources.  Each user job running in a glidein is run in a sandbox on the local disk and is provided with a consistent execution environment across hosts and clusters.
 
-Glidein \cite{frey2002condor} is a pilot job based grid submission that creates an overlay network.  Glidein is designed to use standard Condor mechanisms to advertise its availablity to a Condor Collector process, which is queried by the Scheduler to learn about available resources.  Each user job running in a glidein is run in a sandbox on the local disk and is provided with a consistent execution environment across hosts and clusters.
-
-Pilot jobs are used by many physics experiments \cite{nilsson2008experience, zvada2010cdf, bradley2010use}.  Physics experiments create pilot frameworks because they have need for very large distributed workflow management systems.  Pilot workflow management systems are commonly used for multiple reasons:
+Pilot jobs are used by many physics experiments \cite{nilsson2008experience, zvada2010cdf, bradley2010use}.  Physics experiments create pilot frameworks because they want a consistent execution environment across 100s of clusters.  Pilot workflow management systems have the benefits.
 \begin{itemize}
-\item \textbf{Scheduling Optimization:} The pilot reports only when a cpu is immediately available to run a job.
-\item \textbf{Input/Output Automation:} The pilot can transfer input and output seamlessly for the user.
-\item \textbf{Monitoring:} The monitoring of a job can be more accurate while the job is running.
-\item \textbf{Fault Tolerance:} A job failure can be more accurately detected and recovered.
-\item \textbf{Multiple Runs:} Each pilot can run multiple jobs serially, reducing submissions through the site gatekeeper.
-\end{itemize}
+\item \textbf{Scheduling Optimization:} The pilot reports only when a cpu is immediately available to run a job.  This is in contrast to direct submission to a grid resource, where after submission, you have committed to running on that resource.  If idle cores become available on another cluster, you are unable to execute on them as long as your job is submitted elsewhere.  
+\item \textbf{Input/Output Automation:} The pilot can transfer input and output for the user directly to the worker node.  This bypasses a possible bottleneck at the grid gatekeeper.  Additionally, the pilot can be customized to transfer input from third parties such as storage elements.
+\item \textbf{Monitoring:} The monitoring of a job will be done by the pilot infrastructure.  The grid translation layers between the local batch system and the grid interface can hide many errors and incorrectly report usage.
+\item \textbf{Fault Tolerance:} A job failure can be more accurately detected and recovered inside the pilot.  The pilot can detect the payload job has failed and report back the error.  Additionally, it can verify the environment is acceptable for jobs before allowing jobs to begin.
+\item \textbf{Multiple Runs:} Each pilot can run multiple jobs serially, reducing submissions through the site gatekeeper.  This will increase throughput since only a single authentication is necessary between the pilot and the user.
+\end{itemize} 
 
-The factory uses glideins on non-condor resources in order to create a overlay condor cluster that can execute remote jobs via flocking.  The glideins report to a Collector unique to each Cluster and are configured to exit after a configurable amount of time. 
-
-The glidein job requires six condor daemons packaged with a wrapper script.  When the job starts, the Glidein job will:
+Condor Glidein jobs require six condor daemons packaged with a wrapper script.  When the job starts, the Glidein job will:
 
 \begin{enumerate}
 \item Create a temporary directory on the local disk.  This will be used for the job sandboxes.
@@ -721,17 +746,16 @@ The glidein job requires six condor daemons packaged with a wrapper script.  Whe
 \item Start the  \texttt{condor\_master} daemon included in the glidein executables.
 \end{enumerate}
 
-The \texttt{condor\_master} will start the \texttt{condor\_startd} daemon which will advertise itself to the glidein collector, therefore making the node available for remote jobs.  
+The \texttt{condor\_master} will start the \texttt{condor\_startd} daemon which will advertise itself to the glidein collector, making the node available for remote jobs.  
 
-Glideins are being used in production in the Open Science Grid using the software GlideinWMS \cite{sfiligoi2008glideinwms}.  They provide several advantages over regular job submission.  Each glidein sandboxes and monitors the user jobs it runs.  The glidein can run multiple user jobs inside a single Local Resource Management (LRM) job, and will continue to run until the configured time to stop.  A Glidein host connects directly with the submitter host, removing the need for staging data.
+Glideins are being used in production in the Open Science Grid using the software GlideinWMS \cite{sfiligoi2008glideinwms}.  They provide several advantages over regular job submission.  Each glidein sandboxes and monitors the user jobs it runs.  The glidein can run multiple user jobs inside a single Local Resource Management (LRM) job, and will continue to run until the configured time to stop.  
 
 
 
 \section{Campus Grid Factory} \label{sec:cgf}
-To address the encompass goal, the Campus Grid Factory (CGF) was designed to bridge non-condor clusters into the campus grid.  Additionally, the CGF fulfills the decentralization and resource independence goal by attaching directly to a single cluster that it is serving, eliminating a central service.    
+The Campus Factory is a daemon that runs on non-Condor clusters in order to submit glideins when additional resources are requested.  The Condor instance that the factory communicates with must be on a `gateway' node: Able to talk to both the remote clusters and the local nodes.   The Factory communicates with the \texttt{condor\_collector} daemon in order to detect requests for resources, and the \texttt{condor\_schedd} daemon to submit jobs to the LRM.  
 
-The Campus Factory is a daemon that runs on non-condor clusters in order to submit glideins when additional resources are requested.  The Condor instance that the factory communicates with must be on a `gateway' node: Able to talk to both the remote clusters and the local nodes.   The Factory communicates with the \texttt{condor\_collector} daemon in order to detect requests for resources, and the \texttt{condor\_schedd} daemon to submit jobs to the LRM.  
-
+To address the encompass goal described at the beginning of Chapter \ref{lst:hccgoals}, the Campus Grid Factory (CGF) was designed to bridge non-condor clusters into the campus grid. The CGF fulfills the decentralization and resource independence goal by attaching directly to a single cluster that it is serving, eliminating a central service.    
 
 \begin{figure}[ht]
 \centering
