@@ -417,6 +417,8 @@ A typical OSG site has a compute element that can run jobs and a storage element
 
 A user will install the OSG Client tools and submit to the sites.  The OSG tools will also include applications that can be used to stage data to the storage elements.  A user only needs a valid OSG certificate to access the grid resources.
 
+The OSG is organized into groups of users called Virtual Organizations (VO's).  These VO's help users to run on the grid, as well as provide organization to many thousands of researchers.  Additionally, the VO can sign member's certificates to help sites identify users as belonging to the VO.  
+
 
 % Do we need this?  Probably not, this is what the paper is about.
 %\subsection{Campus Grids}
@@ -753,9 +755,20 @@ Glideins are being used in production in the Open Science Grid using the softwar
 
 
 \section{Campus Grid Factory} \label{sec:cgf}
-The Campus Factory is a daemon that runs on non-Condor clusters in order to submit glideins when additional resources are requested.  The Condor instance that the factory communicates with must be on a `gateway' node: Able to talk to both the remote clusters and the local nodes.   The Factory communicates with the \texttt{condor\_collector} daemon in order to detect requests for resources, and the \texttt{condor\_schedd} daemon to submit jobs to the LRM.  
+The Campus Grid Factory (CGF) is a daemon that runs on non-Condor clusters in order to submit pilots when additional resources are requested.  The Campus Grid Factory is a wrapper around Condor, using functionality in Condor to talk to user queues and submit to the local resource manager.  The Factory instance must be on a `gateway' node; The node must be able to talk to both the remote clusters and the local nodes.   The Factory communicates with the \texttt{condor\_collector} daemon in order to detect requests for resources, and the \texttt{condor\_schedd} daemon to submit jobs to the LRM.  
 
-To address the encompass goal described at the beginning of Chapter \ref{lst:hccgoals}, the Campus Grid Factory (CGF) was designed to bridge non-condor clusters into the campus grid. The CGF fulfills the decentralization and resource independence goal by attaching directly to a single cluster that it is serving, eliminating a central service.    
+To address the encompass goal described on page \pageref{lst:hccgoals}, the Campus Grid Factory (CGF) was designed to bridge non-Condor clusters into the campus grid. The CGF fulfills the decentralization and resource independence goal by attaching directly to a single cluster that it is serving, eliminating a central service.    
+
+
+\begin{figure}[ht]
+\centering
+\scalegraphics{images/CGF-Close}
+\caption{Overview of Campus Factory components}
+\label{fig:cgfcomponents}
+\end{figure}
+
+The components of the Campus Grid Factory are shown in Figure \ref{fig:cgfcomponents}.  The CGF runs as a condor job running on the local machine.  The CGF will communicate with remote queues, querying for idle jobs.  When idle jobs are detected, the CGF will submit jobs as grid universe \texttt{PBS}.  The GridManager will handle interaction between the CGF's \texttt{condor\_schedd} and the BLAHp, which will translate the jobs to PBS submission syntax.  The \texttt{condor\_negotiator} and \texttt{condor\_collector} will communicate with remote queues.  The \texttt{condor\_collector} will maintain a list of active pilot jobs inside the cluster. 
+
 
 \begin{figure}[ht]
 \centering
@@ -765,52 +778,54 @@ To address the encompass goal described at the beginning of Chapter \ref{lst:hcc
 \end{figure}
 
 The Campus Grid Factory overview is shown in Figure \ref{fig:cgf}. The factory software starts by querying all 
-the Condor schedd's on the campus to determine if they have jobs to run (1).  If idle jobs are found, the factory will 
+the Condor schedd's listed in a configuration file to determine if they have jobs to run (1).  If idle jobs are found, the factory will 
 submit (2) a pilot job for execution to the PBS scheduler.  When PBS resources are available, PBS will start the pilot 
 job (3) on an execute host, which is a Condor worker node.  After starting, the Condor worker node will contact (4) the 
 Condor installation at the CGF and list itself as a node available to run jobs.  This is the ``pilot launch" sequence.
 
-To launch user jobs, the user schedd will first advertise (5) it is has idle jobs to run on the CGF's Condor collector.  
+To launch user jobs, the CGF uses Condor flocking mechanisms.  The user schedd will first advertise (5) it is has idle jobs to run on the CGF's Condor collector.  
 The CGF Condor negotiator matches the resources and orchestrates a direct connection (6) between the execute and 
 submit hosts, running the user job.
 
-The factory is an integral part of the campus grid because it allows non-condor clusters to participate in the grid.  A Condor cluster would not need the factory.  The factory submits glideins to the Local Resource Manager (LRM), allowing them to run with the priorities set in the LRM.  The jobs, once started, report back to the factory collector as a regular condor pool node.  The factory collector then is able to route jobs from other clusters to these available glideins just as it would for an all-condor cluster.
+The factory is an integral part of the campus grid because it allows non-Condor clusters to participate in the grid.  A Condor cluster would not need the factory as it already can flock.  The factory obeys the priorities set in the LRM allowing resource independence.  The factory collector then is able to route jobs from other clusters to these available Condor job slots just as it would for an all-Condor cluster.
 
-There are many architectural similarities between the CGF and GlideinWMS teams.  However, GlideinWMS was not chosen to 
-run the CGF as GlideinWMS is designed to have one central factory and a frontend on each submit host.  Therefore, 
-if a non-Condor cluster becomes disconnected from the factory, even jobs that are submitted on the local cluster will 
-be unable to run on the cluster since the factory cannot reach it, violating the decentralization goal.  The current 
-CGF merges the roles of the frontend and factory in the GlideinWMS architecture, removing some complexity from the 
-submit host.  At the core of GlideinWMS is the use of GSI for security; while HCC uses GSI security for its OSG work, 
-it is preferable to avoid making it a requirement for the campus.
+There are many architectural similarities between the CGF and GlideinWMS software: Condor pilot jobs, submission using a translation layer, and querying user queues to detect of idle jobs.  However, GlideinWMS was not 
+used as GlideinWMS is designed to have one central factory and a frontend on each submit host.
+If a non-Condor cluster becomes disconnected from the GlideinWMS factory, even jobs that are submitted to a local cluster will 
+be unable to run.  The GlideinWMS factory needs access to the cluster in order to start jobs, breaking the decentralization goal.  The current 
+CGF merges the roles of the frontend and factory in the GlideinWMS architecture, removing configuration and maintaining a separate GlideinWMS daemon on the submit host. 
+GlideinWMS is designed around GSI for security; while HCC uses GSI security for its OSG work, 
+it is preferable to avoid making it a requirement for users running on the campus.
 
-The GlideinWMS system does a superior job of preparing and validating runtime environments compared to the CGF, an 
+The GlideinWMS system prepares and validates runtime environments via a VO-supplied script, an 
 essential element for removing a common source of grid frustration.  However, the runtime environment 
-problem is mitigated on campuses because of the smaller number of resources and the closer working relationships 
-between system administrators.
+problem is lessened on campuses as the smaller number of resources and the closer working relationships 
+between system administrators.  It is unsolved at the inter-campus level.
 
-The Campus Factory is a python daemon that runs as a persistent condor job.  Since it runs as a condor job, the condor daemons will ensure that it stays alive, eliminating the need to monitor an additional daemon.  
+The Campus Grid Factory (\texttt{campus\_factory}) is a python daemon that runs as a persistent Condor job.  Since it runs as a Condor job, the Condor daemons will ensure that it stays alive, eliminating the need to monitor an additional daemon.  
 
-The factory depends on Condor daemons to carry out many tasks such as:
+The \texttt{campus\_factory} depends on Condor daemons to carry out many tasks such as:
 \begin{itemize}
-\item Run and maintain the factory daemon.
-\item Submission of the glidein jobs to the LRM (See Section \ref{sec:condorandblahp}).
-\item Collect and advertise information on the glidein jobs.
-\item Negotiate with submitters in order to route jobs to glideins.
+\item Run and maintain the \texttt{campus\_factory} daemon.
+\item Submission of the pilot jobs to the LRM (See Section \ref{sec:condorandblahp}).
+\item Collect and advertise information on the pilot jobs.
+\item Negotiate with submitters in order to route jobs to pilot.
 \end{itemize}
 
 
 \subsection{Glidein Submission Determination }
-The factory decides whether to submit glideins to the underlying non-condor cluster.  The factory has two configuration options relating to submission of glideins to the LRM: \texttt{MaxIdleGlideins} and \texttt{MaxQueuedJobs}.
+The factory process decides whether to submit pilots to the underlying non-condor cluster.  The factory has two configuration options relating to submission of pilots to the LRM: \texttt{MaxIdleGlideins} and \texttt{MaxQueuedJobs}.
 
 \begin{description}
 \item[ \texttt{MaxIdleGlideins}] \hfill \\
 An integer representing the number of idle slots that will be allowed before the factory stops submitting jobs. 
 
 \item[ \texttt{MaxQueuedJobs}] \hfill \\
-An integer number of queued glideins that will be allowed to be idle in the LRM before submitting more. 
+The maximum number of queued glideins that will be idle in the queue of the LRM. 
 
 \end{description}
+
+The factory will query user queues and record the number of idle jobs.  When there are idle jobs at user queues, it will use the following logic to determine how many pilot jobs to submit.  \texttt{idleuserjobs} are the recorded number of idle jobs at user queues.
 
 The factory submission logic is as follows:
 
@@ -828,16 +843,16 @@ The factory submission logic is as follows:
 \label{alg:glideins}
 \end{algorithm}
 
-Additionally, the factory has logic to detect glideins that are not reporting to the collector.  This can happen when the LRM cannot transfer files, if the BLAHP is incorrectly reporting the status of a job, or if there is something wrong with the glideins jobs.
+Additionally, the factory has logic to detect pilots that are not reporting to the collector.  Pilots that have been submitted to the factory's Condor will show their status as reported by PBS and BLAHp.  The factory will look for the same number reporting as `Running', and reporting to \texttt{condor\_collector}.  If these two number differ by more than $10\%$, the factory will stop submitting jobs.  This can happen when the LRM cannot transfer files, if the BLAHP is incorrectly reporting the status of a job, or if there is something wrong with the pilot jobs.
 
 
 \subsection{OfflineAds} \label{sec:offlineads}
-OfflineAds are used to optimize the submission of glideins to the underlying batch system.   
-Offline ads were designed to be used for power management. When a node hasn't been matched for a configurable amount of time, the machine can be turned off to save power. When the machine is preparing to turn off, it sends an offline ad to the collector that describes the machine. The OfflineAd includes all of the features that can be used when matching against an online resource, such as memory, disk space, and installed software.  When the offline ad describing the machine is matched to a job by the Condor negotiator, the negoiator inserts a new attributed into the offline ad called \texttt{MachineLastMatchTime}.  When using power management, the Condor Rooster periodically queries the collector for the offline ads, and wakes the powered off matched nodes to run the job.
+Offline ads are a Condor feature that were designed to be used for power management.  When a node hasn't been matched for a configurable amount of time, the machine can be turned off to save power. When the machine is preparing to turn off, it sends an offline ad to the collector that describes the machine so that it can be restarted if needed.  OfflineAds are used to optimize the submission of pilot jobs to the underlying batch system.   
+  The OfflineAd is just a normal ClassAd that includes all of the features that can be used when matching against an online resource, such as memory, disk space, and installed software.  When the offline ad describing the machine is matched to a job by the Condor negotiator, the negotiator inserts a new attributed into the offline ad called \texttt{MachineLastMatchTime}.  When used for power management, the Condor Rooster daemon periodically queries the collector for the offline ads.  If one has been recently matched, then it wakes the corresponding node.
 
 %The collector maintains the offline ads for a configurable amount of time using the configuration variable OFFLINE\_EXPIRE\_ADS\_AFTER. During this time, 
 
-In the factory's implementation, the OfflineAds are used to match possible glidein resources to idle jobs.  When the OfflineAds are collected, the condor negotiator will treat the offline ads just as it would a real ad and match it to idle jobs. Since the Negotiator sees no difference between running and offline ads, the offline ads will be matched even when flocking from another condor pool.
+In the \texttt{campus\_factory}'s implementation, the OfflineAds are used to match possible pilot resources to idle jobs.  Dead pilots are though as ``offline machines''.  Again, the \texttt{condor\_negotiator} will treat the offline ads just as it would a real ad and matches it to idle jobs. Since the Negotiator sees no difference between running and offline ads, the offline ads will be matched even when flocking from another condor pool.
 
 Since the OfflineAds are exact copies of active glideins, the OfflineAds will increase the accuracy of matching with idle jobs by resembling running glideins.  Descriptions of the glidein host and installed software will be represented in the OfflineAds just as it would a regular glidein ad.
 
