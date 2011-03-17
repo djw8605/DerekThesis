@@ -1150,11 +1150,11 @@ In the Virginia Campus Grid, the user uses LDAP and PKI for authentication.  The
 
 In the Oxford Campus Grid, Kerberos is used for on campus submissions, while PKI is used for external access.  This is consistent with on-campus policies.
 
-The OSG focuses on the security of execution gateways (Compute Elements) as opposed to the security of submission hosts. Though a compromise of a gateway can lead to access of many short--lived, limited proxies, the compromise of a submission host can give access to a long--lived, unlimited proxy of a few users.  Further, since the OSG allows unregistered submission hosts, and they are relatively easy to set up compared to the gateways, there are many submission hosts.  Also, gateways are traditionally maintained by professional or knowledgable administrators; in contrast, submission hosts are usually maintained by scientists with limited knowledge of security.  Therefore, submission hosts could be compromised without knowledge of their owners, and could give access to unrestricted certificates.
+The OSG focuses on the security of execution gateways (Compute Elements) as opposed to the security of submission hosts. Though a compromise of a gateway can lead to access of many short--lived, limited proxies, the compromise of a submission host can give access to a long--lived, unlimited proxy of a few users.  Further, since the OSG allows unregistered submission hosts, and they are relatively easy to set up compared to the gateways, there are many submission hosts.  OSG CE's most often maintained by professional or knowledgable administrators; in contrast, submission hosts may be maintained by users with limited knowledge of security.  Submission hosts could be compromised without knowledge of their owners, and could give access to unrestricted certificates.  Thus, we argue the whitelisting of submit hosts under the care of known, dependable system administrators outweigh the lack of ``strong security'' between submit hosts and resources.  
 
-The GLOW and Purdue campus grids are similarly IP security based grids.  The IP based security simplifies the setup of a grid based on Condor flocking that GLOW, Purdue, and HCC use.  The IP based security protects gateway hosts by only allowing very specific submission hosts.  Further, the submission host is protected since it only submits jobs to known good hosts.
+The GLOW and Purdue campus grids are similarly IP security based grids.  The IP based security simplifies the setup of a grid based on Condor flocking that GLOW, Purdue, and HCC use.  The submission host is additionally protected by the fact it only submits jobs to known good hosts.
 
-The trust relationships inside campuses are simple compared to those outside of campus.  When jobs begin flowing outside the local domain, the authentication must match that of the external entity.  In the case of HCC, jobs flow out of the grid through flocking to external campuses and to the OSG through the GlideinWMS interface.
+The trust relationships inside campuses are simple compared to those outside of campus.  When jobs begin flowing outside the local domain, the authentication must match that of the external entity.  Jobs flow off campus through flocking to external campuses and to the OSG through the GlideinWMS interface.
 
 When flocking to external campuses, the HCC grid again uses IP based security negotiated with the campuses.  In practice, this involves publishing a list of trusted hosts on each campus.  Since campuses usually use a single authentication method for all of their machines, this creates a scenario where either a campus will trust the entirety of another campus, or not at all.  For example, HCC trusts all of Purdue's submit hosts, and therefore all of the Purdue users.  More accurately, we trust the Purdue administrators  to monitor their users' usage, and to contain and contact us about possible security threats.
 
@@ -1163,9 +1163,9 @@ When jobs move to the OSG, we must match the authentication methods used on the 
 The HCC campus grid creates a web of trust inside campus composed of IP based security.  Outside of campus, it conforms to the external requirements for authentication with either a published list of trusted hosts (flocking with Purdue) or a PKI certificate (OSG).
 
 \subsection{Job Submission}
-Users have the most interaction with the job submission mechanism; therefore, it must be simple and intuitive.  Most campuses further refine their submissions to distribute work across multiple resources.
+Users have the most interaction with the job submission mechanism; therefore, it must be simple and intuitive.  
 
-The Virginia campus grid and the Oxford grid use Globus to submit and receive jobs.  Oxford further created a resource broker to balance the load among campus resources.
+The Virginia campus grid and the Oxford grid use Globus to submit and receive jobs.  Globus does not have load balancing or job distribution built in; therefore, Oxford created a resource broker to balance the load among campus resources.
 
 In the HCC, GLOW, and Purdue campuses, jobs are flocked to execute hosts inside the campus, automatically spreading out the load to available resources.  Condor takes a greedy approach to scheduling jobs; if there is an empty slot, it will fill it without thinking of future submission or other resources.  Therefore, if a user submits many jobs, and the first resource that it contacts has many idle slots, it will fill those slots without looking at other resources.  Condor will evenly distribute resources across all users of the cluster.
 
@@ -1175,25 +1175,30 @@ Submission on the HCC, GLOW, and Purdue grid requires only two more lines to the
 
 
 \subsection{Resource Independence}
-In the OSG, resource independence is guaranteed by strict separation of resources.  This is accomplished by independent clusters having all necessary infrastructure installed locally, while only sending non-blocking information to a distributed set of central services.  This is very similar to the design of the HCC campus grid.
+In the OSG, resource independence is guaranteed by strict separation of resources; each resource has no dependencies on any other resource.  This is accomplished by independent clusters having all necessary infrastructure installed locally, while only sending information to a distributed set of central services.  The HCC campus grid attempts to mimic these design patterns.
 
-While resources on the OSG are independent, user job submission methods are not.  When using GlideinWMS, if the factory is disconnected or is terminated, no new jobs will start.  More importantly, jobs will not start on local resources either.  PanDA similarly cannot start jobs when disconnected from the central PanDA server at CERN.
+While resources on the OSG are independent of each other, user job submission frameworks are not.  For example, when using GlideinWMS, if the factory is disconnected or is terminated, no new jobs will start.  More importantly, jobs will not start on local resources either.  PanDA similarly cannot start jobs when disconnected from the central PanDA server at CERN.
 
-The HCC Campus grid installs all infrastructure to distribute jobs on the local resource.  For a Condor cluster, this is simply the existing Condor install.  While on the PBS cluster, the CGF install is installed locally on the gatekeeper node.  Therefore, possible failures are:
+The HCC campus grid installs all infrastructure to submit jobs on the local resource and distrubute to remote resources.  For a Condor cluster, this is simply the existing Condor install.  For the PBS cluster, the CGF install is installed locally.  Therefore, possible failures are:
 \begin{itemize}
-\item \textbf{Submitter failure}: If the user's submission machine is taken offline, only jobs submitted on this resource will be effected.  Any jobs that were currently running will be recoverable for a short time while the job lease is active.
-\item \textbf{Condor cluster failure}: If the cluster becomes disconnected from the network, jobs running on the cluster from remote submitters will terminate after their job leases have expired.  Jobs submitted locally will continue to run on local resources, but will be unable to run on remote resources.  If the Condor instance is terminated, the locally submitted jobs will live for the lease time, then terminate.
-\item \textbf{CGF installed cluster failure}:  Remotely submitted jobs will terminate after their lease has expired.  Locally submitted jobs will continue to run on local resources, including glideins previously running under PBS.  If the CGF is terminated, no more glideins will be submitted to PBS, but jobs will continue to execute on existing glideins.  Additionally, Condor will attempt to restart the CGF if it terminates abnormally.  If Condor is terminated, local jobs will execute until their job leases have expired, and glideins will shut down after receiving no new jobs.
+\item \textbf{Submitter failure}: If the user's submission machine is taken offline, only jobs submitted on this resource will be affected.  Any currently running jobs will be recoverable for 15 minutes while the job lease is active.
+\item \textbf{Condor cluster network failure}: If the cluster becomes disconnected from the network, jobs running on the cluster from remote submitters will terminate after their 15 minute job leases have expired.  Jobs submitted locally will continue to run on local resources, but will be unable to run on remote resources.  If the Condor instance is terminated, the locally submitted jobs will be recoverable for the lease time, then terminate.
+\item \textbf{CGF installed cluster failure}:  This could happen if the CGF crashes, the node running the CGF crashes, or any other scenario where the CGF becomes unavailable.  Remotely submitted jobs will terminate after their lease has expired.  Locally submitted jobs will continue to run on local resources, including pilots previously running under PBS.  If the CGF is terminated, no more pilots will be submitted to PBS, but jobs will continue to execute on existing pilots.  Condor will attempt to restart the CGF if it terminates abnormally.  If Condor is terminated, local jobs will execute until their job leases have expired, and pilots will shut down after receiving no new jobs.
 \end{itemize}
 
 
-The HCC campus grid is resistant to failure due to design decisions regarding the placement of the Campus Factory, especially when compared to the GlideinWMS factory.
+The HCC campus grid is resistant to failure due to design decisions regarding the placement of the Campus Factory.  Compared to the centralized GlideinWMS factory, we believe this provides more reliability.
 
 
 \subsection{Accounting}
-Accounting has two perspectives: How many resources have I used?  By whom and to what extend have my resources been used.  
+Accounting has two perspectives: 
+\begin{itemize}
+\item \textbf{User}: How many resources have I consumed?  
+\item \textbf{Resource Owner}: By whom and to what extend have my resources been used?
+\end{itemize}
 
-The first perspective is easier than the second.  In the first perspective, the submitter or group of submitters want to know their usage (time).  Installing accounting software on the submitter machines will account for usage of the submitters.  Since  submitter machines are tightly controlled in the HCC campus grid, it is simple to install accounting software on each.  Therefore, we used the accounting software from the OSG, Gratia, to do accounting on the submitter machines.  Gratia uploads records for each job to a HCC Gratia collector.  The collector can then make usage graphs such as Figure \ref{fig:hccaccounting}.  The Gratia collector is a MySQL database.
+
+In the first perspective, the submitter or group of submitters want to know their usage (time).  Installing accounting software on the submitter machines will account for usage of the submitters.  Since  submitter machines are tightly controlled in the HCC Campus Grid, we mandate the usage of accounting software.  We use the accounting software from the OSG, Gratia, for this task.  Gratia uploads records for each job from the \texttt{condor\_schedd} to a HCC Gratia collector.  The collector can then make usage graphs from its DB, such as Figure \ref{fig:hccaccounting}.
 
 
 \begin{figure}[h!tb]
@@ -1204,26 +1209,26 @@ The first perspective is easier than the second.  In the first perspective, the 
 \end{center}
 \end{figure}
 
-Accounting on the execute resource's side is very useful and is the current model in the OSG.  When a job is submitted in the OSG, it always passes through a gatekeeper on the local resource.  Accounting is done on the gatekeeper since it will see every job running at the resource.
+Accounting on the execute resource side is very useful and is the current model in the OSG.  When a job is submitted in the OSG, it always passes through a gatekeeper on the local resource.  Accounting is done on the gatekeeper since it will see every OSG job running at the resource.
 
-Unfortunately, due to the nature of flocking, accounting on the execute resources is more difficult.  When flocking occurs, the submitter and the execute resource communicate directly, bypassing the gatekeeper.   The only way to keep accurate accounting data is to collect it from the execute resource.  In the CGF installs, the accounting would need to run on the glideins submitted to PBS.  Condor does not support creating Gratia compatible records on the execute site.  This will be left for future work.
+Unfortunately, due to the nature of flocking, accounting on the execute resources is more difficult on the HCC Campus Grid.  When flocking occurs, the submitter and the execute resource communicate directly, bypassing any gatekeeper.   The only way to keep accurate accounting data is to collect it from the worker nodes.  In the CGF installs, the accounting would need to run on the pilot submitted to PBS.  Condor does not support creating Gratia compatible records on the execute site.  This will be left for future work.
 
 
 \subsection{Data Management}
 Data management has been done differently by each campus.  GLOW maintains a global AFS that is available on every worker node.  Purdue has a few large file systems that worker nodes can access.  FermiGrid has a global Network File System (NFS) space for data.  Oxford grid uses the Storage Resource Broker (SRB) and a single vault.
 
-The OSG promotes staging data to a nearby storage element which is difficult for individual scientists to do.  Normally a scientist will stage data to the gatekeeper, then transfer it to the execute host.  This can lead to several bottlenecks when transferring large amounts of data to the gatekeeper.
+The OSG promotes staging data to a nearby storage element which is difficult for individual users to implement.  Normally a user will stage data to the gatekeeper, then transfer it to the execute host.  This can lead to several bottlenecks when transferring large amounts of data to the gatekeeper.
 
-HCC does not have a central file system, and is, therefore, forced to transfer files.  In practice, each job transfers input files and executables directly from the submission to the execute host.  This method has several benefits:
+HCC does not have a central file system, and instead uses Condor file transfer.  This method has several benefits:
 
 \begin{itemize}
 \item Removes the gateway as a bottleneck by transferring files directly from submitter to execute host.
-\item Reduces dependence on the gateway as a failure point.  The gateway could terminate while a job is running and Condor would still be able to transfer back the output, and even start another job.  The only major failure point is the submitter, which is an acceptable risk.
-\item Greatly reduces the work that the gateway needs to perform.  The authentication and authorization are done by the execute and submission hosts.
-\item Not dependent on the reliability or bandwidth of the shared file system.  Further, the submitter is relatively unaffected by other users that are not running on the same submission host.
+\item Reduces dependence on the gateway as a failure point.  The gateway could terminate or become unavailable while a job is running and Condor would still be able to transfer back the output, and even start another job.
+\item Reduces the work that the gateway needs to perform.  The authentication and authorization are done by the execute and submission hosts.
+\item Not dependent on the reliability or bandwidth of the shared file system.  The submitter is relatively unaffected by other users that are not running on the same submission host.
 \end{itemize}
 
-
+There are some downsides to this approach.  The largest is the reliance on the submitter machine.  If the submitter becomes unavailable, all data transfers will fail.  I believe this is an acceptable risk; if the machine is unavailable for more than the 15 minute job lease, all jobs from the submitter will stop.
 
 
 
@@ -1237,17 +1242,18 @@ HCC does not have a central file system, and is, therefore, forced to transfer f
 \end{center}
 \end{figure}
 
-In Figure \ref{fig:snapshothccgrid} you can see a snapshot of production jobs submitted from the GlideinWMS interface host running on the HCC campus grid.  The first thing to notice is the total number of jobs running, (8612).  This is larger than the total number of cores in any single Nebraska cluster, and even larger than the sum total of all cores managed by HCC (8000).  In this particular picture, Derrick Stolee is running a graph search workflow.
+In Figure \ref{fig:snapshothccgrid} one can see a snapshot of production jobs submitted from the GlideinWMS interface host running on the HCC Campus Grid.  Note the total number of jobs running, (8612):  this is larger than the total number of cores in any single Nebraska cluster and larger than the sum total of all cores managed by HCC (8000).  
 
+A description of the resources shown in the picture follows.
 \begin{itemize}
 \item \textbf{Local Resources}: ff.unl.edu, prairiefire.unl.edu
 \item \textbf{Peered campus resources}: bluearc.rcac.purdue.edu, lustrea.rcac.purdue.edu, miner.rcac.purdue.edu
 \item \textbf{OSG through GlideinWMS}: USCMS-FNAL-WC1-CE3 (Fermilab), Omaha (Globus submission to Firefly), Michigan, Caltech, NERSC-CARVER, \mbox{Nebraska} (Nebraska Tier 2), UCSD, UConn, BNL (Brookhaven), Wisconsin, MIT, \\ OSCER\_ATLAS (OU).
 \end{itemize}
 
-Another interesting observation is the number of jobs running at the peered campus, Purdue.   Purdue has large resources and peering with them has been very valuable to Nebraska researchers.  As described in Figure \ref{fig:campusgrid}, the submitter first looks at local resources ff.unl.edu (CGF) and prairiefire.unl.edu (Condor).  Both had few resources available, so the submitter moved onto the OSG and peered campuses.  The peered campus had many resources available (especially lustrea.rcac.purdue.edu).  Also, many sites in the OSG were able to start jobs (see Fermilab, Wisconsin, MIT).  
+Another observation is the number of jobs running at the peered campus, Purdue.   Purdue has large resources and peering with them has significantly increased the available resources to Nebraska researchers.  As described in Figure \ref{fig:campusgrid}, the submitter first looks at local resources \texttt{ff.unl.edu} (CGF) and \texttt{prairiefire.unl.edu} (Condor).  Both had few resources available, so the submitter moved onto the OSG and peered campuses.  The peered campus had many resources available (especially \texttt{lustrea.rcac.purdue.edu}).  Sites in the OSG were able to start jobs (see Fermilab, Wisconsin, MIT).  
 
-A unique usage case is installation of the Campus Grid Factory.  Currently, the campus grid factory is used in production only on Firefly at Nebraska.  But, it is currently being run in test environments at the National Center for Supercomputing Applications (NCSA) \cite{ncsa}.  At the NCSA, researchers from the Renaissance Computing Institute \cite{renci} have installed the CGF to flock from their submission host at their institution.  Additionally, campus grids such as Louisiana Tech and the Sunshine Grid in Florida are experimenting with the framework.
+Currently, the campus grid factory is used in production only on Firefly at Nebraska.  It is currently being run in test environments at the National Center for Supercomputing Applications (NCSA) \cite{ncsa}.  At the NCSA, researchers from the Renaissance Computing Institute \cite{renci} have installed the CGF to flock from their submission host at their institution.  Campus grids such as Louisiana Tech and the Sunshine Grid in Florida are experimenting with the framework.
 
 
 
@@ -1255,16 +1261,17 @@ A unique usage case is installation of the Campus Grid Factory.  Currently, the 
 \chapter{Conclusions and Future Work}
 \label{sec:Conclusion}
 
-The framework described in this thesis creates a grid of clusters that transparently overflow to each other.  Also, the grid can overflow to national cyberinfrastructure and peered campuses through production interfaces.  The CGF was developed to connect a PBS cluster into the Condor campus grid.  The HCC campus grid is a production grid, running many users' jobs.
+The framework described in this thesis creates a grid of clusters that transparently overflow to each other.  The grid can overflow to national cyberinfrastructure and peered campuses through production interfaces.  The CGF was developed to connect a PBS cluster into the Condor campus grid.  The HCC campus grid is a production grid, running many users' jobs.
 
-The framework includes many components developed by external organizations such as BLAHP by gLite, Condor by University of Wisconsin -- Madison, and GlideinWMS by the CMS collaboration.  These components are glued together by Condor and the CGF to create a uniform grid.
+The framework includes many components developed by external organizations such as BLAHP (gLite), Condor (University of Wisconsin--Madison), and GlideinWMS (Fermilab).  These components are glued together by Condor and the CGF to create a uniform grid.
 
+By using production components from other grids, I was able to build a framework that integrates all clusters on the campus into the HCC Campus Grid, as well as overflow to the regional and national cyberinfrastructure.  Further it develops the idea of a tiered model: the framework prefers to run jobs locally before expanding to the campus, and finally overflowing to regional and national grids.
 
-Futher refinement of data management and accounting are left for future work.  Data management has proven difficult in the OSG, and it is no different in a campus grid.  Transparent access to storage has been a goal for the OSG and major collaborators for some time.  CMS and ATLAS are moving towards cache--based data distribution methods.  The campus grids should follow this model as well,  whether this is as simple as using web caching, or more complicated such as utilizing Xrootd \cite{dorigo2005xrootd} for data distribution.
+Further refinement of data management and accounting are left for future work.  Data management has proven difficult in the OSG, and it is no different in a campus grid.  Transparent access to storage has been a goal for the OSG and major collaborators for some time.  CMS and ATLAS are moving towards cache--based data distribution methods \cite{campana2011commissioning}.  The campus grids should follow this model as well,  whether this is as simple as using web caching, or more complicated such as utilizing Xrootd \cite{dorigo2005xrootd} for data distribution.  Similar to the BLAHP, Condor, and GlideinWMS, the components developed by the large experiments CMS and ATLAS should be adapted for use on the campus grid.  The work done by the large experiments to adapt the these components to their grids is much larger than the effort available for campus grids.  
 
-Accounting also will be improved in the future.  It is important for resource owners to determine the hours given to external entities.  This can only be accomplished with the execution side reporting usage.  This model is not used in the OSG and will need to be developed.
+Accounting also will be improved in the future.  It is important for resource owners to determine the hours given to external entities.  This can be accomplished with the execution side reporting usage.  This model is not used in the OSG and will need to be developed separately.
 
-The campus grid ideas outlined in this thesis are being used in other states for their campus grids.  Institutions such as Florida State and Louisiana Tech are installing the software and evaluating it for their campus grids.  The OSG Campus Grid Initiative is a priority goal inside the OSG that will include the software and ideas developed here.
+The campus grid ideas outlined in this thesis are being used in other states for their campus grids.  Institutions such as Florida State and Louisiana Tech are installing the software and evaluating it for their campus grids.  The Campus Grid area of the OSG will include the software and ideas developed here.
 
 
 
