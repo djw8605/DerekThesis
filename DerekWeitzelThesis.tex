@@ -1230,6 +1230,27 @@ HCC does not have a central file system, and instead uses Condor file transfer. 
 
 There are some downsides to this approach.  The largest is the reliance on the submitter machine.  If the submitter becomes unavailable, all data transfers will fail.  I believe this is an acceptable risk; if the machine is unavailable for more than the 15 minute job lease, all jobs from the submitter will stop.
 
+\subsection{Updated table of Campus Grid Attributes}
+\begin{table}[h!t]
+\centering
+\small
+\begin{tabular}{ | p{50pt} | | p{68pt} | p{54pt} | p{60pt} | p{50pt} | p{60pt} |}
+\hline
+Grid & Trust & Job & Resource & Accounting & Data \\ 
+& Relationship & Submission & Independence & & Management \\
+\hline \hline
+Virginia &  LDAP/PKI  & None \mbox{Described} & Strict & Central & None     \\ \hline
+Oxford & Kerberos/PKI & Central & Central \mbox{Submission} & Custom & SRB  \\ \hline
+Purdue & Host &  Distributed & Strict & Custom & Condor Transfer  \\ \hline
+GLOW &  Host & Distributed & Strict & None &  Condor Transfer \\ \hline
+FermiGrid & PKI & Central & Strict & OSG \mbox{Gratia} & Central File System  \\ \hline
+OSG & PKI  & Distributed & Strict & OSG \mbox{Gratia} & Distributed \\ \hline
+HCC & Campus Defined & Distributed & Strict & OSG \mbox{Gratia} & Condor Transfer \\ \hline
+\end{tabular}
+\caption{Updated Campus Grid Attributes} \label{tab:updatedcampusgridoverview}
+\end{table}
+
+The Campus Grid attributes with HCC are shown in Table \ref{tab:updatedcampusgridoverview}.  
 
 
 \section{Usage}
