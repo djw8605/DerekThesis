@@ -121,7 +121,7 @@ The framework is implemented spanning two campuses at the Holland Computing Cent
 
 %\end{itemize}
 
-A computational grid is a hardware and software infrastructure that provides dependable, consistent, pervasive, and inexpensive access to high-end computational capabilities\cite{foster2004grid}.  A campus grid is a specialized grid where resources are owned by the same organization, though can be in multiple administrative domains.  We further restrict our considerations to those campuses that have computation multiple resources.
+A computational grid is a hardware and software infrastructure that provides dependable, consistent, pervasive, and inexpensive access to high-end computational capabilities\cite{foster2004grid}.  A campus grid is a specialized grid where resources are owned by the same organization, though can be in multiple administrative domains.  We further restrict our considerations to those campuses that have multiple computation resources.
 
 A campus grid has become necessary to alleviate demand on newer parallel machines by moving single core jobs to other resources that have idle cycles, such as previous generations of parallel machines and idle workstations.  By moving the single core jobs, it can free the newest hardware for large parallel jobs that can benefit from better interconnects, larger and faster storage, and increased core count that are on the newest hardware.
 
@@ -129,7 +129,7 @@ A campus grid requires a framework for distributing computation among independen
 
 The framework described in this thesis is used to create a production campus grid.  The campus grid includes technology to allow clusters to participate in the campus grid.  It integrates clusters that use several schedulers, and uses production quality software integrated into a solution that is deployed at several clusters in the U.S.  The campus grid framework provides a method for users to run jobs transparently on distributed resources.  The jobs are sent to available resources on distributed clusters on the campus grid.  Further, it can expand beyond the campus and onto other campuses by simple configuration changes.
 
-At the Holland Computing Center (HCC), I created a campus grid that spans two clusters and can overflow onto national grid infrastructure.  The HCC grid borrowed concepts and techniques from earlier campus grids and a national grid, the Open Science Grid (OSG).  The OSG focuses on High Throughput Computing (HTC), concentrating on tasks that require as much computing power (throughput) as possible over long periods of time \cite{gridbook-htc}.  The HCC campus grid also focuses on HTC tasks.  
+At the Holland Computing Center (HCC) \cite{hccwebsite} at the University of Nebraska -- Lincoln, I created a campus grid that spans two clusters and can overflow onto national grid infrastructure.  The HCC grid borrowed concepts and techniques from earlier campus grids and a national grid, the Open Science Grid (OSG).  The OSG focuses on High Throughput Computing (HTC), concentrating on tasks that require as much computing power (throughput) as possible over long periods of time \cite{gridbook-htc}.  The HCC campus grid also focuses on HTC tasks.  
 
 The HCC campus grid bridges clusters and the national infrastructure while running production processing jobs from on-campus researchers. Since the beginning of 2010, we have run 8,151,607 jobs for 9,022,655 hours on the campus grid infrastructure.
 
