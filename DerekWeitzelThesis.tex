@@ -244,7 +244,7 @@ There have been several methods to create a distributed campus grid.  They all u
 \chapter{Background}
 \section{Characteristics of Campus Grids} \label{sec:attributes}
 In this section, we explore five characteristics of HTC-centric campus grids. While the list is not exhaustive, we believe these are the foundational characteristics of campus grids.  We've 
-found campus grids can be characterized by how they approach trust relationships, job submission, resource 
+found that campus grids can be characterized by how they approach trust relationships, job submission, resource 
 independence, accounting, and data management.
 
 
@@ -364,13 +364,13 @@ much did I give away due to resource sharing?Ó
 
 \subsection{Data Management}
 Scientific data management presents two challenges for research computing centers: volume of data and archival 
-requirements.  The data volume is often larger than a single scientist can keep on his personal systems, and 
-archiving requires expertise outside his field.
+requirements.  The data volume is often larger than a single scientist can keep on their personal systems, and 
+archiving requires expertise outside their field.
 
 Distributed computing can present an additional challenge: managing data location.  Data access costs may be 
 variable between different resources on a grid, or required data may simply be unavailable at some locations.  A simple 
 solution is to export the same file system to all resources, hiding data locality from the user.  Unfortunately, this 
-solution breaks down outside the campus and may break down in highly-distributed campuses.
+solution breaks down outside the campus since the file system would need to be accessed from outside campus, which can significantly hurt performance and increase administration cost on other campuses.   A single file system solution may not work in highly-distributed campuses as well.
 
 More complex solutions include declaring data dependencies for jobs explicitly inside the job 
 submissions (gLite WMS \cite{andreetto2008glite}, Condor), promoting data to be a top-level abstraction equal to jobs (Stork \cite
