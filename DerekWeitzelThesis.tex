@@ -90,13 +90,13 @@ The framework is implemented spanning two campuses at the Holland Computing Cent
 \end{abstract}
 
 \begin{acknowledgments}
-I would like to thank my advisor, David Swanson, for guidance during this project, during my undergraduate career, and also for the career advise as I have worked at RCF and HCC.  Also, thank you for hiring me as an freshman, with absolutely no computing experience, and giving me the support to learn and excel at scientific computing.
+I would like to thank my advisor, David Swanson.  I appreciated his guidance and patience while I implemented this thesis project. Also, I thank David for hiring me as an freshman, with little computing experience and giving me the support to learn and excel at scientific computing.
 
-I want to thank Dan Fraser, for bringing this interesting project to me, and giving me the opportunity to create my own solution to this problem.
+I want to thank Dan Fraser for bringing this interesting project to me and giving me the opportunity to create my own solution to this problem.
 
-I want to thank Brian Bockelman for excellent technical advise during my time at HCC.  He worked diligently with me on my thesis, and has become a good friend.
+I want to thank Brian Bockelman for excellent technical advise during my time at HCC.  He worked diligently with me on my thesis.
 
-I also want to thank all the people at the Holland Computing Center.  I have broken their systems, asked for advise, and caused an untold amount of extra work for them.  I especially want to thank Garhan Attebury, Carl Lundstedt, Tom Harvill, Adam Caprez, Ashu Guru, and Chen He.
+I also want to thank all the people at the Holland Computing Center.  I have broken their systems, asked for advise, and caused an untold amount of extra work for them.  I especially want to thank my colleagues for the assistance they've provided over the years: Garhan Attebury, Carl Lundstedt, Tom Harvill, Adam Caprez, Ashu Guru, and Chen He.
 \end{acknowledgments}
 
 
@@ -497,7 +497,7 @@ conclusions and describes future work.
 %your idea relates to other work as possible
 
 \subsection{Globus} \label{sec:globus}
-Globus GRAM is a translation layer between a standard defined Resource Specification Language and the local resource manager.  It has been very successful and has a large install base.  Globus also has deep integration with standard grid authentication methods such as PKI.
+Globus GRAM is a translation layer between the Globus Resource Specification Language and the local resource manager.  It has been very successful and has a large install base.  Globus also has deep integration with standard grid authentication methods such as PKI.
 
 Placing Globus gatekeepers on each cluster allows jobs to be submitted to each cluster without modifying the underlying batch system.  This requires a higher layer of abstraction over the Globus gatekeepers to optimally balance load between clusters.   
 Globus GRAM implements the Grid Security Infrastructure (GSI) security that is inconsistent with most existing campus security architectures such as LDAP \cite{howes1997ldap} authentication or Kerberos \cite{steiner1988kerberos}.  It does not provide a method for transparent execution on other clusters: each submission must target a specific execution resource.  Therefore, there is no overflow capability in Globus, which experience on the OSG has shown is important to users.
@@ -1125,7 +1125,7 @@ The environment includes two local clusters, as well as an interface to the OSG 
 \subsection{Prairiefire Cluster Configuration} \label{sec:prairiefiresetup}
 Prairiefire is running both Condor and PBS in a side-by-side configuration.  This is very similar to how Purdue uses Condor.  When a PBS job arrives on a node, the Condor daemons will preempt the running job and move to another node.  Therefore, PBS has priority access to nodes, while Condor is treated as an opportunistic user.
 
-Condor runs on the head node of the cluster.  The head node has both a public and private interface.  Each worker node connects to the outside world through a Network Address Translation (NAT) layer.  The NAT is used to aggregate the outside connectivity of the cluster by funneling traffic through a single gateway.  Since Condor must have direct communication between the submitter (possibly outside of Prairiefire) and the execute host (worker nodes), Prairiefire must run the Condor Connection Broker (CCB).  The CCB runs on the head node and negotiates connections for nodes behind the NAT to connect with the submitter.
+Condor runs on the head node of the cluster, which has both a public and private network interface.  Each worker node connects to the outside world through a Network Address Translation (NAT) layer.  The NAT is used to aggregate the outside connectivity of the cluster by funneling traffic through a single gateway.  Since Condor must have direct communication between the submitter (possibly outside of Prairiefire) and the execute host (worker nodes), Prairiefire must run the Condor Connection Broker (CCB).  The CCB runs on the head node and negotiates connections for nodes behind the NAT to connect with the submitter.
 
 Prairiefire will schedule jobs from the Firefly CGF and the GlideWMS submit machine to run via Condor flocking.  Prairiefire's head node can also flock jobs to Firefly.  These interactions are shown in Figure \ref{fig:hccgrid}.  To do this, the configuration variable \texttt{FLOCK\_FROM} was set to \texttt{ff-grid.unl.edu, glidein.unl.edu} and \texttt{FLOCK\_TO} to \texttt{ff-grid.unl.edu}.   Further, the security is set up such that jobs coming from outside of the Prairiefire pool will use the user \texttt{nobody} when running the job.  Condor uses this unprivileged account so that a rogue user can cause minimal impact to the system, and to protect other users of the system.  The security on the machine is IP based; it trusts all users from the \texttt{FLOCK\_TO} and \texttt{FLOCK\_FROM} hosts.
 
@@ -1137,12 +1137,12 @@ Firefly is running the Campus Grid Factory (CGF) on a node straddling the border
 
 The CGF runs as a local unprivileged user.  Condor is installed in this user's home directory and runs under this user's account.  The CGF runs as a Condor job; it is maintained by the Condor schedd.  Submissions to PBS use the default queue.
 
-The Condor instance that runs on the gatekeeper is configured to allow flocked jobs from Prairiefire and the GlideinWMS submission node.  Also, users can submit jobs to the CGF's Condor instance at Firefly, allowing them to run on Firefly or flock to Prairiefire.
+The Condor instance that runs on the gatekeeper is configured to allow flocked jobs from Prairiefire and the GlideinWMS submission node.  Alternatively, users can submit jobs to the CGF's Condor instance at Firefly, allowing them to run on Firefly or flock to Prairiefire.
 
 
 
 \subsection{GlideinWMS OSG Interface Configuration}
-The GldeinWMS interface runs the GlideinWMS frontend software, as well as a Condor installation.  The frontend periodically queries the queues of multiple campus machines to detect idle jobs.  When idle jobs are present, the frontend sends a request for glideins to be submitted to the GlideinWMS factory.  The HCC frontend requests glideins from the central OSG factory run at the University of California at San Diego.  
+The GlideinWMS interface runs the GlideinWMS frontend software, as well as a Condor installation.  The frontend periodically queries the queues of multiple campus machines to detect idle jobs.  When idle jobs are present, the frontend sends a request for glideins to be submitted to the GlideinWMS factory.  The HCC frontend requests glideins from the central OSG factory run at the University of California at San Diego.  
 
 Glideins are submitted to resources across the country on behalf of HCC.  When the glidein jobs start on the remote resources, they pull Condor executables from the central factory, start them, and contact the HCC frontend to request jobs.
 
@@ -1150,7 +1150,7 @@ Glideins are submitted to resources across the country on behalf of HCC.  When t
 \subsection{Flocking to Purdue Configuration}
 Flocking to Purdue is enabled by publishing a list of collectors and schedds at Purdue and HCC.  This list is then manually inserted into the configurations of machines that will send and receive jobs.  The collector locations are placed in \texttt{FLOCK\_TO} and the schedds are specified in \texttt{FLOCK\_FROM}.
 
-Security between the hosts are established with the \texttt{CLAIMTOBE} environment in Condor.  In this environment, Condor trusts the daemons to give accurate information on job ownership and authentication.  The security is further refined by limiting the authentication to only the Collector and Schedd hosts specified above.  This is the same method used on the HCC campus grid described in \secref{sec:prairiefiresetup}.
+Security between the hosts are established with the \texttt{CLAIMTOBE} environment in Condor.  In this environment, Condor trusts the daemons to give accurate information on job ownership and authentication.  The security is further refined by limiting the authentication to only the collector and schedd hosts specified above.  This is the same method used on the HCC campus grid described in \secref{sec:prairiefiresetup}.
 
 In total, Purdue has seven collectors and six schedds participating in the flocking.  HCC has two collectors and three schedds.
 
@@ -1194,15 +1194,15 @@ This section evaluates the HCC Campus Grid on the characteristics defined in Sec
 \subsection{Trust Relationships}
 On most campuses, trust relationships are very strong.  On some campuses, a single group maintains the campus clusters.  On others, the proximity of administrators has facilitated trust.
 
-At HCC, one group administers the clusters on campus, therefore the trust relationship is strong.  The execution gateways in the campus grid restrict access by IP address.  Therefore, there is a set of trusted submission hosts.  Each host trusts each other's claimed user authentication.   Additionally, jobs running on the CGF use a valid user account rather than a un-privileged account such as user \texttt{nobody}.
+At HCC, one group administers the clusters on campus, therefore the trust relationship is strong.  The execution gateways in the campus grid restrict access by IP address.  Therefore, there is a set of trusted submission hosts.  Each host trusts each other's claimed user authentication.   Additionally, jobs running on the CGF use a valid user account rather than a unprivileged account such as user \texttt{nobody}.
 
 When we compare this to other campus grids, we can see that the IP based filtering policy is consistent with some campuses, and less restrictive than others.  
 
-In the Virginia Campus Grid, the user uses LDAP and PKI for authentication.  The user first authenticates with local LDAP servers, then creates a PKI certificate to interact with the on--campus clusters.  While the LDAP authentication is consistent with on-campus policies, PKI is not.  The series of interactions complicates the authentication with the servers, and necessitated the creation of a separate daemon called CredEx.  The HCC policy requires only one authentication with a submit host to have access to the campus grid.
+In the Virginia Campus Grid, the user uses LDAP and PKI for authentication.  The user first authenticates with local LDAP servers, then creates a PKI certificate to interact with the on--campus clusters.  While the LDAP authentication is consistent with on-campus policies, PKI is not.  The series of interactions complicates the authentication with the servers, and necessitates the creation of a separate daemon called CredEx.  The HCC policy requires only one authentication with a submit host to have access to the campus grid.
 
 In the Oxford Campus Grid, Kerberos is used for on campus submissions, while PKI is used for external access.  This is consistent with on-campus policies.
 
-The OSG focuses on the security of execution gateways (Compute Elements) as opposed to the security of submission hosts. Though a compromise of a gateway can lead to access of many short--lived, limited proxies, the compromise of a submission host can give access to a long--lived, unlimited proxy of a few users.  Further, since the OSG allows unregistered submission hosts, and they are relatively easy to set up compared to the gateways, there are many submission hosts.  OSG CE's most often maintained by professional or knowledgable administrators; in contrast, submission hosts may be maintained by users with limited knowledge of security.  Submission hosts could be compromised without knowledge of their owners, and could give access to unrestricted certificates.  Thus, we argue the whitelisting of submit hosts under the care of known, dependable system administrators outweigh the lack of ``strong security'' between submit hosts and resources.  
+The OSG focuses on the security of execution gateways (Compute Elements) as opposed to the security of submission hosts. Though a compromise of a gateway can lead to access of many short--lived, limited proxies, the compromise of a submission host can give access to a long--lived, unlimited proxy of a few users.  Further, since the OSG allows unregistered submission hosts, and they are relatively easy to set up compared to the gateways, there are many submission hosts.  OSG CE's are most often maintained by professional or knowledgable administrators; in contrast, submission hosts may be maintained by users with limited knowledge of security.  Submission hosts could be compromised without knowledge of their owners, and could give access to unrestricted certificates.  Thus, we argue the whitelisting of submit hosts under the care of known, dependable system administrators outweigh the lack of ``strong security'' between submit hosts and resources.  
 
 The GLOW and Purdue campus grids are similarly IP security based grids.  The IP based security simplifies the setup of a grid based on Condor flocking that GLOW, Purdue, and HCC use.  The submission host is additionally protected by the fact it only submits jobs to known good hosts.
 
